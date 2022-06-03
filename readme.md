@@ -11,6 +11,8 @@ In spannenden und dynamischen Kämpfen wird die eigene Taktik und Strategie auf 
 
 [Story](https://docs.google.com/document/d/16YKuekXXZELbwOJ96YNQeD6UEQXKldQXbGw0qDydKeY/edit)
 
-
 [Systemarchitektur](./Systemarchitektur.svg)
+
+[Design](https://www.figma.com/file/gxirKpXJDLJkDa6ToHvPt6/Theorem?node-id=0%3A1)
+
 
