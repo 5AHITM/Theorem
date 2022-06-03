@@ -12,5 +12,5 @@ In spannenden und dynamischen Kämpfen wird die eigene Taktik und Strategie auf 
 [Story](https://docs.google.com/document/d/16YKuekXXZELbwOJ96YNQeD6UEQXKldQXbGw0qDydKeY/edit)
 
 
-##Systemarchitektur
-<img src="./Systemarchitektur.svg">
+[Systemarchitektur](./Systemarchitektur.svg)
+
