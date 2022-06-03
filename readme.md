@@ -1,5 +1,8 @@
 
-
+# Theorem
+Theorem ist ein Multiplayer-Card-Trading Game made in Unity.
+Erstelle dein eigenes Deck, fordere deine Freunde heraus, kämpfe online gegen andere Spieler und sammle Karten.
+In spannenden und dynamischen Kämpfen wird die eigene Taktik und Strategie auf die Probe gestellt.
 
 
 
@@ -10,5 +13,4 @@
 
 
 ##Systemarchitektur
-![Alt text](./Systemarchitektur.svg)
 <img src="./Systemarchitektur.svg">
