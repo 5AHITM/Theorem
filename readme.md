@@ -15,4 +15,9 @@ In spannenden und dynamischen Kämpfen wird die eigene Taktik und Strategie auf 
 
 [Design](https://www.figma.com/file/gxirKpXJDLJkDa6ToHvPt6/Theorem?node-id=0%3A1)
 
+[Jira](https://theoremrpg.atlassian.net/jira/software/projects/THEOR/boards/1)
+
+[Download Game](https://github.com/MarvinAichinger/TheoremSocketIO)
+
+
 
