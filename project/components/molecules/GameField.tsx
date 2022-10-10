@@ -11,11 +11,11 @@ const GameSideLayout = styled("div", {
   height: "100%",
 });
 
-export const GameSide: React.FC<{}> = () => {
+export const GameField: React.FC<{}> = () => {
   return (
     <GameSideLayout>
       <CardField></CardField>
-      <CardHand></CardHand>
+      <CardField></CardField>
     </GameSideLayout>
   );
 };

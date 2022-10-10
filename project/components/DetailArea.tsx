@@ -1,4 +1,6 @@
 import { styled } from "@stitches/react";
+import { CardHidden } from "./atoms/CardHidden";
+import CardHiddenSVG from "./atoms/svg/CardHiddenSVG";
 
 const DetailAreaLayout = styled("div", {
   display: "flex",
@@ -29,15 +31,25 @@ const CardDeckArea = styled("div", {
   borderRadius: "5px",
 });
 
-export const DetailArea: React.FC<{}> = () => {
+const CardButton = styled("button", {
+  backgroundColor: "white",
+  border: "1px solid black",
+  borderRadius: "5px",
+  width: "50%",
+});
+
+export const DetailArea: React.FC<{ drawCardEvent: () => void }> = ({
+  drawCardEvent,
+}) => {
   return (
     <DetailAreaLayout>
-      <h1>Detail Area</h1>
       <ZoomCardArea>
         <h2>Zoom Card Area</h2>
       </ZoomCardArea>
       <CardDeckArea>
-        <h2>Card Deck Area</h2>
+        <CardButton onClick={drawCardEvent}>
+          <CardHidden></CardHidden>
+        </CardButton>
       </CardDeckArea>
     </DetailAreaLayout>
   );

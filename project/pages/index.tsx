@@ -17,10 +17,12 @@ const Layout = styled("div", {
   minHeight: "100%",
 });
 
+function drawCard() {}
+
 export default function Home() {
   return (
     <Layout>
-      <DetailArea></DetailArea>
+      <DetailArea drawCardEvent={drawCard}></DetailArea>
       <GameArea></GameArea>
       <UtilityArea></UtilityArea>
     </Layout>
