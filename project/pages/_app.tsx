@@ -1,6 +1,5 @@
 import { AppProps } from "next/app";
 import { useRouter } from "next/router";
-import ProtectedRoute from "../components/atoms/ProtectedRoute";
 import { globalCss } from "../stitches.config";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
@@ -26,12 +25,10 @@ function App({ Component, pageProps }: AppProps) {
   const queryClient = new QueryClient();
 
   return (
-    <ProtectedRoute router={router}>
-      <QueryClientProvider client={queryClient}>
-        <Component {...pageProps} router={router} />
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </ProtectedRoute>
+    <QueryClientProvider client={queryClient}>
+      <Component {...pageProps} router={router} />
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
 
