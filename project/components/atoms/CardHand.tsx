@@ -1,4 +1,5 @@
 import { styled } from "@stitches/react";
+import { MutableRefObject, useRef } from "react";
 import {
   Draggable,
   Droppable,
@@ -20,13 +21,15 @@ const CardHandLayout = styled("div", {
   variants: {
     isEnemy: {
       true: {
-        height: "40%",
+        height: "10vh",
       },
       false: {
-        height: "60%",
+        height: "30vh",
       },
     },
   },
+
+  overflow: "hidden",
 });
 
 const CardContainer = styled("div", {
@@ -36,105 +39,70 @@ const CardContainer = styled("div", {
   justifyContent: "center",
   border: "1px solid black",
   borderRadius: "5px",
-  height: "100%",
   width: "80%",
 });
 
-export const CardHand: React.FC<{ isEnemy: boolean }> = ({ isEnemy }) => {
+export const CardHand: React.FC<{
+  isEnemy: boolean;
+  getCoordiantes?: (e: HTMLElement) => void;
+}> = ({ isEnemy, getCoordiantes }) => {
   if (isEnemy) {
     return (
       <CardHandLayout isEnemy="true">
-        <CardContainer></CardContainer>
-        <CardContainer></CardContainer>
-        <CardContainer></CardContainer>
-        <CardContainer></CardContainer>
-        <CardContainer></CardContainer>
-        <CardContainer></CardContainer>
-        <CardContainer></CardContainer>
+        <CardContainer>
+          <CardHidden></CardHidden>
+        </CardContainer>
+        <CardContainer>
+          <CardHidden></CardHidden>
+        </CardContainer>
+        <CardContainer>
+          <CardHidden></CardHidden>
+        </CardContainer>
+        <CardContainer>
+          <CardHidden></CardHidden>
+        </CardContainer>
+        <CardContainer>
+          <CardHidden></CardHidden>
+        </CardContainer>
+        <CardContainer>
+          <CardHidden></CardHidden>
+        </CardContainer>
+        <CardContainer>
+          <CardHidden></CardHidden>
+        </CardContainer>
       </CardHandLayout>
     );
   } else {
     return (
       <Droppable droppableId="playerHand" direction="horizontal">
         {(provided) => (
-          <CardHandLayout isEnemy="false" ref={provided.innerRef}>
-            <Draggable draggableId="item1" index={0} key="item1">
-              {(provided) => (
-                <CardContainer
-                  ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                >
-                  <CardHidden></CardHidden>
-                </CardContainer>
-              )}
-            </Draggable>
-            <Draggable draggableId="item2" index={1} key="item2">
-              {(provided) => (
-                <CardContainer
-                  ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                >
-                  <CardHidden></CardHidden>
-                </CardContainer>
-              )}
-            </Draggable>
-            <Draggable draggableId="item3" index={2} key="item3">
-              {(provided) => (
-                <CardContainer
-                  ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                >
-                  <CardHidden></CardHidden>
-                </CardContainer>
-              )}
-            </Draggable>
-            <Draggable draggableId="item4" index={3} key="item4">
-              {(provided) => (
-                <CardContainer
-                  ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                >
-                  <CardHidden></CardHidden>
-                </CardContainer>
-              )}
-            </Draggable>
-            <Draggable draggableId="item5" index={4} key="item5">
-              {(provided) => (
-                <CardContainer
-                  ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                >
-                  <CardHidden></CardHidden>
-                </CardContainer>
-              )}
-            </Draggable>
-            {/* <Draggable draggableId="item6" index={5} key="item6">
-              {(provided) => (
-                <CardContainer
-                  ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                >
-                  <CardHidden></CardHidden>
-                </CardContainer>
-              )}
-            </Draggable>
-            <Draggable draggableId="item7" index={6} key="item7">
-              {(provided) => (
-                <CardContainer
-                  ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                >
-                  <CardHidden></CardHidden>
-                </CardContainer>
-              )}
-            </Draggable> */}
+          <CardHandLayout
+            isEnemy="false"
+            ref={(e) => {
+              console.log(e);
+              console.log(typeof getCoordiantes);
+              if (!e) {
+                return;
+              }
+              if (getCoordiantes) {
+                console.log(e);
+                getCoordiantes(e);
+              }
+            }}
+          >
+            <div ref={provided.innerRef}>
+              <Draggable draggableId="item1" index={0} key="item1">
+                {(provided) => (
+                  <CardContainer
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                  >
+                    <CardHidden></CardHidden>
+                  </CardContainer>
+                )}
+              </Draggable>
+            </div>
           </CardHandLayout>
         )}
       </Droppable>

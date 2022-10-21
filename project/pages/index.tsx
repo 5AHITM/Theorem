@@ -1,10 +1,10 @@
 import { styled } from "../stitches.config";
-import dynamic from "next/dynamic";
 import { useState } from "react";
-import { useRouter } from "next/router";
 import { DetailArea } from "../components/DetailArea";
 import { GameArea } from "../components/GameArea";
 import { UtilityArea } from "../components/UtilityArea";
+import { resetServerContext } from "react-beautiful-dnd";
+import { InferGetServerSidePropsType } from "next/types";
 
 const Layout = styled("div", {
   display: "flex",
@@ -17,14 +17,36 @@ const Layout = styled("div", {
   minHeight: "100%",
 });
 
-function drawCard() {}
+export default function Home({
+  data,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const [cardDeck, setCardDeck] = useState([]);
 
-export default function Home() {
+  const [pos, setPos] = useState([0]);
+
+  function getCoordiantes(e: HTMLElement) {
+    setPos([e.getBoundingClientRect().x, e.getBoundingClientRect().y]);
+  }
+
   return (
     <Layout>
-      <DetailArea drawCardEvent={drawCard}></DetailArea>
-      <GameArea></GameArea>
+      <DetailArea
+        setCardDeck={setCardDeck}
+        cardDeck={cardDeck}
+        pos={pos}
+      ></DetailArea>
+      <GameArea getCoordiantes={getCoordiantes}></GameArea>
       <UtilityArea></UtilityArea>
     </Layout>
   );
 }
+
+export const getServerSideProps = async () => {
+  resetServerContext();
+
+  // Fetch data from external API
+  const data = [];
+
+  // Pass data to the page via props
+  return { props: { data } };
+};
