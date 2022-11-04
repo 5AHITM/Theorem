@@ -12,21 +12,20 @@ const GameAreaLayout = styled("div", {
   height: "100%",
 });
 
-const onDragEnd = (result) => {};
-
-const pos = [];
-
 export const GameArea: React.FC<{
   getCoordiantes: (e: HTMLElement) => void;
-}> = (getCoordiantes) => {
+  playerCards: any[];
+}> = ({ getCoordiantes, playerCards }) => {
   return (
     <GameAreaLayout>
-      <CardHand isEnemy={true}></CardHand>
+      <CardHand isEnemy={true} getCoordiantes={() => {}} cards={[]}></CardHand>
 
       <GameField></GameField>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <CardHand isEnemy={false} getCoordiantes={getCoordiantes}></CardHand>
-      </DragDropContext>
+      <CardHand
+        isEnemy={false}
+        getCoordiantes={getCoordiantes}
+        cards={playerCards}
+      ></CardHand>
     </GameAreaLayout>
   );
 };
