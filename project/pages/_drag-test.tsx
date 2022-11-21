@@ -3,21 +3,29 @@ import { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const NameBox = styled("div", {
-    backgroundColor: "white",
-    border: "1px solid black",
-    height: "15rem",
-    width: "10rem"
+  height: "15rem",
+  width: "10rem",
 });
 
 const NameList = styled("ul", {
-    width: "100%",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "left",
+  width: "100%",
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "left",
 });
 
 export default function TestPage() {
-  const list: string[] = ["Marvin", "Simon", "Felix", "Gregor", "Daniel", "Fabian", "Grinning Tree", "EderEderEder", "Jürgen"];
+  const list: string[] = [
+    "Marvin",
+    "Simon",
+    "Felix",
+    "Gregor",
+    "Daniel",
+    "Fabian",
+    "Grinning Tree",
+    "EderEderEder",
+    "Jürgen",
+  ];
 
   function onDragEnd(result) {
     const { destination, source, draggableId } = result;

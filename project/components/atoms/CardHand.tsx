@@ -14,10 +14,7 @@ const CardHandLayout = styled("div", {
   gridTemplateColumns: "repeat(7, 1fr)",
   alignItems: "center",
   justifyContent: "center",
-  border: "1px solid black",
-  borderRadius: "5px",
   width: "100%",
-  height: "100%",
 
   overflow: "hidden",
 });
@@ -27,20 +24,23 @@ const CardContainer = styled("div", {
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  border: "1px solid black",
-  borderRadius: "5px",
   width: "80%",
+  overflow: "hidden",
+  transition: "all 0.2s ease-in-out",
 });
 
 const CardHandLayoutWrapper = styled("div", {
   width: "100%",
+  overflow: "hidden",
   variants: {
     isEnemy: {
       true: {
-        height: "10vh",
+        height: "17vh",
+        minheight: "17vh",
       },
       false: {
         height: "30vh",
+        minheight: "30vh",
       },
     },
   },
@@ -51,31 +51,38 @@ export const CardHand: React.FC<{
   getCoordiantes: (e: HTMLElement) => void;
   cards: any[];
 }> = ({ isEnemy, getCoordiantes, cards }) => {
+  function getStyle(style, snapshot) {
+    console.log("snapshot", snapshot);
+    if (!snapshot.isDropAnimating) {
+      return style;
+    }
+
+    const { moveTo, curve, duration } = snapshot.dropAnimation;
+    const translate = `translate(${moveTo.x}px, ${moveTo.y}px)`;
+
+    // patching the existing style
+    return {
+      ...style,
+      transformOrigin: "top left",
+      transform: `${translate} scale(1.65)`,
+      // slowing down the drop because we can
+      transition: `all ${curve} ${duration + 1}s`,
+    };
+  }
+
   if (isEnemy) {
     return (
-      <CardHandLayout>
-        <CardContainer>
-          <CardHidden></CardHidden>
-        </CardContainer>
-        <CardContainer>
-          <CardHidden></CardHidden>
-        </CardContainer>
-        <CardContainer>
-          <CardHidden></CardHidden>
-        </CardContainer>
-        <CardContainer>
-          <CardHidden></CardHidden>
-        </CardContainer>
-        <CardContainer>
-          <CardHidden></CardHidden>
-        </CardContainer>
-        <CardContainer>
-          <CardHidden></CardHidden>
-        </CardContainer>
-        <CardContainer>
-          <CardHidden></CardHidden>
-        </CardContainer>
-      </CardHandLayout>
+      <CardHandLayoutWrapper isEnemy={isEnemy}>
+        <CardHandLayout>
+          {cards.map((card, index) => {
+            return (
+              <CardContainer key={card}>
+                <CardHidden></CardHidden>
+              </CardContainer>
+            );
+          })}
+        </CardHandLayout>
+      </CardHandLayoutWrapper>
     );
   } else {
     return (
@@ -92,16 +99,13 @@ export const CardHand: React.FC<{
               }}
             >
               {cards.map((card, index) => (
-                <Draggable
-                  draggableId={`item${index}`}
-                  index={index}
-                  key={`item${index}`}
-                >
-                  {(provided) => (
+                <Draggable draggableId={card} index={index} key={card}>
+                  {(provided, snapshot) => (
                     <CardContainer
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
+                      style={getStyle(provided.draggableProps.style, snapshot)}
                     >
                       <CardHidden></CardHidden>
                     </CardContainer>

@@ -22,9 +22,6 @@ const ZoomCardArea = styled("div", {
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "center",
-  backgroundColor: "white",
-  border: "1px solid black",
-  borderRadius: "5px",
 });
 
 const CardDeckArea = styled("div", {
@@ -33,28 +30,41 @@ const CardDeckArea = styled("div", {
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "center",
-  backgroundColor: "white",
-  border: "1px solid black",
-  borderRadius: "5px",
+  overflow: "hidden",
 });
 
 const CardButton = styled("button", {
-  backgroundColor: "white",
-  border: "1px solid black",
-  borderRadius: "5px",
   width: "50%",
+  overflow: "hidden",
 });
 
 const CardDeckContainer = styled("div", {
   position: "fixed",
-  width: "10%",
-  bottom: "10%",
+  width: "12%",
+  bottom: "12%",
 });
 
 export const DetailArea: React.FC<{
   cardDeck: string[];
   drawCard: () => void;
 }> = ({ cardDeck, drawCard }) => {
+  function getStyle(style, snapshot) {
+    if (!snapshot.isDropAnimating) {
+      return style;
+    }
+
+    const { moveTo, curve, duration } = snapshot.dropAnimation;
+    const translate = `translate(${moveTo.x / 0.7}px, ${moveTo.y / 0.7}px)`;
+
+    // patching the existing style
+    return {
+      ...style,
+      transformOrigin: "top left",
+      transform: `scale(0.7) ${translate}`,
+      // slowing down the drop because we can
+      transition: `all ${curve} ${duration}s`,
+    };
+  }
   return (
     <DetailAreaLayout>
       <ZoomCardArea>
@@ -72,24 +82,23 @@ export const DetailArea: React.FC<{
           <Droppable droppableId="cardDeck">
             {(provided) => (
               <div ref={provided.innerRef}>
-                <Draggable
-                  draggableId="cardDeckItem"
-                  index={0}
-                  key="cardDeckItem"
-                >
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      {cardDeck.map((card) => (
+                {cardDeck.map((card) => (
+                  <Draggable draggableId={card} index={0} key={card}>
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        style={getStyle(
+                          provided.draggableProps.style,
+                          snapshot
+                        )}
+                      >
                         <CardHidden key={card}></CardHidden>
-                      ))}
-                    </div>
-                  )}
-                </Draggable>
-
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
                 {provided.placeholder}
               </div>
             )}

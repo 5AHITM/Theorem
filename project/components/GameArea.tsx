@@ -1,7 +1,6 @@
 import { styled } from "@stitches/react";
 import { CardHand } from "./atoms/CardHand";
 import { GameField } from "./molecules/GameField";
-import { DragDropContext } from "react-beautiful-dnd";
 
 const GameAreaLayout = styled("div", {
   display: "flex",
@@ -15,12 +14,28 @@ const GameAreaLayout = styled("div", {
 export const GameArea: React.FC<{
   getCoordiantes: (e: HTMLElement) => void;
   playerCards: any[];
-}> = ({ getCoordiantes, playerCards }) => {
+  playerFieldCards: any[];
+  enemyFieldCards: any[];
+  enemyCards: any[];
+}> = ({
+  getCoordiantes,
+  playerCards,
+  playerFieldCards,
+  enemyFieldCards,
+  enemyCards,
+}) => {
   return (
     <GameAreaLayout>
-      <CardHand isEnemy={true} getCoordiantes={() => {}} cards={[]}></CardHand>
+      <CardHand
+        isEnemy={true}
+        getCoordiantes={() => {}}
+        cards={enemyCards}
+      ></CardHand>
 
-      <GameField></GameField>
+      <GameField
+        playerCards={playerFieldCards}
+        enemyCards={enemyFieldCards}
+      ></GameField>
       <CardHand
         isEnemy={false}
         getCoordiantes={getCoordiantes}

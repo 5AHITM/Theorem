@@ -6,9 +6,6 @@ const UtilityAreaLayout = styled("div", {
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  backgroundColor: "white",
-  border: "1px solid black",
-  borderRadius: "5px",
   height: "100%",
 });
 

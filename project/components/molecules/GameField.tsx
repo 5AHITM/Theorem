@@ -5,17 +5,18 @@ import { CardHand } from "../atoms/CardHand";
 const GameSideLayout = styled("div", {
   display: "flex",
   flexDirection: "column",
-  border: "1px solid black",
-  borderRadius: "5px",
   width: "100%",
   height: "100%",
 });
 
-export const GameField: React.FC<{}> = () => {
+export const GameField: React.FC<{
+  playerCards: number[];
+  enemyCards: number[];
+}> = ({ playerCards, enemyCards }) => {
   return (
     <GameSideLayout>
-      <CardField></CardField>
-      <CardField></CardField>
+      <CardField isPlayer={false} cards={enemyCards}></CardField>
+      <CardField isPlayer={true} cards={playerCards}></CardField>
     </GameSideLayout>
   );
 };
