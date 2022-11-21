@@ -108,7 +108,7 @@ export default function Game({
     if (destination?.droppableId === source.droppableId) {
       return;
     }
-    if (source.droppableId == "cardDeck") {
+    if (source.droppableId == "cardDeck" && playerCards.length < 7) {
       setCardDeck(["" + (Number.parseInt(draggableId) + 1)]);
       //copy array
       const newPlayerCards = [...playerCards];
@@ -184,6 +184,7 @@ export default function Game({
         <DragDropContext
           onDragEnd={onDragEnd}
           onDragStart={(result) => {
+            if(result.source)
             console.log(result);
           }}
           sensors={[useMyCoolSensor]}

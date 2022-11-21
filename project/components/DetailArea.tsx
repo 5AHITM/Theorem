@@ -8,6 +8,7 @@ import {
 } from "react-beautiful-dnd";
 import { CardHidden } from "./atoms/CardHidden";
 import { Dispatch, MutableRefObject, SetStateAction, useRef } from "react";
+import { CardFront } from "./atoms/CardFront";
 
 const DetailAreaLayout = styled("div", {
   display: "flex",
@@ -76,9 +77,6 @@ export const DetailArea: React.FC<{
             drawCard();
           }}
         >
-          <CardDeckContainer>
-            <CardHidden></CardHidden>
-          </CardDeckContainer>
           <Droppable droppableId="cardDeck">
             {(provided) => (
               <div ref={provided.innerRef}>
@@ -94,7 +92,17 @@ export const DetailArea: React.FC<{
                           snapshot
                         )}
                       >
-                        <CardHidden key={card}></CardHidden>
+                        <CardFront
+                        key={card}
+                        name="Grinning Tree"
+                        mana={3}
+                        attack={5}
+                        defense={3}
+                        effects="Shield"
+                        type="Good/Tree"
+                        text="A peaceful, nice, grinning Tree living his best live"
+                        image="/img/test.png"
+                        ></CardFront>
                       </div>
                     )}
                   </Draggable>
