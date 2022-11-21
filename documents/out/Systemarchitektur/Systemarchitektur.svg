@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="647px" preserveAspectRatio="none" style="width:563px;height:647px;background:#FFFFFF;" version="1.1" viewBox="0 0 563 647" width="563px" zoomAndPan="magnify"><defs/><g><!--MD5=[4c2277641ea37e20ebffd03041c9fdd1]
+cluster Netzwerk1--><g id="cluster_Netzwerk1"><rect fill="none" height="184" rx="35" ry="35" style="stroke:#181818;stroke-width:1.0;" width="236" x="58.4646" y="7"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="65" x="143.9646" y="28.5332">Netzwerk</text></g><!--MD5=[2378498e3493ef6f30eaedb646724b00]
+cluster Client1--><g id="cluster_Client1"><rect fill="none" height="116" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1.0;" width="188" x="82.4646" y="51"/><image height="16" width="16" x="168.4646" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAKUlEQVR42mNgGK7gPxiQppoEPbTXQJof/mMAqmr4jwNQScN/vICOqQYAFNKhXxPvygUAAAAASUVORK5CYII=" y="53"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="49" x="151.9646" y="83.5332">Client1</text></g><!--MD5=[b26259b1eb7c76039ebb2680e330cc99]
+cluster Netzwerk2--><g id="cluster_Netzwerk2"><rect fill="none" height="184" rx="35" ry="35" style="stroke:#181818;stroke-width:1.0;" width="236" x="321.4646" y="7"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="65" x="406.9646" y="28.5332">Netzwerk</text></g><!--MD5=[ede11d11702db0004b7dace9060b267b]
+cluster Client2--><g id="cluster_Client2"><rect fill="none" height="116" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1.0;" width="188" x="345.4646" y="51"/><image height="16" width="16" x="431.4646" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAKUlEQVR42mNgGK7gPxiQppoEPbTXQJof/mMAqmr4jwNQScN/vICOqQYAFNKhXxPvygUAAAAASUVORK5CYII=" y="53"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="49" x="414.9646" y="83.5332">Client2</text></g><!--MD5=[07074073229a58b98d86dbf75a12e332]
+cluster Internet--><g id="cluster_Internet"><path d="M43.4847,250.809 C52.6823,236.3505 68.0014,234.8741 78.0209,249.8445 C87.9803,236.6862 97.9334,234.8511 108.2896,249.4112 C120.716,232.2348 131.0799,234.9082 142.3427,250.6162 C154.0136,232.2287 164.8997,231.3121 178.3535,248.828 C185.8213,234.3264 196.315,230.951 208.9247,242.8808 C221.4083,227.5275 236.2141,226.5191 247.9581,243.7664 C256.1592,228.6473 270.082,231.8442 277.0549,245.029 C287.9625,229.0303 300.6759,225.5762 313.9761,242.332 C324.3584,226.7655 340.829,225.9164 348.5966,244.9484 C359.4151,228.7102 375.3834,233.0392 382.0065,249.266 C390.4203,229.2448 408.6484,230.9407 418.734,247.5916 C428.0407,234.4454 442.13,234.4541 451.3296,247.7237 C460.5858,231.0333 475.648,235.0372 483.5017,249.1867 C499.2692,236.2356 511.633,235.8769 521.4646,256 C523.7514,255.6649 525.2324,256.6691 524.5608,259.1981 C542.2116,271.1095 538.2506,281.5193 524.1478,293.0433 C544.7128,301.0886 545.8719,319.2285 526.3944,329.726 C540.1185,339.9546 540.8275,355.7908 524.8079,364.6689 C541.5825,376.0984 541.2761,388.5629 526.1202,401.1414 C546.2666,407.6855 546.1889,423.6953 531.2378,435.4714 C546.8855,447.7108 547.3926,458.2518 528.7932,467.9104 C542.025,479.0711 542.4044,489.953 528.6869,501.0272 C545.4014,512.285 544.7196,528.9401 524.5291,535.783 C543.0567,544.5471 540.2964,558.9172 526.7747,569.7972 C544.9809,587.8499 539.8377,605.9675 514.4646,611 C518.1804,609.7589 520.3921,611.7843 519.3888,615.5976 C506.7512,633.3226 495.003,632.4603 485.3734,612.8567 C475.1178,633.0334 461.7467,631.7098 448.7198,615.6608 C438.4458,631.9458 425.8845,632.3404 414.9298,616.374 C405.8801,632.395 394.4287,634.3965 381.9602,620.0908 C372.8715,633.4028 359.0169,632.3576 350.512,619.3922 C341.8267,633.7082 325.8017,634.21 316.694,619.8911 C307.8882,637.793 292.036,638.8091 282.7509,620.3385 C268.3952,639.1787 255.1369,635.6902 242.7769,618.146 C234.4885,633.1959 224.7306,635.2564 213.9802,620.5268 C204.9376,637.238 188.7047,640.4568 178.5557,621.6297 C164.85,634.6496 149.5162,631.59 141.5589,614.5538 C132.5354,627.8307 118.4727,628.1149 110.1589,613.7477 C102.0322,633.1132 86.4167,635.5127 74.7582,617.0531 C54.5149,635.4092 38.5793,629.188 31.4646,604 C32.0765,603.9282 32.287,604.3349 32.0204,604.8426 C19.4037,592.5235 17.6497,582.3636 34.2882,572.0688 C20.7667,563.7413 16.1971,549.9161 32.6146,540.025 C15.5945,533.0939 8.6009,516.65 26.4203,503.7669 C9.7603,493.8562 13.0391,480.4577 26.8993,470.9931 C8.0154,461.579 6.9386,444.2683 22.5209,431.0738 C6,420.9079 9.5448,406.7466 24.0155,397.9804 C8.8572,386.3931 8.1166,374.0361 25.2437,363.6023 C11.365,350.543 11.9038,334.0241 31.7775,326.9878 C17.5953,317.7898 15.8282,303.0484 32.5106,294.5479 C11.6896,279.5625 15.5977,258.2745 38.4646,249 C40.7512,246.8002 42.9789,248.0669 43.4847,250.809 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="56" x="248.4646" y="268.5332">Internet</text></g><!--MD5=[6da0cdd6115536ea177f19d4bd65484c]
+cluster Server1 (Linux Ubuntu)--><g id="cluster_Server1 (Linux Ubuntu)"><polygon fill="none" points="47.4646,295,57.4646,285,505.4646,285,505.4646,448,495.4646,458,47.4646,458,47.4646,295" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="495.4646" x2="505.4646" y1="295" y2="285"/><line style="stroke:#181818;stroke-width:1.0;" x1="47.4646" x2="495.4646" y1="295" y2="295"/><line style="stroke:#181818;stroke-width:1.0;" x1="495.4646" x2="495.4646" y1="295" y2="458"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="163" x="190.9646" y="312.5332">Server1 (Linux Ubuntu)</text></g><!--MD5=[2b611c2d60e481aa2035053367969193]
+cluster Game--><g id="cluster_Game"><path d="M73.9646,334 L114.9646,334 A3.75,3.75 0 0 1 117.4646,336.5 L124.4646,357.6094 L326.9646,357.6094 A2.5,2.5 0 0 1 329.4646,360.1094 L329.4646,431.5 A2.5,2.5 0 0 1 326.9646,434 L73.9646,434 A2.5,2.5 0 0 1 71.4646,431.5 L71.4646,336.5 A2.5,2.5 0 0 1 73.9646,334 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="71.4646" x2="124.4646" y1="357.6094" y2="357.6094"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="40" x="75.4646" y="350.5332">Game</text></g><!--MD5=[4fe24e7a78a2aa504d753135b030a7ea]
+cluster Utility--><g id="cluster_Utility"><path d="M355.9646,334 L395.9646,334 A3.75,3.75 0 0 1 398.4646,336.5 L405.4646,357.6094 L478.9646,357.6094 A2.5,2.5 0 0 1 481.4646,360.1094 L481.4646,431.5 A2.5,2.5 0 0 1 478.9646,434 L355.9646,434 A2.5,2.5 0 0 1 353.4646,431.5 L353.4646,336.5 A2.5,2.5 0 0 1 355.9646,334 " fill="none" style="stroke:#0000FF;stroke-width:1.0;stroke-dasharray:1.0,3.0;"/><line style="stroke:#0000FF;stroke-width:1.0;stroke-dasharray:1.0,3.0;" x1="353.4646" x2="405.4646" y1="357.6094" y2="357.6094"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="39" x="357.4646" y="350.5332">Utility</text></g><!--MD5=[4915eaa5dd0c2e60382807b5b2444d45]
+cluster Server2--><g id="cluster_Server2"><polygon fill="none" points="351.4646,501,361.4646,491,483.4646,491,483.4646,585,473.4646,595,351.4646,595,351.4646,501" style="stroke:#0000FF;stroke-width:1.0;stroke-dasharray:1.0,3.0;"/><line style="stroke:#0000FF;stroke-width:1.0;stroke-dasharray:1.0,3.0;" x1="473.4646" x2="483.4646" y1="501" y2="491"/><line style="stroke:#0000FF;stroke-width:1.0;stroke-dasharray:1.0,3.0;" x1="351.4646" x2="473.4646" y1="501" y2="501"/><line style="stroke:#0000FF;stroke-width:1.0;stroke-dasharray:1.0,3.0;" x1="473.4646" x2="473.4646" y1="501" y2="595"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="56" x="385.4646" y="518.5332">Server2</text></g><!--MD5=[642a622a9c0169d0ff51ead41ec52996]
+entity NextGame1--><g id="elem_NextGame1"><rect fill="#F1F1F1" height="47.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="156" x="98.4646" y="103"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="234.4646" y="108"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="232.4646" y="110"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="232.4646" y="114"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="116" x="113.4646" y="137.5332">NextJS Game (TS)</text></g><!--MD5=[2884dc6b92efa98a00f02df98ee44f15]
+entity NextGame2--><g id="elem_NextGame2"><rect fill="#F1F1F1" height="47.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="156" x="361.4646" y="103"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="497.4646" y="108"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="495.4646" y="110"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="495.4646" y="114"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="116" x="376.4646" y="137.5332">NextJS Game (TS)</text></g><!--MD5=[049227cf6c078ba29fe8293d85f87e68]
+entity Mirror Networking Server Build--><g id="elem_Mirror Networking Server Build"><rect fill="#F1F1F1" height="47.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="225" x="87.9646" y="370"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="292.9646" y="375"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="290.9646" y="377"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="290.9646" y="381"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="185" x="102.9646" y="404.5332">SocketIO Server (TypeScript)</text></g><!--MD5=[a6db0c926898241e7c594507fb3ca544]
+entity Backend--><g id="elem_Backend"><rect fill="#F0F8FF" height="47.6094" rx="2.5" ry="2.5" style="stroke:#0000FF;stroke-width:1.0;stroke-dasharray:1.0,3.0;" width="95" x="369.9646" y="370"/><rect fill="#F0F8FF" height="10" style="stroke:#0000FF;stroke-width:1.0;stroke-dasharray:1.0,3.0;" width="15" x="444.9646" y="375"/><rect fill="#F0F8FF" height="2" style="stroke:#0000FF;stroke-width:1.0;stroke-dasharray:1.0,3.0;" width="4" x="442.9646" y="377"/><rect fill="#F0F8FF" height="2" style="stroke:#0000FF;stroke-width:1.0;stroke-dasharray:1.0,3.0;" width="4" x="442.9646" y="381"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="55" x="384.9646" y="404.5332">Backend</text></g><!--MD5=[fa1e3283224feb76407c84b7e90ed808]
+entity Database--><g id="elem_Database"><path d="M377.9646,542 C377.9646,532 417.4646,532 417.4646,532 C417.4646,532 456.9646,532 456.9646,542 L456.9646,568.6094 C456.9646,578.6094 417.4646,578.6094 417.4646,578.6094 C417.4646,578.6094 377.9646,578.6094 377.9646,568.6094 L377.9646,542 " fill="#F0F8FF" style="stroke:#0000FF;stroke-width:1.0;stroke-dasharray:1.0,3.0;"/><path d="M377.9646,542 C377.9646,552 417.4646,552 417.4646,552 C417.4646,552 456.9646,552 456.9646,542 " fill="none" style="stroke:#0000FF;stroke-width:1.0;stroke-dasharray:1.0,3.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="59" x="387.9646" y="570.5332">database</text></g><!--MD5=[246428fbaead4def380f04580e5bccc4]
+link NextGame1 to Mirror Networking Server Build--><g id="link_NextGame1_Mirror Networking Server Build"><path d="M174.6746,156.5 C173.8146,171.52 172.8846,190.25 172.4646,207 C172.2646,215 171.8046,217.03 172.4646,225 C176.5646,274.51 187.3446,331.4 194.2646,364.65 " fill="none" id="NextGame1-Mirror Networking Server Build" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="195.3446,369.78,197.4047,360.149,194.3145,364.8873,189.5763,361.7971,195.3446,369.78" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="174.9846,151.15,170.4776,159.9071,174.6993,156.1419,178.4646,160.3635,174.9846,151.15" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="54" x="173.4646" y="221.4951">SocketIO</text></g><!--MD5=[2e59db6a49f2bfbfa3b6fa64c4b14213]
+link NextGame2 to Mirror Networking Server Build--><g id="link_NextGame2_Mirror Networking Server Build"><path d="M415.1146,155 C369.2846,205.82 270.7146,315.11 224.8546,365.96 " fill="none" id="NextGame2-Mirror Networking Server Build" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="221.3746,369.81,230.3684,365.7962,224.7194,366.0935,224.4221,360.4445,221.3746,369.81" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="418.6746,151.05,409.6722,155.0447,415.3219,154.7594,415.6072,160.409,418.6746,151.05" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="54" x="363.4646" y="221.4951">SocketIO</text></g><!--MD5=[389864e86aec0eb867747bdabc37a258]
+link NextGame1 to Backend--><g id="link_NextGame1_Backend"><path d="M206.3146,151.14 C233.4846,171.71 275.0946,202.01 313.4646,225 C320.2846,229.09 323.7346,227.49 329.4646,233 C368.7746,270.8 394.9946,330.06 407.9646,364.86 " fill="none" id="NextGame1-to-Backend" style="stroke:#0000FF;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#0000FF" points="409.7846,369.81,410.4321,359.9825,408.0587,365.1173,402.9238,362.7439,409.7846,369.81" style="stroke:#0000FF;stroke-width:1.0;"/><text fill="#0000FF" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="32" x="314.4646" y="221.4951">HTTP</text></g><!--MD5=[141d88856a2517603033969ba647badf]
+link NextGame2 to Backend--><g id="link_NextGame2_Backend"><path d="M437.5546,151.05 C433.5246,199.51 424.2046,311.78 419.8246,364.59 " fill="none" id="NextGame2-to-Backend" style="stroke:#0000FF;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#0000FF" points="419.3946,369.81,424.1261,361.1721,419.8086,364.8272,416.1536,360.5097,419.3946,369.81" style="stroke:#0000FF;stroke-width:1.0;"/><text fill="#0000FF" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="32" x="433.4646" y="221.4951">HTTP</text></g><!--MD5=[80ce1f6df5d8c077a380ce2c2e013c12]
+link Backend to Database--><g id="link_Backend_Database"><path d="M417.4646,418.19 C417.4646,446.94 417.4646,495.9 417.4646,526.65 " fill="none" id="Backend-to-Database" style="stroke:#0000FF;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#0000FF" points="417.4646,531.8,421.4646,522.8,417.4646,526.8,413.4646,522.8,417.4646,531.8" style="stroke:#0000FF;stroke-width:1.0;"/></g><!--MD5=[d95f9a136f4a99ae1dce23cbb89ecdb7]
+@startuml
+
+sprite $img [16x16/16] {
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFF00FFFFFFF
+FFFFFF0000FFFFFF
+FFFFFF0000FFFFFF
+FFFFFF0000FFFFFF
+FFFFFFF00FFFFFFF
+FFFFF000000FFFFF
+FFFFF000000FFFFF
+FFFF00000000FFFF
+FFFF00000000FFFF
+FFF0000000000FFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+}
+
+storage Netzwerk1 as "Netzwerk" {
+    rectangle Client1 <<$img>> {
+        [NextGame1] as "NextJS Game (TS)"
+    }
+}
+storage Netzwerk2 as "Netzwerk" {
+    rectangle Client2 <<$img>> {
+        [NextGame2] as "NextJS Game (TS)"
+    }
+}
+
+cloud Internet {
+    node "Server1 (Linux Ubuntu)" {
+      package "Game" {
+        [Mirror Networking Server Build] as "SocketIO Server (TypeScript)"
+      }
+
+      package "Utility" #line:blue;line.dotted {
+        [Backend] #aliceblue;line:blue;line.dotted
+      }
+    }
+
+    node "Server2" #line:blue;line.dotted {
+      database Database as "database" #aliceblue;line:blue;line.dotted
+    }
+}
+
+[NextGame1] <- -> [Mirror Networking Server Build] : SocketIO
+[NextGame2] <- -> [Mirror Networking Server Build] : SocketIO
+
+[NextGame1] ..> [Backend] #blue;text:blue : HTTP
+[NextGame2] ..> [Backend] #blue;text:blue : HTTP
+
+Backend ..> Database #blue
+
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 19:01:30 CEST 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: Cp1252
+Language: de
+Country: AT
+--></g></svg>

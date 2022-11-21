@@ -1,0 +1,57 @@
+@startuml
+
+sprite $img [16x16/16] {
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFF00FFFFFFF
+FFFFFF0000FFFFFF
+FFFFFF0000FFFFFF
+FFFFFF0000FFFFFF
+FFFFFFF00FFFFFFF
+FFFFF000000FFFFF
+FFFFF000000FFFFF
+FFFF00000000FFFF
+FFFF00000000FFFF
+FFF0000000000FFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+}
+
+storage Netzwerk1 as "Netzwerk" {
+    rectangle Client1 <<$img>> {
+        [NextGame1] as "NextJS Game (TS)"
+    }
+}
+storage Netzwerk2 as "Netzwerk" {
+    rectangle Client2 <<$img>> {
+        [NextGame2] as "NextJS Game (TS)"
+    }
+}
+
+cloud Internet {
+    node "Server1 (Linux Ubuntu)" {
+      package "Game" {
+        [Mirror Networking Server Build] as "SocketIO Server (TypeScript)"
+      }
+
+      package "Utility" #line:blue;line.dotted {
+        [Backend] #aliceblue;line:blue;line.dotted
+      }
+    }
+
+    node "Server2" #line:blue;line.dotted {
+      database Database as "database" #aliceblue;line:blue;line.dotted
+    }
+}
+
+[NextGame1] <--> [Mirror Networking Server Build] : SocketIO
+[NextGame2] <--> [Mirror Networking Server Build] : SocketIO
+
+[NextGame1] ..> [Backend] #blue;text:blue : HTTP
+[NextGame2] ..> [Backend] #blue;text:blue : HTTP
+
+Backend ..> Database #blue
+
+@enduml
