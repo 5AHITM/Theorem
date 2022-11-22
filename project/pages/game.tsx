@@ -36,6 +36,21 @@ export default function Game({
 
   const [roomNumber, setRoomNumber] = useState("");
 
+  const [cardDeck, setCardDeck] = useState(["0"]);
+
+  const [pos, setPos] = useState([0]);
+
+  const [playerCards, setPlayerCards] = useState([]);
+
+  const [playerFieldCards, setPlayerFieldCards] = useState([]);
+
+  const [enemyFieldCards, setEnemyFieldCards] = useState([]);
+
+  const [enemyCards, setEnemyCards] = useState([1]);
+
+  //check if fullscreen
+  const [screenModeSet, setScreenModeSet] = useState(false);
+
   //set up socket io connection
   useEffect(() => {
     socketInitializer();
@@ -73,22 +88,26 @@ export default function Game({
     socket.on("startGame", () => {
       setRoomFound(true);
     });
+
+    socket.on("disconnect", () => {
+      console.log("disconnected");
+    });
+
+    socket.on("cardDrawn", (id) => {
+      setEnemyCards([id, ...enemyCards]);
+      console.log("card drawn");
+    });
+
+    socket.on("cardPlayed", (id) => {
+      setEnemyFieldCards([...enemyFieldCards, id]);
+    });
+
+    socket.on("nextCard", (card) => {
+      const newPlayerCards = [...playerCards];
+      newPlayerCards.splice(1, 0, card);
+      setPlayerCards(newPlayerCards);
+    });
   };
-
-  const [cardDeck, setCardDeck] = useState(["0"]);
-
-  const [pos, setPos] = useState([0]);
-
-  const [playerCards, setPlayerCards] = useState([]);
-
-  const [playerFieldCards, setPlayerFieldCards] = useState([]);
-
-  const [enemyFieldCards, setEnemyFieldCards] = useState([]);
-
-  const [enemyCards, setEnemyCards] = useState([1]);
-
-  //check if fullscreen
-  const [screenModeSet, setScreenModeSet] = useState(false);
 
   function getCoordiantes(e: HTMLElement) {
     if (pos.length === 1) {
@@ -97,6 +116,10 @@ export default function Game({
         e.getClientRects()[0].y * 0.12,
       ]);
     }
+  }
+
+  function getNextCard() {
+    socket.emit("drawCard");
   }
 
   const onDragEnd = (result) => {
@@ -110,10 +133,8 @@ export default function Game({
     }
     if (source.droppableId == "cardDeck" && playerCards.length < 7) {
       setCardDeck(["" + (Number.parseInt(draggableId) + 1)]);
+      getNextCard();
       //copy array
-      const newPlayerCards = [...playerCards];
-      newPlayerCards.splice(1, 0, draggableId);
-      setPlayerCards(newPlayerCards);
     } else if (
       destination.droppableId == "playerField" &&
       source.droppableId == "playerHand" &&
@@ -184,8 +205,7 @@ export default function Game({
         <DragDropContext
           onDragEnd={onDragEnd}
           onDragStart={(result) => {
-            if(result.source)
-            console.log(result);
+            if (result.source) console.log(result);
           }}
           sensors={[useMyCoolSensor]}
         >
