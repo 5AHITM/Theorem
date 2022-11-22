@@ -2,11 +2,15 @@ import { styled } from "@stitches/react";
 import { MutableRefObject, useRef } from "react";
 import {
   Draggable,
+  DraggableStateSnapshot,
+  DraggingStyle,
   Droppable,
+  NotDraggingStyle,
   PreDragActions,
   SensorAPI,
   SnapDragActions,
 } from "react-beautiful-dnd";
+import { CardFront } from "./CardFront";
 import { CardHidden } from "./CardHidden";
 
 const CardHandLayout = styled("div", {
@@ -51,7 +55,10 @@ export const CardHand: React.FC<{
   getCoordiantes: (e: HTMLElement) => void;
   cards: any[];
 }> = ({ isEnemy, getCoordiantes, cards }) => {
-  function getStyle(style, snapshot) {
+  function getStyle(
+    style: DraggingStyle | NotDraggingStyle,
+    snapshot: DraggableStateSnapshot
+  ) {
     if (!snapshot.isDropAnimating) {
       return style;
     }
@@ -93,16 +100,11 @@ export const CardHand: React.FC<{
                 if (!e) {
                   return;
                 }
-
                 getCoordiantes(e);
               }}
             >
               {cards.map((card, index) => (
-                <Draggable
-                  draggableId={card._id}
-                  index={index}
-                  key={card._id + index}
-                >
+                <Draggable draggableId={card.key} index={index} key={card.key}>
                   {(provided, snapshot) => (
                     <CardContainer
                       ref={provided.innerRef}
@@ -110,7 +112,17 @@ export const CardHand: React.FC<{
                       {...provided.dragHandleProps}
                       style={getStyle(provided.draggableProps.style, snapshot)}
                     >
-                      <CardHidden></CardHidden>
+                      <CardFront
+                        name={card.name}
+                        text={card.text}
+                        attack={card.attack}
+                        defense={card.defense}
+                        mana={card.mana}
+                        type={card.type}
+                        effects={card.effect}
+                        image={card.img}
+                        key={card.key}
+                      ></CardFront>
                     </CardContainer>
                   )}
                 </Draggable>

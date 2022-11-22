@@ -7,7 +7,7 @@ const CardContainer = styled("div", {
   display: "flex",
   width: "100%",
   position: "relative",
-  aspectRatio:"1105/1556",
+  aspectRatio: "1105/1556",
 });
 
 const CardName = styled("p", {
@@ -18,7 +18,7 @@ const CardName = styled("p", {
   textAlign: "left",
   fontFamily: "Immortal",
   display: "inline",
-  fontSize: "60%"
+  fontSize: "60%",
 });
 
 const CardMana = styled("p", {
@@ -29,7 +29,7 @@ const CardMana = styled("p", {
   textAlign: "right",
   fontFamily: "Immortal",
   display: "inline",
-  fontSize: "60%"
+  fontSize: "60%",
 });
 
 const CardAttackValue = styled("p", {
@@ -40,7 +40,7 @@ const CardAttackValue = styled("p", {
   textAlign: "right",
   fontFamily: "Immortal",
   display: "inline",
-  fontSize: "60%"
+  fontSize: "60%",
 });
 
 const CardDefenseValue = styled("p", {
@@ -51,7 +51,7 @@ const CardDefenseValue = styled("p", {
   textAlign: "left",
   fontFamily: "Immortal",
   display: "inline",
-  fontSize: "60%"
+  fontSize: "60%",
 });
 
 const CardType = styled("p", {
@@ -62,7 +62,7 @@ const CardType = styled("p", {
   textAlign: "left",
   fontFamily: "Immortal",
   display: "inline",
-  fontSize: "60%"
+  fontSize: "60%",
 });
 
 const CardEffects = styled("p", {
@@ -73,7 +73,7 @@ const CardEffects = styled("p", {
   textAlign: "left",
   fontFamily: "Immortal",
   display: "inline",
-  fontSize: "60%"
+  fontSize: "60%",
 });
 
 const CardText = styled("p", {
@@ -83,21 +83,28 @@ const CardText = styled("p", {
   width: "64%",
   textAlign: "left",
   fontFamily: "Immortal",
-  fontSize: "60%"
+  fontSize: "60%",
 });
 
-export const CardFront: React.FC<{name: string, mana: number, attack: number, 
-  defense: number, type: string, effects: string, text: string, image: string}> = ({name,mana,attack,defense,type,effects,text,image}) => {
-
+export const CardFront: React.FC<{
+  name: string;
+  mana: number;
+  attack: number;
+  defense: number;
+  type: string;
+  effects: string;
+  text: string;
+  image: string;
+}> = ({ name, mana, attack, defense, type, effects, text, image }) => {
   const CardImage = styled("div", {
     position: "relative",
     top: 0,
     right: 0,
     width: "100%",
     height: "60%",
-    backgroundImage: "url('" + image + "')",
+    backgroundImage: "url('" + "/img/" + image + "')",
     backgroundRepeat: "no-repeat",
-    backgroundSize: "cover"
+    backgroundSize: "cover",
   });
 
   return (

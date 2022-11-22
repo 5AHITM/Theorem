@@ -46,7 +46,7 @@ export default function Game({
 
   const [enemyFieldCards, setEnemyFieldCards] = useState([]);
 
-  const [enemyCards, setEnemyCards] = useState([1]);
+  const [enemyCards, setEnemyCards] = useState([]);
 
   //check if fullscreen
   const [screenModeSet, setScreenModeSet] = useState(false);
@@ -104,17 +104,14 @@ export default function Game({
       console.log("card drawn");
     });
 
-    socket.on("cardPlayed", (id) => {
-      setEnemyFieldCards([...enemyFieldCards, id]);
+    socket.on("playerPlaysCard", (card) => {
+      setEnemyCards(enemyCards.slice(1));
+      setEnemyFieldCards([...enemyFieldCards, card]);
     });
 
     socket.on("nextCard", (card) => {
-      console.log("next card");
-      console.log(card);
       let newPlayerCards = [card, ...playerCards];
-      console.log(newPlayerCards);
       setPlayerCards(newPlayerCards);
-      console.log(newPlayerCards);
     });
   }, [enemyCards, enemyFieldCards, playerCards]);
 
@@ -131,8 +128,14 @@ export default function Game({
     socket.emit("drawCard", roomNumber);
   }
 
+  function playCard(id: number) {
+    socket.emit("playerPlaysCard", roomNumber, id);
+  }
+
   const onDragEnd = (result) => {
     const { destination, source, draggableId } = result;
+
+    console.log(result);
 
     if (!destination && source.droppableId != "cardDeck") {
       return;
@@ -149,8 +152,18 @@ export default function Game({
       source.droppableId == "playerHand" &&
       playerFieldCards.length < 5
     ) {
-      //setPlayerCards(playerCards.filter((card) => card !== draggableId));
-      setPlayerFieldCards([...playerFieldCards, draggableId]);
+      //get card out of playerCards with the key equals to the draggableId
+      let card = playerCards.find((card) => card.key == draggableId);
+      //remove card from playerCards
+      let newPlayerCards = playerCards.filter(
+        (card) => card.key != draggableId
+      );
+      //add card to playerFieldCards
+      let newPlayerFieldCards = [...playerFieldCards, card];
+      //set state
+      setPlayerCards(newPlayerCards);
+      setPlayerFieldCards(newPlayerFieldCards);
+      playCard(card.key);
     }
   };
 
@@ -175,6 +188,7 @@ export default function Game({
 
   function drawCard() {
     if (playerCards.length < 7) {
+      console.log(playerCards.length);
       startDrag();
     }
   }

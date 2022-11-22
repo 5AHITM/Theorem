@@ -1,5 +1,6 @@
 import { styled } from "@stitches/react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
+import { CardFront } from "./CardFront";
 import { CardHidden } from "./CardHidden";
 
 const CardFieldLayout = styled("div", {
@@ -23,7 +24,7 @@ const CardHandLayoutWrapper = styled("div", {
   width: "100%",
 });
 
-export const CardField: React.FC<{ isPlayer?: boolean; cards: number[] }> = ({
+export const CardField: React.FC<{ isPlayer?: boolean; cards: any[] }> = ({
   isPlayer,
   cards,
 }) => {
@@ -33,18 +34,24 @@ export const CardField: React.FC<{ isPlayer?: boolean; cards: number[] }> = ({
         {(provided) => (
           <CardFieldLayout ref={provided.innerRef}>
             {cards.map((card, index) => (
-              <Draggable
-                draggableId={`filedCard${index}`}
-                index={index}
-                key={`fieldCard${index}`}
-              >
+              <Draggable draggableId={card.key} index={index} key={card.key}>
                 {(provided) => (
                   <CardContainer
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                   >
-                    <CardHidden></CardHidden>
+                    <CardFront
+                      name={card.name}
+                      text={card.text}
+                      attack={card.attack}
+                      defense={card.defense}
+                      mana={card.mana}
+                      type={card.type}
+                      effects={card.effect}
+                      image={card.img}
+                      key={card.key}
+                    ></CardFront>
                   </CardContainer>
                 )}
               </Draggable>
@@ -56,13 +63,48 @@ export const CardField: React.FC<{ isPlayer?: boolean; cards: number[] }> = ({
     );
   } else {
     return (
-      <CardFieldLayout>
-        <CardContainer></CardContainer>
-        <CardContainer></CardContainer>
-        <CardContainer></CardContainer>
-        <CardContainer></CardContainer>
-        <CardContainer></CardContainer>
-      </CardFieldLayout>
+      // <CardFieldLayout>
+      //   {cards.map((card, index) => {
+      //     return (
+      //       <CardFront
+      //         name={card.name}
+      //         text={card.text}
+      //         attack={card.attack}
+      //         defense={card.defense}
+      //         mana={card.mana}
+      //         type={card.type}
+      //         effects={card.effect}
+      //         image={card.img}
+      //         key={card.key}
+      //       ></CardFront>
+      //     );
+      //   })}
+      // </CardFieldLayout>
+      <Droppable
+        droppableId="enemyField"
+        direction="horizontal"
+        isDropDisabled={true}
+      >
+        {(provided) => (
+          <CardFieldLayout ref={provided.innerRef}>
+            {cards.map((card, index) => (
+              <CardContainer key={card.key} ref={provided.innerRef}>
+                <CardFront
+                  name={card.name}
+                  text={card.text}
+                  attack={card.attack}
+                  defense={card.defense}
+                  mana={card.mana}
+                  type={card.type}
+                  effects={card.effect}
+                  image={card.img}
+                  key={card.key}
+                ></CardFront>
+              </CardContainer>
+            ))}
+          </CardFieldLayout>
+        )}
+      </Droppable>
     );
   }
 };

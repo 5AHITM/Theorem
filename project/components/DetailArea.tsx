@@ -80,8 +80,8 @@ export const DetailArea: React.FC<{
           <Droppable droppableId="cardDeck">
             {(provided) => (
               <div ref={provided.innerRef}>
-                {cardDeck.map((card) => (
-                  <Draggable draggableId={card} index={0} key={card}>
+                {cardDeck.map((card, index) => (
+                  <Draggable draggableId={card} index={index} key={card}>
                     {(provided, snapshot) => (
                       <div
                         ref={provided.innerRef}
@@ -92,17 +92,7 @@ export const DetailArea: React.FC<{
                           snapshot
                         )}
                       >
-                        <CardFront
-                        key={card}
-                        name="Grinning Tree"
-                        mana={3}
-                        attack={5}
-                        defense={3}
-                        effects="Shield"
-                        type="Good/Tree"
-                        text="A peaceful, nice, grinning Tree living his best live"
-                        image="/img/test.png"
-                        ></CardFront>
+                        <CardHidden></CardHidden>
                       </div>
                     )}
                   </Draggable>
