@@ -52,29 +52,35 @@ export default function Game({
   const [screenModeSet, setScreenModeSet] = useState(false);
 
   //set up socket io connection
+
   useEffect(() => {
+    const socketInitializer = async () => {
+      //get query params
+      const { roomNumber, isPrivate } = router.query;
+
+      //if roomNumber is not undefined, then we are joining a room
+
+      const query = {
+        token: "WEB",
+        roomId: roomNumber,
+        isPrivate: isPrivate,
+      };
+
+      // We just call it because we don't need anything else out of it
+      socket = io("http://localhost:4000", {
+        query,
+        withCredentials: true,
+      });
+    };
     socketInitializer();
     setScreenModeSet(!window.screenTop && !window.screenY);
-  }, []);
+  }, [router.query]);
 
-  const socketInitializer = async () => {
-    //get query params
-    const { roomNumber, isPrivate } = router.query;
+  useEffect(() => {
+    console.log(playerCards);
+  }, [playerCards]);
 
-    //if roomNumber is not undefined, then we are joining a room
-
-    const query = {
-      token: "WEB",
-      roomId: roomNumber,
-      isPrivate: isPrivate,
-    };
-
-    // We just call it because we don't need anything else out of it
-    socket = io("http://localhost:4000", {
-      query,
-      withCredentials: true,
-    });
-
+  useEffect(() => {
     socket.on("connect", () => {
       console.log("connected");
     });
@@ -82,7 +88,7 @@ export default function Game({
     socket.on("gameRoomID", (roomId) => {
       setRoomNumber(roomId);
       //addroomnumber to url
-      router.push("/game?roomNumber=" + roomId);
+      //router.push("/game?roomNumber=" + roomId);
     });
 
     socket.on("startGame", () => {
@@ -103,11 +109,14 @@ export default function Game({
     });
 
     socket.on("nextCard", (card) => {
-      const newPlayerCards = [...playerCards];
-      newPlayerCards.splice(1, 0, card);
+      console.log("next card");
+      console.log(card);
+      let newPlayerCards = [card, ...playerCards];
+      console.log(newPlayerCards);
       setPlayerCards(newPlayerCards);
+      console.log(newPlayerCards);
     });
-  };
+  }, [enemyCards, enemyFieldCards, playerCards]);
 
   function getCoordiantes(e: HTMLElement) {
     if (pos.length === 1) {
@@ -119,7 +128,7 @@ export default function Game({
   }
 
   function getNextCard() {
-    socket.emit("drawCard");
+    socket.emit("drawCard", roomNumber);
   }
 
   const onDragEnd = (result) => {
@@ -132,15 +141,15 @@ export default function Game({
       return;
     }
     if (source.droppableId == "cardDeck" && playerCards.length < 7) {
-      setCardDeck(["" + (Number.parseInt(draggableId) + 1)]);
       getNextCard();
+      setCardDeck(["" + (Number.parseInt(draggableId) + 1)]);
       //copy array
     } else if (
       destination.droppableId == "playerField" &&
       source.droppableId == "playerHand" &&
       playerFieldCards.length < 5
     ) {
-      setPlayerCards(playerCards.filter((card) => card !== draggableId));
+      //setPlayerCards(playerCards.filter((card) => card !== draggableId));
       setPlayerFieldCards([...playerFieldCards, draggableId]);
     }
   };
@@ -171,7 +180,6 @@ export default function Game({
   }
 
   const startDrag = function start() {
-    console.log(cardDeck[0]);
     const preDrag = api.tryGetLock(cardDeck[0]);
 
     if (!preDrag && pos.length > 0) {
@@ -181,8 +189,6 @@ export default function Game({
     const endX = pos[0];
 
     const endY = pos[1];
-
-    console.log(endX, endY);
 
     const start = { x: 0, y: 0 };
     const end = { x: endX, y: endY };
@@ -204,9 +210,7 @@ export default function Game({
       <Layout>
         <DragDropContext
           onDragEnd={onDragEnd}
-          onDragStart={(result) => {
-            if (result.source) console.log(result);
-          }}
+          onDragStart={(result) => {}}
           sensors={[useMyCoolSensor]}
         >
           <Background></Background>

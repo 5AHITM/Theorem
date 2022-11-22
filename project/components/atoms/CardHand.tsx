@@ -52,7 +52,6 @@ export const CardHand: React.FC<{
   cards: any[];
 }> = ({ isEnemy, getCoordiantes, cards }) => {
   function getStyle(style, snapshot) {
-    console.log("snapshot", snapshot);
     if (!snapshot.isDropAnimating) {
       return style;
     }
@@ -99,7 +98,11 @@ export const CardHand: React.FC<{
               }}
             >
               {cards.map((card, index) => (
-                <Draggable draggableId={card} index={index} key={card}>
+                <Draggable
+                  draggableId={card._id}
+                  index={index}
+                  key={card._id + index}
+                >
                   {(provided, snapshot) => (
                     <CardContainer
                       ref={provided.innerRef}
