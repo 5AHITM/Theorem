@@ -26,6 +26,16 @@ const Layout = styled("div", {
   minHeight: "100%",
 });
 
+const WaitingScreenLayout = styled("div", {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  height: "100vh",
+  width: "100vw",
+  minHeight: "100%",
+});
+
 let socket;
 
 export default function Game({
@@ -50,6 +60,18 @@ export default function Game({
   const [enemyFieldCards, setEnemyFieldCards] = useState([]);
 
   const [enemyCards, setEnemyCards] = useState([]);
+
+  const [health, setHealth] = useState(20);
+
+  const [enemyHealth, setEnemyHealth] = useState(20);
+
+  const [mana, setMana] = useState(0);
+
+  const [selectedCard, setSelectedCard] = useState();
+
+  const [enemySelectedCardCoordinates, setEnemySelectedCard] = useState([]);
+
+  const [selectedCardCoordinates, setSelectedCardCoordinates] = useState([]);
 
   //check if fullscreen
   const [screenModeSet, setScreenModeSet] = useState(false);
@@ -100,6 +122,7 @@ export default function Game({
       setRoomFound(true);
       if (starting) {
         setGameState(GameState.PLAYER_DRAWS);
+        setMana(1);
       }
     });
 
@@ -117,11 +140,16 @@ export default function Game({
       setEnemyFieldCards([...enemyFieldCards, card]);
     });
 
+    socket.on("changeTurn", (turn) => {
+      setGameState(GameState.PLAYER_DRAWS);
+      mana + turn < 10 ? setMana(mana + turn) : setMana(10);
+    });
+
     socket.on("nextCard", (card) => {
       let newPlayerCards = [card, ...playerCards];
       setPlayerCards(newPlayerCards);
     });
-  }, [enemyCards, enemyFieldCards, playerCards]);
+  }, [enemyCards, enemyFieldCards, mana, playerCards]);
 
   function getCoordiantes(e: HTMLElement) {
     if (pos.length === 1) {
@@ -138,6 +166,10 @@ export default function Game({
 
   function playCard(id: number) {
     socket.emit("playerPlaysCard", roomNumber, id);
+  }
+
+  function changeTurn() {
+    socket.emit("changeTurn", roomNumber);
   }
 
   const onDragEnd = (result) => {
@@ -166,15 +198,18 @@ export default function Game({
       //get card out of playerCards with the key equals to the draggableId
       let card = playerCards.find((card) => card.key == draggableId);
       //remove card from playerCards
-      let newPlayerCards = playerCards.filter(
-        (card) => card.key != draggableId
-      );
-      //add card to playerFieldCards
-      let newPlayerFieldCards = [...playerFieldCards, card];
-      //set state
-      setPlayerCards(newPlayerCards);
-      setPlayerFieldCards(newPlayerFieldCards);
-      playCard(card.key);
+      if (card.mana <= mana) {
+        setMana(mana - card.mana);
+        let newPlayerCards = playerCards.filter(
+          (card) => card.key != draggableId
+        );
+        //add card to playerFieldCards
+        let newPlayerFieldCards = [...playerFieldCards, card];
+        //set state
+        setPlayerCards(newPlayerCards);
+        setPlayerFieldCards(newPlayerFieldCards);
+        playCard(card.key);
+      }
     }
   };
 
@@ -199,8 +234,32 @@ export default function Game({
 
   function drawCard() {
     if (playerCards.length < 7) {
-      console.log(playerCards.length);
       startDrag();
+    }
+  }
+
+  function changeGameState() {
+    if (gameState === GameState.PLAYER_DRAWS) {
+      setGameState(GameState.PLAYER_PLAYS);
+    }
+    if (gameState === GameState.PLAYER_PLAYS) {
+      setGameState(GameState.PLAYER_FIGHTS);
+    }
+    if (gameState === GameState.PLAYER_FIGHTS) {
+      setGameState(GameState.ENEMY_TURN);
+      changeTurn();
+    }
+  }
+
+  function fightCard(card, e) {
+    if (selectedCard) {
+      console.log(card);
+      console.log(e);
+      setEnemySelectedCard([
+        e.clientX - selectedCardCoordinates[0],
+        e.clientY - selectedCardCoordinates[1],
+      ]);
+      socket.emit("playerAttacks", roomNumber, card.key, selectedCard.key);
     }
   }
 
@@ -251,14 +310,26 @@ export default function Game({
             enemyFieldCards={enemyFieldCards}
             enemyCards={enemyCards}
             gameState={gameState}
+            setSelectedCard={setSelectedCard}
+            fightCard={fightCard}
+            enemySelectedCard={enemySelectedCardCoordinates}
+            setEnemySelectedCard={setEnemySelectedCard}
+            setSelectedCardCoordinates={setSelectedCardCoordinates}
           ></GameArea>
-          <UtilityArea></UtilityArea>
+          <UtilityArea
+            gameState={gameState}
+            cards={[]}
+            changeGameState={changeGameState}
+            mana={mana}
+            health={health}
+            enemyHealth={enemyHealth}
+          ></UtilityArea>
         </DragDropContext>
       </Layout>
     );
   } else {
     return (
-      <div>
+      <WaitingScreenLayout>
         {roomFound ? (
           <h1>Room Found</h1>
         ) : (
@@ -273,7 +344,7 @@ export default function Game({
         >
           Go Fullscrenmode
         </button>
-      </div>
+      </WaitingScreenLayout>
     );
   }
 }

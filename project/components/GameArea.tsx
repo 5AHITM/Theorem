@@ -19,6 +19,11 @@ export const GameArea: React.FC<{
   enemyFieldCards: any[];
   enemyCards: any[];
   gameState: GameState;
+  setSelectedCard: (card: any) => void;
+  fightCard: (card: any, e: any) => void;
+  enemySelectedCard: any;
+  setEnemySelectedCard?: (card: any) => void;
+  setSelectedCardCoordinates: (e: any) => void;
 }> = ({
   getCoordiantes,
   playerCards,
@@ -26,6 +31,11 @@ export const GameArea: React.FC<{
   enemyFieldCards,
   enemyCards,
   gameState,
+  setSelectedCard,
+  fightCard,
+  enemySelectedCard,
+  setEnemySelectedCard,
+  setSelectedCardCoordinates,
 }) => {
   return (
     <GameAreaLayout>
@@ -40,6 +50,11 @@ export const GameArea: React.FC<{
         playerCards={playerFieldCards}
         enemyCards={enemyFieldCards}
         gameState={gameState}
+        setSelectedCard={setSelectedCard}
+        fightCard={fightCard}
+        enemySelectedCard={enemySelectedCard}
+        setEnemySelectedCard={setEnemySelectedCard}
+        setSelectedCardCoordinates={setSelectedCardCoordinates}
       ></GameField>
       <CardHand
         gameState={gameState}

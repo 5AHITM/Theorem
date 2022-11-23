@@ -14,18 +14,40 @@ export const GameField: React.FC<{
   playerCards: number[];
   enemyCards: number[];
   gameState: GameState;
-}> = ({ playerCards, enemyCards, gameState }) => {
+  setSelectedCard: (card: any) => void;
+  fightCard: (card: any, e: any) => void;
+  enemySelectedCard: number[];
+  setEnemySelectedCard?: (card: any) => void;
+  setSelectedCardCoordinates: (e: any) => void;
+}> = ({
+  playerCards,
+  enemyCards,
+  gameState,
+  setSelectedCard,
+  fightCard,
+  enemySelectedCard,
+  setEnemySelectedCard,
+  setSelectedCardCoordinates,
+}) => {
   return (
     <GameSideLayout>
       <CardField
         isPlayer={false}
         cards={enemyCards}
         gameState={gameState}
+        fightCard={fightCard}
+        enemySelectedCard={enemySelectedCard}
+        setEnemySelectedCard={setEnemySelectedCard}
+        setSelectedCardCoordinates={setSelectedCardCoordinates}
       ></CardField>
       <CardField
         isPlayer={true}
         cards={playerCards}
         gameState={gameState}
+        setSelectedCard={setSelectedCard}
+        enemySelectedCard={enemySelectedCard}
+        setEnemySelectedCard={setEnemySelectedCard}
+        setSelectedCardCoordinates={setSelectedCardCoordinates}
       ></CardField>
     </GameSideLayout>
   );

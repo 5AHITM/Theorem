@@ -110,7 +110,12 @@ export const CardFront: React.FC<{
   return (
     <CardContainer>
       <CardImage></CardImage>
-      <Image src={"/img/card-template.png"} alt={"template"} fill />
+      <Image
+        src={"/img/card-template.png"}
+        alt={"template"}
+        fill
+        draggable={false}
+      />
       <CardName>{name}</CardName>
       <CardMana>{mana}</CardMana>
       <CardAttackValue>{attack}</CardAttackValue>
