@@ -1,4 +1,5 @@
 import { styled } from "@stitches/react";
+import { GameState } from "../utils/Enum";
 import { CardHand } from "./atoms/CardHand";
 import { GameField } from "./molecules/GameField";
 
@@ -17,16 +18,19 @@ export const GameArea: React.FC<{
   playerFieldCards: any[];
   enemyFieldCards: any[];
   enemyCards: any[];
+  gameState: GameState;
 }> = ({
   getCoordiantes,
   playerCards,
   playerFieldCards,
   enemyFieldCards,
   enemyCards,
+  gameState,
 }) => {
   return (
     <GameAreaLayout>
       <CardHand
+        gameState={gameState}
         isEnemy={true}
         getCoordiantes={() => {}}
         cards={enemyCards}
@@ -35,8 +39,10 @@ export const GameArea: React.FC<{
       <GameField
         playerCards={playerFieldCards}
         enemyCards={enemyFieldCards}
+        gameState={gameState}
       ></GameField>
       <CardHand
+        gameState={gameState}
         isEnemy={false}
         getCoordiantes={getCoordiantes}
         cards={playerCards}

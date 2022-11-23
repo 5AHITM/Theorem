@@ -1,15 +1,12 @@
 import { styled } from "@stitches/react";
-import { MutableRefObject, useRef } from "react";
 import {
   Draggable,
   DraggableStateSnapshot,
   DraggingStyle,
   Droppable,
   NotDraggingStyle,
-  PreDragActions,
-  SensorAPI,
-  SnapDragActions,
 } from "react-beautiful-dnd";
+import { GameState } from "../../utils/Enum";
 import { CardFront } from "./CardFront";
 import { CardHidden } from "./CardHidden";
 
@@ -54,7 +51,8 @@ export const CardHand: React.FC<{
   isEnemy: boolean;
   getCoordiantes: (e: HTMLElement) => void;
   cards: any[];
-}> = ({ isEnemy, getCoordiantes, cards }) => {
+  gameState: GameState;
+}> = ({ isEnemy, getCoordiantes, cards, gameState }) => {
   function getStyle(
     style: DraggingStyle | NotDraggingStyle,
     snapshot: DraggableStateSnapshot
@@ -92,7 +90,14 @@ export const CardHand: React.FC<{
     );
   } else {
     return (
-      <Droppable droppableId="playerHand" direction="horizontal">
+      <Droppable
+        droppableId="playerHand"
+        direction="horizontal"
+        isDropDisabled={
+          gameState === GameState.PLAYER_FIGHTS ||
+          gameState === GameState.ENEMY_TURN
+        }
+      >
         {(provided) => (
           <CardHandLayoutWrapper ref={provided.innerRef} isEnemy="false">
             <CardHandLayout
@@ -104,7 +109,15 @@ export const CardHand: React.FC<{
               }}
             >
               {cards.map((card, index) => (
-                <Draggable draggableId={card.key} index={index} key={card.key}>
+                <Draggable
+                  draggableId={card.key}
+                  index={index}
+                  key={card.key}
+                  isDragDisabled={
+                    gameState === GameState.PLAYER_FIGHTS ||
+                    gameState === GameState.ENEMY_TURN
+                  }
+                >
                   {(provided, snapshot) => (
                     <CardContainer
                       ref={provided.innerRef}

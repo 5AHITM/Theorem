@@ -14,6 +14,7 @@ import * as tweenFunctions from "tween-functions";
 import io from "socket.io-client";
 import { Background } from "../components/atoms/Background";
 import { useRouter } from "next/router";
+import { GameState } from "../utils/Enum";
 
 const Layout = styled("div", {
   display: "flex",
@@ -31,6 +32,8 @@ export default function Game({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
+
+  const [gameState, setGameState] = useState<GameState>(GameState.ENEMY_TURN);
 
   const [roomFound, setRoomFound] = useState(false);
 
@@ -81,18 +84,23 @@ export default function Game({
   }, [playerCards]);
 
   useEffect(() => {
+    console.log(gameState);
+  }, [gameState]);
+
+  useEffect(() => {
     socket.on("connect", () => {
       console.log("connected");
     });
 
     socket.on("gameRoomID", (roomId) => {
       setRoomNumber(roomId);
-      //addroomnumber to url
-      //router.push("/game?roomNumber=" + roomId);
     });
 
-    socket.on("startGame", () => {
+    socket.on("startGame", (starting: boolean) => {
       setRoomFound(true);
+      if (starting) {
+        setGameState(GameState.PLAYER_DRAWS);
+      }
     });
 
     socket.on("disconnect", () => {
@@ -146,6 +154,9 @@ export default function Game({
     if (source.droppableId == "cardDeck" && playerCards.length < 7) {
       getNextCard();
       setCardDeck(["" + (Number.parseInt(draggableId) + 1)]);
+      if (GameState.PLAYER_DRAWS) {
+        setGameState(GameState.PLAYER_PLAYS);
+      }
       //copy array
     } else if (
       destination.droppableId == "playerField" &&
@@ -228,13 +239,18 @@ export default function Game({
           sensors={[useMyCoolSensor]}
         >
           <Background></Background>
-          <DetailArea cardDeck={cardDeck} drawCard={drawCard}></DetailArea>
+          <DetailArea
+            gameState={gameState}
+            cardDeck={cardDeck}
+            drawCard={drawCard}
+          ></DetailArea>
           <GameArea
             getCoordiantes={getCoordiantes}
             playerCards={playerCards}
             playerFieldCards={playerFieldCards}
             enemyFieldCards={enemyFieldCards}
             enemyCards={enemyCards}
+            gameState={gameState}
           ></GameArea>
           <UtilityArea></UtilityArea>
         </DragDropContext>

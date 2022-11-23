@@ -1,4 +1,5 @@
 import { styled } from "@stitches/react";
+import { GameState } from "../../utils/Enum";
 import { CardField } from "../atoms/CardField";
 import { CardHand } from "../atoms/CardHand";
 
@@ -12,11 +13,20 @@ const GameSideLayout = styled("div", {
 export const GameField: React.FC<{
   playerCards: number[];
   enemyCards: number[];
-}> = ({ playerCards, enemyCards }) => {
+  gameState: GameState;
+}> = ({ playerCards, enemyCards, gameState }) => {
   return (
     <GameSideLayout>
-      <CardField isPlayer={false} cards={enemyCards}></CardField>
-      <CardField isPlayer={true} cards={playerCards}></CardField>
+      <CardField
+        isPlayer={false}
+        cards={enemyCards}
+        gameState={gameState}
+      ></CardField>
+      <CardField
+        isPlayer={true}
+        cards={playerCards}
+        gameState={gameState}
+      ></CardField>
     </GameSideLayout>
   );
 };

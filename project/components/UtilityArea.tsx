@@ -1,4 +1,6 @@
 import { styled } from "@stitches/react";
+import { CardGraveyard } from "./molecules/CardGraveyard";
+import { PlayerUtilities } from "./molecules/PlayerUtilities";
 
 const UtilityAreaLayout = styled("div", {
   flex: 2,
@@ -12,7 +14,8 @@ const UtilityAreaLayout = styled("div", {
 export const UtilityArea: React.FC<{}> = () => {
   return (
     <UtilityAreaLayout>
-      <h1>Utility Area</h1>
+      <PlayerUtilities></PlayerUtilities>
+      <CardGraveyard cards={[]}></CardGraveyard>
     </UtilityAreaLayout>
   );
 };

@@ -1,5 +1,6 @@
 import { styled } from "@stitches/react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
+import { GameState } from "../../utils/Enum";
 import { CardFront } from "./CardFront";
 import { CardHidden } from "./CardHidden";
 
@@ -24,13 +25,21 @@ const CardHandLayoutWrapper = styled("div", {
   width: "100%",
 });
 
-export const CardField: React.FC<{ isPlayer?: boolean; cards: any[] }> = ({
-  isPlayer,
-  cards,
-}) => {
+export const CardField: React.FC<{
+  isPlayer?: boolean;
+  cards: any[];
+  gameState: GameState;
+}> = ({ isPlayer, cards, gameState }) => {
   if (isPlayer) {
     return (
-      <Droppable droppableId="playerField" direction="horizontal">
+      <Droppable
+        droppableId="playerField"
+        direction="horizontal"
+        isDropDisabled={
+          gameState === GameState.ENEMY_TURN ||
+          gameState === GameState.PLAYER_DRAWS
+        }
+      >
         {(provided) => (
           <CardFieldLayout ref={provided.innerRef}>
             {cards.map((card, index) => (

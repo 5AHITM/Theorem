@@ -9,6 +9,7 @@ import {
 import { CardHidden } from "./atoms/CardHidden";
 import { Dispatch, MutableRefObject, SetStateAction, useRef } from "react";
 import { CardFront } from "./atoms/CardFront";
+import { GameState } from "../utils/Enum";
 
 const DetailAreaLayout = styled("div", {
   display: "flex",
@@ -48,7 +49,8 @@ const CardDeckContainer = styled("div", {
 export const DetailArea: React.FC<{
   cardDeck: string[];
   drawCard: () => void;
-}> = ({ cardDeck, drawCard }) => {
+  gameState: GameState;
+}> = ({ cardDeck, drawCard, gameState }) => {
   function getStyle(style, snapshot) {
     if (!snapshot.isDropAnimating) {
       return style;
@@ -74,14 +76,21 @@ export const DetailArea: React.FC<{
       <CardDeckArea>
         <CardButton
           onClick={() => {
-            drawCard();
+            if (gameState === GameState.PLAYER_DRAWS) {
+              drawCard();
+            }
           }}
         >
-          <Droppable droppableId="cardDeck">
+          <Droppable droppableId="cardDeck" isDropDisabled={true}>
             {(provided) => (
               <div ref={provided.innerRef}>
                 {cardDeck.map((card, index) => (
-                  <Draggable draggableId={card} index={index} key={card}>
+                  <Draggable
+                    draggableId={card}
+                    index={index}
+                    key={card}
+                    isDragDisabled={!(gameState === GameState.PLAYER_DRAWS)}
+                  >
                     {(provided, snapshot) => (
                       <div
                         ref={provided.innerRef}
