@@ -102,6 +102,10 @@ export default function Game({
   }, [router.query]);
 
   useEffect(() => {
+    console.log(roomNumber);
+  }, [roomNumber]);
+
+  useEffect(() => {
     console.log(playerCards);
   }, [playerCards]);
 
@@ -136,6 +140,7 @@ export default function Game({
     });
 
     socket.on("playerPlaysCard", (card) => {
+      console.log(card);
       setEnemyCards(enemyCards.slice(1));
       setEnemyFieldCards([...enemyFieldCards, card]);
     });
