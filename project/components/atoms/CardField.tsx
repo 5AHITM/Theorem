@@ -2,6 +2,7 @@ import { styled } from "@stitches/react";
 import { motion } from "framer-motion";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import { GameState } from "../../utils/Enum";
+import { Card } from "../../utils/Types";
 import { CardFront } from "./CardFront";
 import { CardHidden } from "./CardHidden";
 
@@ -28,13 +29,19 @@ const CardHandLayoutWrapper = styled("div", {
 
 export const CardField: React.FC<{
   isPlayer?: boolean;
-  cards: any[];
+  cards: Card[];
   gameState: GameState;
-  setSelectedCard?: (card: any) => void;
-  fightCard?: (card: any, e: any) => void;
+  setSelectedCard?: (card: Card) => void;
+  fightCard?: (card: Card, e: any) => void;
   enemySelectedCard: number[];
-  setEnemySelectedCard: (card: any) => void;
+  setEnemySelectedCard: (card: number[]) => void;
   setSelectedCardCoordinates: (e: any) => void;
+  selectedCard?: Card;
+  addCardPositions: (card: any) => void;
+  attackedCard?: any;
+  enemyAttackingCard?: any;
+  enemyAttackingFinished: (card: any) => void;
+  alreadyAttackedCards?: any[];
 }> = ({
   isPlayer,
   cards,
@@ -44,6 +51,12 @@ export const CardField: React.FC<{
   enemySelectedCard,
   setEnemySelectedCard,
   setSelectedCardCoordinates,
+  selectedCard,
+  addCardPositions,
+  attackedCard,
+  enemyAttackingCard,
+  enemyAttackingFinished,
+  alreadyAttackedCards,
 }) => {
   if (isPlayer) {
     return (
@@ -61,7 +74,7 @@ export const CardField: React.FC<{
               <motion.div
                 key={card.key}
                 animate={
-                  enemySelectedCard.length > 0
+                  enemySelectedCard.length > 0 && selectedCard.key === card.key
                     ? {
                         x: [0, enemySelectedCard[0], 0],
                         y: [0, enemySelectedCard[1], 0],
@@ -71,6 +84,16 @@ export const CardField: React.FC<{
                 }
                 onAnimationComplete={() => {
                   setEnemySelectedCard([]);
+                  setSelectedCard(undefined);
+                }}
+                ref={(e) => {
+                  if (e) {
+                    addCardPositions({
+                      key: card.key,
+                      x: e.getBoundingClientRect().x,
+                      y: e.getBoundingClientRect().y,
+                    });
+                  }
                 }}
               >
                 <Draggable
@@ -88,7 +111,10 @@ export const CardField: React.FC<{
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                       onClick={(e) => {
-                        if (gameState === GameState.PLAYER_FIGHTS) {
+                        if (
+                          gameState === GameState.PLAYER_FIGHTS &&
+                          !alreadyAttackedCards.includes(card.key)
+                        ) {
                           setSelectedCard(card);
                           setSelectedCardCoordinates([e.clientX, e.clientY]);
                         }
@@ -100,7 +126,7 @@ export const CardField: React.FC<{
                         attack={card.attack}
                         defense={card.defense}
                         mana={card.mana}
-                        type={card.type}
+                        type={card.religion_type}
                         effects={card.effect}
                         image={card.img}
                         key={card.key}
@@ -137,26 +163,44 @@ export const CardField: React.FC<{
 
       <CardFieldLayout>
         {cards.map((card, index) => (
-          <CardContainer
+          <motion.div
             key={card.key}
-            onClick={(e) => {
-              if (gameState === GameState.PLAYER_FIGHTS) {
-                fightCard(card, e);
-              }
+            animate={
+              enemyAttackingCard &&
+              attackedCard &&
+              enemyAttackingCard.key === card.key
+                ? {
+                    x: [0, attackedCard.x, 0],
+                    y: [0, attackedCard.y, 0],
+                    transition: { duration: 0.5 },
+                  }
+                : {}
+            }
+            onAnimationComplete={() => {
+              enemyAttackingFinished(card);
             }}
           >
-            <CardFront
-              name={card.name}
-              text={card.text}
-              attack={card.attack}
-              defense={card.defense}
-              mana={card.mana}
-              type={card.type}
-              effects={card.effect}
-              image={card.img}
+            <CardContainer
               key={card.key}
-            ></CardFront>
-          </CardContainer>
+              onClick={(e) => {
+                if (gameState === GameState.PLAYER_FIGHTS) {
+                  fightCard(card, e);
+                }
+              }}
+            >
+              <CardFront
+                name={card.name}
+                text={card.text}
+                attack={card.attack}
+                defense={card.defense}
+                mana={card.mana}
+                type={card.religion_type}
+                effects={card.effect}
+                image={card.img}
+                key={card.key}
+              ></CardFront>
+            </CardContainer>
+          </motion.div>
         ))}
       </CardFieldLayout>
     );

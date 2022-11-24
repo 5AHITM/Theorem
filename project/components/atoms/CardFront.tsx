@@ -92,7 +92,7 @@ export const CardFront: React.FC<{
   attack: number;
   defense: number;
   type: string;
-  effects: string;
+  effects: string[];
   text: string;
   image: string;
 }> = ({ name, mana, attack, defense, type, effects, text, image }) => {
@@ -121,7 +121,7 @@ export const CardFront: React.FC<{
       <CardAttackValue>{attack}</CardAttackValue>
       <CardDefenseValue>{defense}</CardDefenseValue>
       <CardType>{type}</CardType>
-      <CardEffects>{effects}</CardEffects>
+      <CardEffects>{effects.join(", ")}</CardEffects>
       <CardText>{text}</CardText>
     </CardContainer>
   );

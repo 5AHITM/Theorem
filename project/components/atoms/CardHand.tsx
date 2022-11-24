@@ -124,6 +124,9 @@ export const CardHand: React.FC<{
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                       style={getStyle(provided.draggableProps.style, snapshot)}
+                      onClick={() => {
+                        card.stance = card.stance === "attack" ? "defend" : "attack"; 
+                      }}
                     >
                       <CardFront
                         name={card.name}

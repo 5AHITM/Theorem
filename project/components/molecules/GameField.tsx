@@ -1,5 +1,6 @@
 import { styled } from "@stitches/react";
 import { GameState } from "../../utils/Enum";
+import { Card } from "../../utils/Types";
 import { CardField } from "../atoms/CardField";
 import { CardHand } from "../atoms/CardHand";
 
@@ -11,14 +12,20 @@ const GameSideLayout = styled("div", {
 });
 
 export const GameField: React.FC<{
-  playerCards: number[];
-  enemyCards: number[];
+  playerCards: Card[];
+  enemyCards: Card[];
   gameState: GameState;
-  setSelectedCard: (card: any) => void;
-  fightCard: (card: any, e: any) => void;
+  setSelectedCard: (card: Card) => void;
+  fightCard: (card: Card, e: any) => void;
   enemySelectedCard: number[];
   setEnemySelectedCard?: (card: any) => void;
   setSelectedCardCoordinates: (e: any) => void;
+  selectedCard?: any;
+  addCardPositions: (card: any) => void;
+  attackedCard: any;
+  enemyAttackingCard: any;
+  enemyAttackingFinished: (card: any) => void;
+  alreadyAttackedCards?: any[];
 }> = ({
   playerCards,
   enemyCards,
@@ -28,6 +35,12 @@ export const GameField: React.FC<{
   enemySelectedCard,
   setEnemySelectedCard,
   setSelectedCardCoordinates,
+  selectedCard,
+  addCardPositions,
+  attackedCard,
+  enemyAttackingCard,
+  enemyAttackingFinished,
+  alreadyAttackedCards
 }) => {
   return (
     <GameSideLayout>
@@ -39,6 +52,10 @@ export const GameField: React.FC<{
         enemySelectedCard={enemySelectedCard}
         setEnemySelectedCard={setEnemySelectedCard}
         setSelectedCardCoordinates={setSelectedCardCoordinates}
+        addCardPositions={addCardPositions}
+        attackedCard={attackedCard}
+        enemyAttackingCard={enemyAttackingCard}
+        enemyAttackingFinished={enemyAttackingFinished}
       ></CardField>
       <CardField
         isPlayer={true}
@@ -48,6 +65,10 @@ export const GameField: React.FC<{
         enemySelectedCard={enemySelectedCard}
         setEnemySelectedCard={setEnemySelectedCard}
         setSelectedCardCoordinates={setSelectedCardCoordinates}
+        selectedCard={selectedCard}
+        addCardPositions={addCardPositions}
+        enemyAttackingFinished={enemyAttackingFinished}
+        alreadyAttackedCards={alreadyAttackedCards}
       ></CardField>
     </GameSideLayout>
   );

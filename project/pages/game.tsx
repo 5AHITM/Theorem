@@ -15,6 +15,7 @@ import io from "socket.io-client";
 import { Background } from "../components/atoms/Background";
 import { useRouter } from "next/router";
 import { GameState } from "../utils/Enum";
+import { Card } from "../utils/Types";
 
 const Layout = styled("div", {
   display: "flex",
@@ -43,22 +44,31 @@ export default function Game({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
 
+  // What turn it is, also used for managing drag and drop disabled
   const [gameState, setGameState] = useState<GameState>(GameState.ENEMY_TURN);
 
+  // If a room has been found and the game can start
   const [roomFound, setRoomFound] = useState(false);
 
+  // roomNumber for socket io
   const [roomNumber, setRoomNumber] = useState("");
 
+  // A draggable placeholder for the card deck to draw
   const [cardDeck, setCardDeck] = useState(["0"]);
 
+  // The position of the card hand
   const [pos, setPos] = useState([0]);
 
-  const [playerCards, setPlayerCards] = useState([]);
+  // The cards the player has in hand
+  const [playerCards, setPlayerCards] = useState<Card[]>([]);
 
-  const [playerFieldCards, setPlayerFieldCards] = useState([]);
+  // The cards the player has on the field
+  const [playerFieldCards, setPlayerFieldCards] = useState<Card[]>([]);
 
-  const [enemyFieldCards, setEnemyFieldCards] = useState([]);
+  // The cards the enemy has on the field
+  const [enemyFieldCards, setEnemyFieldCards] = useState<Card[]>([]);
 
+  // The cards the enemy has in hand
   const [enemyCards, setEnemyCards] = useState([]);
 
   const [health, setHealth] = useState(20);
@@ -67,17 +77,33 @@ export default function Game({
 
   const [mana, setMana] = useState(0);
 
-  const [selectedCard, setSelectedCard] = useState();
+  // the card that has been selected for the players game field to attack with
+  const [selectedCard, setSelectedCard] = useState<Card>();
 
-  const [enemySelectedCardCoordinates, setEnemySelectedCard] = useState([]);
+  // the card that has been selected from the enemy game field to attack
+  const [enemySelectedCardCoordinates, setEnemySelectedCard] = useState<
+    number[]
+  >([]);
 
+  // the coordinates of the selected card
   const [selectedCardCoordinates, setSelectedCardCoordinates] = useState([]);
 
   //check if fullscreen
   const [screenModeSet, setScreenModeSet] = useState(false);
 
-  //set up socket io connection
+  //positions of the cards in the player field with the key
+  const [cardPositions, setCardPositions] = useState([]);
 
+  //card that is being attacked by the enemy
+  const [attackedCard, setAttackedCard] = useState();
+
+  //card that is the attacker
+  const [enemyAttackingCard, setEnemyAttackingCard] = useState<Card>();
+
+  //cards that have already attacked
+  const [alreadyAttackedCards, setAlreadyAttackedCards] = useState([]);
+
+  //set up socket io connection
   useEffect(() => {
     const socketInitializer = async () => {
       //get query params
@@ -118,7 +144,7 @@ export default function Game({
       console.log("connected");
     });
 
-    socket.on("gameRoomID", (roomId) => {
+    socket.on("gameRoomID", (roomId: string) => {
       setRoomNumber(roomId);
     });
 
@@ -134,27 +160,39 @@ export default function Game({
       console.log("disconnected");
     });
 
-    socket.on("cardDrawn", (id) => {
+    socket.on("cardDrawn", (id: string) => {
       setEnemyCards([id, ...enemyCards]);
       console.log("card drawn");
     });
 
-    socket.on("playerPlaysCard", (card) => {
+    socket.on("playerPlaysCard", (card: Card) => {
       console.log(card);
       setEnemyCards(enemyCards.slice(1));
       setEnemyFieldCards([...enemyFieldCards, card]);
     });
 
-    socket.on("changeTurn", (turn) => {
+    socket.on("changeTurn", (turn: number) => {
       setGameState(GameState.PLAYER_DRAWS);
-      mana + turn < 10 ? setMana(mana + turn) : setMana(10);
+      mana + turn < 7 ? setMana(turn) : setMana(7);
     });
 
-    socket.on("nextCard", (card) => {
+    socket.on("nextCard", (card: Card) => {
       let newPlayerCards = [card, ...playerCards];
       setPlayerCards(newPlayerCards);
     });
-  }, [enemyCards, enemyFieldCards, mana, playerCards]);
+
+    socket.on("playerAttacks", (attackedCard: Card, attackingCard: Card) => {
+      setAttackedCard(
+        cardPositions.find((card) => card.key === attackedCard.key)
+      );
+      setEnemyAttackingCard(attackingCard);
+    });
+  }, [cardPositions, enemyCards, enemyFieldCards, mana, playerCards]);
+
+  function enemyAttackingFinished() {
+    setAttackedCard(undefined);
+    setEnemyAttackingCard(undefined);
+  }
 
   function getCoordiantes(e: HTMLElement) {
     if (pos.length === 1) {
@@ -169,8 +207,8 @@ export default function Game({
     socket.emit("drawCard", roomNumber);
   }
 
-  function playCard(id: number) {
-    socket.emit("playerPlaysCard", roomNumber, id);
+  function playCard(key: string) {
+    socket.emit("playerPlaysCard", roomNumber, key);
   }
 
   function changeTurn() {
@@ -258,14 +296,17 @@ export default function Game({
 
   function fightCard(card, e) {
     if (selectedCard) {
-      console.log(card);
-      console.log(e);
+      setAlreadyAttackedCards([...alreadyAttackedCards, selectedCard.key]);
       setEnemySelectedCard([
         e.clientX - selectedCardCoordinates[0],
         e.clientY - selectedCardCoordinates[1],
       ]);
       socket.emit("playerAttacks", roomNumber, card.key, selectedCard.key);
     }
+  }
+
+  function addCardPositions(cardPositions) {
+    setCardPositions([...cardPositions, cardPositions]);
   }
 
   const startDrag = function start() {
@@ -320,6 +361,12 @@ export default function Game({
             enemySelectedCard={enemySelectedCardCoordinates}
             setEnemySelectedCard={setEnemySelectedCard}
             setSelectedCardCoordinates={setSelectedCardCoordinates}
+            selectedCard={selectedCard}
+            addCardPositions={addCardPositions}
+            attackedCard={attackedCard}
+            enemyAttackingCard={enemyAttackingCard}
+            enemyAttackingFinished={enemyAttackingFinished}
+            alreadyAttackedCards={alreadyAttackedCards}
           ></GameArea>
           <UtilityArea
             gameState={gameState}

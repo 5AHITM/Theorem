@@ -1,5 +1,6 @@
 import { styled } from "@stitches/react";
 import { GameState } from "../utils/Enum";
+import { Card } from "../utils/Types";
 import { CardHand } from "./atoms/CardHand";
 import { GameField } from "./molecules/GameField";
 
@@ -14,16 +15,22 @@ const GameAreaLayout = styled("div", {
 
 export const GameArea: React.FC<{
   getCoordiantes: (e: HTMLElement) => void;
-  playerCards: any[];
-  playerFieldCards: any[];
-  enemyFieldCards: any[];
-  enemyCards: any[];
+  playerCards: Card[];
+  playerFieldCards: Card[];
+  enemyFieldCards: Card[];
+  enemyCards: number[];
   gameState: GameState;
   setSelectedCard: (card: any) => void;
-  fightCard: (card: any, e: any) => void;
-  enemySelectedCard: any;
-  setEnemySelectedCard?: (card: any) => void;
+  fightCard: (card: Card, e: any) => void;
+  enemySelectedCard: number[];
+  setEnemySelectedCard?: (card: number[]) => void;
   setSelectedCardCoordinates: (e: any) => void;
+  selectedCard?: Card;
+  addCardPositions: (card: any) => void;
+  attackedCard: Card;
+  enemyAttackingCard: any;
+  enemyAttackingFinished: (card: any) => void;
+  alreadyAttackedCards?: any[];
 }> = ({
   getCoordiantes,
   playerCards,
@@ -36,6 +43,12 @@ export const GameArea: React.FC<{
   enemySelectedCard,
   setEnemySelectedCard,
   setSelectedCardCoordinates,
+  selectedCard,
+  addCardPositions,
+  attackedCard,
+  enemyAttackingCard,
+  enemyAttackingFinished,
+  alreadyAttackedCards,
 }) => {
   return (
     <GameAreaLayout>
@@ -55,6 +68,12 @@ export const GameArea: React.FC<{
         enemySelectedCard={enemySelectedCard}
         setEnemySelectedCard={setEnemySelectedCard}
         setSelectedCardCoordinates={setSelectedCardCoordinates}
+        selectedCard={selectedCard}
+        addCardPositions={addCardPositions}
+        attackedCard={attackedCard}
+        enemyAttackingCard={enemyAttackingCard}
+        enemyAttackingFinished={enemyAttackingFinished}
+        alreadyAttackedCards={alreadyAttackedCards}
       ></GameField>
       <CardHand
         gameState={gameState}
