@@ -1,6 +1,6 @@
 import { styled } from "@stitches/react";
 import { GameState } from "../utils/Enum";
-import { Card } from "../utils/Types";
+import { Card, CardCoordinates } from "../utils/Types";
 import { CardHand } from "./atoms/CardHand";
 import { GameField } from "./molecules/GameField";
 
@@ -27,7 +27,7 @@ export const GameArea: React.FC<{
   setSelectedCardCoordinates: (e: any) => void;
   selectedCard?: Card;
   addCardPositions: (card: any) => void;
-  attackedCard: Card;
+  attackedCard: CardCoordinates;
   enemyAttackingCard: any;
   enemyAttackingFinished: (card: any) => void;
   alreadyAttackedCards?: any[];

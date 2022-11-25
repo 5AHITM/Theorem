@@ -15,3 +15,20 @@ export interface Card {
   playedStance: "open" | "hidden";
   trapped: boolean;
 }
+
+export interface Result {
+  defendingCardDies: boolean;
+  attackingCardDies: boolean;
+  defendingCardsPlayerDamage: number;
+  attackingCardsPlayerDamage: number;
+  attackingCardDamage: number;
+  defendingCardDamage: number;
+  effectsHittingAttackingCard: StandardEffects[];
+  effectsUsedByDefendingCard: StandardEffects[];
+}
+
+export interface CardCoordinates {
+  x: number;
+  y: number;
+  key: string;
+}

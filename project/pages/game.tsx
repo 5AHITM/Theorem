@@ -15,7 +15,7 @@ import io from "socket.io-client";
 import { Background } from "../components/atoms/Background";
 import { useRouter } from "next/router";
 import { GameState } from "../utils/Enum";
-import { Card } from "../utils/Types";
+import { Card, CardCoordinates, Result } from "../utils/Types";
 
 const Layout = styled("div", {
   display: "flex",
@@ -92,10 +92,10 @@ export default function Game({
   const [screenModeSet, setScreenModeSet] = useState(false);
 
   //positions of the cards in the player field with the key
-  const [cardPositions, setCardPositions] = useState([]);
+  const [cardPositions, setCardPositions] = useState<CardCoordinates[]>([]);
 
   //card that is being attacked by the enemy
-  const [attackedCard, setAttackedCard] = useState();
+  const [attackedCard, setAttackedCard] = useState<CardCoordinates>();
 
   //card that is the attacker
   const [enemyAttackingCard, setEnemyAttackingCard] = useState<Card>();
@@ -166,7 +166,6 @@ export default function Game({
     });
 
     socket.on("playerPlaysCard", (card: Card) => {
-      console.log(card);
       setEnemyCards(enemyCards.slice(1));
       setEnemyFieldCards([...enemyFieldCards, card]);
     });
@@ -181,12 +180,18 @@ export default function Game({
       setPlayerCards(newPlayerCards);
     });
 
-    socket.on("playerAttacks", (attackedCard: Card, attackingCard: Card) => {
-      setAttackedCard(
-        cardPositions.find((card) => card.key === attackedCard.key)
-      );
-      setEnemyAttackingCard(attackingCard);
-    });
+    socket.on(
+      "playerAttacks",
+      (attackedCard: Card, attackingCard: Card, result: Result) => {
+        console.log(attackedCard, attackingCard, result);
+        if (cardPositions) {
+          setAttackedCard(
+            cardPositions.find((card) => card.key === attackedCard.key)
+          );
+        }
+        setEnemyAttackingCard(attackingCard);
+      }
+    );
   }, [cardPositions, enemyCards, enemyFieldCards, mana, playerCards]);
 
   function enemyAttackingFinished() {
@@ -207,8 +212,8 @@ export default function Game({
     socket.emit("drawCard", roomNumber);
   }
 
-  function playCard(key: string) {
-    socket.emit("playerPlaysCard", roomNumber, key);
+  function playCard(key: string, stance: "attack" | "defense") {
+    socket.emit("playerPlaysCard", roomNumber, key, stance);
   }
 
   function changeTurn() {
@@ -251,7 +256,7 @@ export default function Game({
         //set state
         setPlayerCards(newPlayerCards);
         setPlayerFieldCards(newPlayerFieldCards);
-        playCard(card.key);
+        playCard(card.key, card.stance);
       }
     }
   };
@@ -302,11 +307,12 @@ export default function Game({
         e.clientY - selectedCardCoordinates[1],
       ]);
       socket.emit("playerAttacks", roomNumber, card.key, selectedCard.key);
+      setSelectedCard(undefined);
     }
   }
 
-  function addCardPositions(cardPositions) {
-    setCardPositions([...cardPositions, cardPositions]);
+  function addCardPositions(cardPositionsN: CardCoordinates) {
+    setCardPositions([...cardPositions, cardPositionsN]);
   }
 
   const startDrag = function start() {

@@ -2,7 +2,7 @@ import { styled } from "@stitches/react";
 import { motion } from "framer-motion";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import { GameState } from "../../utils/Enum";
-import { Card } from "../../utils/Types";
+import { Card, CardCoordinates } from "../../utils/Types";
 import { CardFront } from "./CardFront";
 import { CardHidden } from "./CardHidden";
 
@@ -37,7 +37,7 @@ export const CardField: React.FC<{
   setEnemySelectedCard: (card: number[]) => void;
   setSelectedCardCoordinates: (e: any) => void;
   selectedCard?: Card;
-  addCardPositions: (card: any) => void;
+  addCardPositions: (card: CardCoordinates) => void;
   attackedCard?: any;
   enemyAttackingCard?: any;
   enemyAttackingFinished: (card: any) => void;
