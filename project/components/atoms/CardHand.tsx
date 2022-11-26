@@ -157,6 +157,7 @@ export const CardHand: React.FC<{
                         <CardFront
                           card={card}
                           sizeVariant={SizeVariants.SMALL}
+                          cardStance= {cardStances.find((c) => c.key === card.key)}
                         ></CardFront>
                       ) : (
                         <CardHidden></CardHidden>

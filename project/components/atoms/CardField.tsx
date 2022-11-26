@@ -133,7 +133,7 @@ export const CardField: React.FC<{
                           setSelectedCardCoordinates([e.clientX, e.clientY]);
                         } else if (
                           gameState === GameState.PLAYER_DRAWS ||
-                          GameState.PLAYER_PLAYS
+                          gameState === GameState.PLAYER_PLAYS
                         ) {
                           if (stance.playedStance !== "hidden") {
                             card.stance =
@@ -147,8 +147,12 @@ export const CardField: React.FC<{
                         }
                       }}
                     >
-                      {card.playedStance === "open" ? (
+                      {cardStances.find((stance) => stance.key === card.key)
+                        .playedStance === "open" ? (
                         <CardFront
+                          cardStance={cardStances.find(
+                            (stance) => stance.key === card.key
+                          )}
                           card={card}
                           sizeVariant={SizeVariants.MEDIUM}
                         ></CardFront>
@@ -198,6 +202,7 @@ export const CardField: React.FC<{
                 <CardFront
                   card={card}
                   sizeVariant={SizeVariants.MEDIUM}
+                  cardStance={cardStances.find((c) => c.key === card.key)}
                 ></CardFront>
               ) : (
                 <CardHidden></CardHidden>

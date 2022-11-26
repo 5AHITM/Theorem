@@ -2,7 +2,7 @@ import { styled } from "@stitches/react";
 import Image from "next/image";
 import { relative } from "node:path/win32";
 import { SizeVariants } from "../../utils/Enum";
-import { Card } from "../../utils/Types";
+import { Card, CardStance } from "../../utils/Types";
 import CardHiddenSVG from "./svg/CardHiddenSVG";
 
 const CardContainer = styled("div", {
@@ -99,6 +99,7 @@ const CardText = styled("p", {
 export const CardFront: React.FC<{
   card: Card;
   sizeVariant?: SizeVariants;
+  cardStance: CardStance;
 }> = ({ card, sizeVariant }) => {
   if (!sizeVariant) {
     sizeVariant = SizeVariants.MEDIUM;
