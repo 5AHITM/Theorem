@@ -7,6 +7,7 @@ import {
   NotDraggingStyle,
 } from "react-beautiful-dnd";
 import { GameState } from "../../utils/Enum";
+import { CardStance } from "../../utils/Types";
 import { CardFront } from "./CardFront";
 import { CardHidden } from "./CardHidden";
 
@@ -52,7 +53,9 @@ export const CardHand: React.FC<{
   getCoordiantes: (e: HTMLElement) => void;
   cards: any[];
   gameState: GameState;
-}> = ({ isEnemy, getCoordiantes, cards, gameState }) => {
+  changeCardStance: (cardStance: CardStance) => void;
+  cardStances: CardStance[];
+}> = ({ isEnemy, getCoordiantes, cards, gameState, changeCardStance, cardStances }) => {
   function getStyle(
     style: DraggingStyle | NotDraggingStyle,
     snapshot: DraggableStateSnapshot
@@ -117,6 +120,12 @@ export const CardHand: React.FC<{
                     gameState === GameState.PLAYER_FIGHTS ||
                     gameState === GameState.ENEMY_TURN
                   }
+                  ref={(e) => {
+                    if (!e) {
+                      return;
+                    }
+                    
+                  }}
                 >
                   {(provided, snapshot) => (
                     <CardContainer
@@ -124,21 +133,30 @@ export const CardHand: React.FC<{
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                       style={getStyle(provided.draggableProps.style, snapshot)}
-                      onClick={() => {
-                        card.stance = card.stance === "attack" ? "defend" : "attack"; 
+                      onClick={(e) => {
+                        card.stance =
+                          card.stance === "attack" ? "defend" : "attack";
+                        changeCardStance({
+                          key: card.key,
+                          stance: card.stance,
+                        });
                       }}
                     >
-                      <CardFront
-                        name={card.name}
-                        text={card.text}
-                        attack={card.attack}
-                        defense={card.defense}
-                        mana={card.mana}
-                        type={card.type}
-                        effects={card.effect}
-                        image={card.img}
-                        key={card.key}
-                      ></CardFront>
+                      {cardStances.find((c) => c.key === card.key).stance === "attack" ? (
+                        <CardFront
+                          name={card.name}
+                          text={card.text}
+                          attack={card.attack}
+                          defense={card.defense}
+                          mana={card.mana}
+                          type={card.type}
+                          effects={card.effect}
+                          image={card.img}
+                          key={card.key}
+                        ></CardFront>
+                      ) : (
+                        <CardHidden></CardHidden>
+                      )}
                     </CardContainer>
                   )}
                 </Draggable>

@@ -2,7 +2,7 @@ import { styled } from "@stitches/react";
 import { motion } from "framer-motion";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import { GameState } from "../../utils/Enum";
-import { Card, CardCoordinates } from "../../utils/Types";
+import { Card, CardCoordinates, CardStance } from "../../utils/Types";
 import { CardFront } from "./CardFront";
 import { CardHidden } from "./CardHidden";
 
@@ -42,6 +42,8 @@ export const CardField: React.FC<{
   enemyAttackingCard?: any;
   enemyAttackingFinished: (card: any) => void;
   alreadyAttackedCards?: any[];
+  changeCardStance: (card: CardStance) => void;
+  cardStances: CardStance[];
 }> = ({
   isPlayer,
   cards,
@@ -57,6 +59,8 @@ export const CardField: React.FC<{
   enemyAttackingCard,
   enemyAttackingFinished,
   alreadyAttackedCards,
+  changeCardStance,
+  cardStances
 }) => {
   if (isPlayer) {
     return (
@@ -74,7 +78,7 @@ export const CardField: React.FC<{
               <motion.div
                 key={card.key}
                 animate={
-                  enemySelectedCard.length > 0 && selectedCard.key === card.key
+                  enemySelectedCard.length > 0 && selectedCard.key === card.key && cardStances.find((stance) => stance.key === card.key)?.stance === "attack"
                     ? {
                         x: [0, enemySelectedCard[0], 0],
                         y: [0, enemySelectedCard[1], 0],

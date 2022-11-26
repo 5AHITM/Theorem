@@ -1,6 +1,6 @@
 import { styled } from "@stitches/react";
 import { GameState } from "../utils/Enum";
-import { Card, CardCoordinates } from "../utils/Types";
+import { Card, CardCoordinates, CardStance } from "../utils/Types";
 import { CardHand } from "./atoms/CardHand";
 import { GameField } from "./molecules/GameField";
 
@@ -31,6 +31,8 @@ export const GameArea: React.FC<{
   enemyAttackingCard: any;
   enemyAttackingFinished: (card: any) => void;
   alreadyAttackedCards?: any[];
+  changeCardStance: (card: CardStance) => void;
+  cardStances: CardStance[];
 }> = ({
   getCoordiantes,
   playerCards,
@@ -49,6 +51,8 @@ export const GameArea: React.FC<{
   enemyAttackingCard,
   enemyAttackingFinished,
   alreadyAttackedCards,
+  changeCardStance,
+  cardStances,
 }) => {
   return (
     <GameAreaLayout>
@@ -57,6 +61,8 @@ export const GameArea: React.FC<{
         isEnemy={true}
         getCoordiantes={() => {}}
         cards={enemyCards}
+        changeCardStance={changeCardStance}
+        cardStances={cardStances}
       ></CardHand>
 
       <GameField
@@ -74,12 +80,16 @@ export const GameArea: React.FC<{
         enemyAttackingCard={enemyAttackingCard}
         enemyAttackingFinished={enemyAttackingFinished}
         alreadyAttackedCards={alreadyAttackedCards}
+        changeCardStance={changeCardStance}
+        cardStances={cardStances}
       ></GameField>
       <CardHand
         gameState={gameState}
         isEnemy={false}
         getCoordiantes={getCoordiantes}
         cards={playerCards}
+        changeCardStance={changeCardStance}
+        cardStances={cardStances}
       ></CardHand>
     </GameAreaLayout>
   );

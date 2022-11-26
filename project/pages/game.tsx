@@ -15,7 +15,7 @@ import io from "socket.io-client";
 import { Background } from "../components/atoms/Background";
 import { useRouter } from "next/router";
 import { GameState } from "../utils/Enum";
-import { Card, CardCoordinates, Result } from "../utils/Types";
+import { Card, CardCoordinates, CardStance, Result } from "../utils/Types";
 
 const Layout = styled("div", {
   display: "flex",
@@ -103,6 +103,9 @@ export default function Game({
   //cards that have already attacked
   const [alreadyAttackedCards, setAlreadyAttackedCards] = useState([]);
 
+  //card stances
+  const [cardStances, setCardStances] = useState<CardStance[]>([]);
+
   //set up socket io connection
   useEffect(() => {
     const socketInitializer = async () => {
@@ -178,7 +181,11 @@ export default function Game({
     socket.on("nextCard", (card: Card) => {
       let newPlayerCards = [card, ...playerCards];
       setPlayerCards(newPlayerCards);
-    });
+      setCardStances([...cardStances, {
+        key: card.key,
+        stance: card.stance}]);
+      }
+    );
 
     socket.on(
       "playerAttacks",
@@ -192,7 +199,7 @@ export default function Game({
         setEnemyAttackingCard(attackingCard);
       }
     );
-  }, [cardPositions, enemyCards, enemyFieldCards, mana, playerCards]);
+  }, [cardPositions, cardStances, enemyCards, enemyFieldCards, mana, playerCards]);
 
   function enemyAttackingFinished() {
     setAttackedCard(undefined);
@@ -315,6 +322,14 @@ export default function Game({
     setCardPositions([...cardPositions, cardPositionsN]);
   }
 
+  function changeCardStance(cardStance: CardStance) {
+    setCardStances(
+      cardStances.map((card) => {
+        return card.key === cardStance.key ? cardStance : card;
+      })
+    );
+  }
+
   const startDrag = function start() {
     const preDrag = api.tryGetLock(cardDeck[0]);
 
@@ -373,6 +388,8 @@ export default function Game({
             enemyAttackingCard={enemyAttackingCard}
             enemyAttackingFinished={enemyAttackingFinished}
             alreadyAttackedCards={alreadyAttackedCards}
+            changeCardStance={changeCardStance}
+            cardStances={cardStances}
           ></GameArea>
           <UtilityArea
             gameState={gameState}

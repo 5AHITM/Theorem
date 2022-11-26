@@ -32,3 +32,8 @@ export interface CardCoordinates {
   y: number;
   key: string;
 }
+
+export interface CardStance {
+  stance: "attack" | "defense";
+  key: string;
+}

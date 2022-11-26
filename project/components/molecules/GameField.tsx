@@ -1,6 +1,6 @@
 import { styled } from "@stitches/react";
 import { GameState } from "../../utils/Enum";
-import { Card, CardCoordinates } from "../../utils/Types";
+import { Card, CardCoordinates, CardStance } from "../../utils/Types";
 import { CardField } from "../atoms/CardField";
 import { CardHand } from "../atoms/CardHand";
 
@@ -26,6 +26,8 @@ export const GameField: React.FC<{
   enemyAttackingCard: any;
   enemyAttackingFinished: (card: any) => void;
   alreadyAttackedCards?: any[];
+  changeCardStance: (card: CardStance) => void;
+  cardStances: CardStance[];
 }> = ({
   playerCards,
   enemyCards,
@@ -41,6 +43,8 @@ export const GameField: React.FC<{
   enemyAttackingCard,
   enemyAttackingFinished,
   alreadyAttackedCards,
+  changeCardStance,
+  cardStances,
 }) => {
   return (
     <GameSideLayout>
@@ -56,6 +60,8 @@ export const GameField: React.FC<{
         attackedCard={attackedCard}
         enemyAttackingCard={enemyAttackingCard}
         enemyAttackingFinished={enemyAttackingFinished}
+        changeCardStance={changeCardStance}
+        cardStances={cardStances}
       ></CardField>
       <CardField
         isPlayer={true}
@@ -69,6 +75,8 @@ export const GameField: React.FC<{
         addCardPositions={addCardPositions}
         enemyAttackingFinished={enemyAttackingFinished}
         alreadyAttackedCards={alreadyAttackedCards}
+        changeCardStance={changeCardStance}
+        cardStances={cardStances}
       ></CardField>
     </GameSideLayout>
   );
