@@ -54,6 +54,20 @@ const CardMana = styled("p", {
   fontFamily: "Immortal",
   display: "inline",
   fontSize: "60%",
+
+  variants: {
+    size: {
+      [SizeVariants.SMALL]: {
+        fontSize: "30%"
+      },
+      [SizeVariants.MEDIUM]: {
+        fontSize: "60%"
+      },
+      [SizeVariants.LARGE]: {
+        fontSize: "90%"
+      },
+    },
+  },
 });
 
 const CardAttackValue = styled("p", {
@@ -65,6 +79,20 @@ const CardAttackValue = styled("p", {
   fontFamily: "Immortal",
   display: "inline",
   fontSize: "60%",
+
+  variants: {
+    size: {
+      [SizeVariants.SMALL]: {
+        fontSize: "30%"
+      },
+      [SizeVariants.MEDIUM]: {
+        fontSize: "60%"
+      },
+      [SizeVariants.LARGE]: {
+        fontSize: "90%"
+      },
+    },
+  },
 });
 
 const CardDefenseValue = styled("p", {
@@ -76,6 +104,20 @@ const CardDefenseValue = styled("p", {
   fontFamily: "Immortal",
   display: "inline",
   fontSize: "60%",
+
+  variants: {
+    size: {
+      [SizeVariants.SMALL]: {
+        fontSize: "30%"
+      },
+      [SizeVariants.MEDIUM]: {
+        fontSize: "60%"
+      },
+      [SizeVariants.LARGE]: {
+        fontSize: "90%"
+      },
+    },
+  },
 });
 
 const CardType = styled("p", {
@@ -87,6 +129,20 @@ const CardType = styled("p", {
   fontFamily: "Immortal",
   display: "inline",
   fontSize: "60%",
+
+  variants: {
+    size: {
+      [SizeVariants.SMALL]: {
+        fontSize: "30%"
+      },
+      [SizeVariants.MEDIUM]: {
+        fontSize: "60%"
+      },
+      [SizeVariants.LARGE]: {
+        fontSize: "90%"
+      },
+    },
+  },
 });
 
 const CardEffects = styled("p", {
@@ -98,6 +154,20 @@ const CardEffects = styled("p", {
   fontFamily: "Immortal",
   display: "inline",
   fontSize: "60%",
+
+  variants: {
+    size: {
+      [SizeVariants.SMALL]: {
+        fontSize: "30%"
+      },
+      [SizeVariants.MEDIUM]: {
+        fontSize: "60%"
+      },
+      [SizeVariants.LARGE]: {
+        fontSize: "90%"
+      },
+    },
+  },
 });
 
 const CardText = styled("p", {
@@ -108,6 +178,20 @@ const CardText = styled("p", {
   textAlign: "left",
   fontFamily: "Immortal",
   fontSize: "60%",
+
+  variants: {
+    size: {
+      [SizeVariants.SMALL]: {
+        fontSize: "30%"
+      },
+      [SizeVariants.MEDIUM]: {
+        fontSize: "60%"
+      },
+      [SizeVariants.LARGE]: {
+        fontSize: "90%"
+      },
+    },
+  },
 });
 
 export const CardFront: React.FC<{
@@ -162,12 +246,12 @@ export const CardFront: React.FC<{
         draggable={false}
       />
       <CardName size={sizeVariant}>{card.name}</CardName>
-      <CardMana>{card.mana}</CardMana>
-      <CardAttackValue>{card.attack}</CardAttackValue>
-      <CardDefenseValue>{card.defense}</CardDefenseValue>
-      <CardType>{card.religion_type}</CardType>
-      <CardEffects>{card.effect.join(", ")}</CardEffects>
-      <CardText>{card.text}</CardText>
+      <CardMana size={sizeVariant}>{card.mana}</CardMana>
+      <CardAttackValue size={sizeVariant}>{card.attack}</CardAttackValue>
+      <CardDefenseValue size={sizeVariant}>{card.defense}</CardDefenseValue>
+      <CardType size={sizeVariant}>{card.religion_type}</CardType>
+      <CardEffects size={sizeVariant}>{card.effect.join(", ")}</CardEffects>
+      <CardText size={sizeVariant}>{card.text}</CardText>
       <CardIcon></CardIcon>
     </CardContainer>
   );
