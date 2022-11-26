@@ -183,7 +183,9 @@ export default function Game({
       setPlayerCards(newPlayerCards);
       setCardStances([...cardStances, {
         key: card.key,
-        stance: card.stance}]);
+        stance: card.stance,
+        playedStance: card.playedStance
+      }]);
       }
     );
 

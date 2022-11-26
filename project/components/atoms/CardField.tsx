@@ -60,7 +60,7 @@ export const CardField: React.FC<{
   enemyAttackingFinished,
   alreadyAttackedCards,
   changeCardStance,
-  cardStances
+  cardStances,
 }) => {
   if (isPlayer) {
     return (
@@ -78,7 +78,10 @@ export const CardField: React.FC<{
               <motion.div
                 key={card.key}
                 animate={
-                  enemySelectedCard.length > 0 && selectedCard.key === card.key && cardStances.find((stance) => stance.key === card.key)?.stance === "attack"
+                  enemySelectedCard.length > 0 &&
+                  selectedCard.key === card.key &&
+                  cardStances.find((stance) => stance.key === card.key)
+                    ?.stance === "attack"
                     ? {
                         x: [0, enemySelectedCard[0], 0],
                         y: [0, enemySelectedCard[1], 0],
@@ -124,17 +127,7 @@ export const CardField: React.FC<{
                         }
                       }}
                     >
-                      <CardFront
-                        name={card.name}
-                        text={card.text}
-                        attack={card.attack}
-                        defense={card.defense}
-                        mana={card.mana}
-                        type={card.religion_type}
-                        effects={card.effect}
-                        image={card.img}
-                        key={card.key}
-                      ></CardFront>
+                      <CardFront card={card}></CardFront>
                     </CardContainer>
                   )}
                 </Draggable>
@@ -192,17 +185,7 @@ export const CardField: React.FC<{
                 }
               }}
             >
-              <CardFront
-                name={card.name}
-                text={card.text}
-                attack={card.attack}
-                defense={card.defense}
-                mana={card.mana}
-                type={card.religion_type}
-                effects={card.effect}
-                image={card.img}
-                key={card.key}
-              ></CardFront>
+              <CardFront card={card}></CardFront>
             </CardContainer>
           </motion.div>
         ))}

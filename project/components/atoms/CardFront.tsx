@@ -1,6 +1,7 @@
 import { styled } from "@stitches/react";
 import Image from "next/image";
 import { relative } from "node:path/win32";
+import { Card } from "../../utils/Types";
 import CardHiddenSVG from "./svg/CardHiddenSVG";
 
 const CardContainer = styled("div", {
@@ -87,22 +88,15 @@ const CardText = styled("p", {
 });
 
 export const CardFront: React.FC<{
-  name: string;
-  mana: number;
-  attack: number;
-  defense: number;
-  type: string;
-  effects: string[];
-  text: string;
-  image: string;
-}> = ({ name, mana, attack, defense, type, effects, text, image }) => {
+  card: Card;
+}> = ({ card }) => {
   const CardImage = styled("div", {
     position: "relative",
     top: 0,
     right: 0,
     width: "100%",
     height: "60%",
-    backgroundImage: "url('" + "/img/" + image + "')",
+    backgroundImage: "url('" + "/img/" + card.img + "')",
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
   });
@@ -116,13 +110,13 @@ export const CardFront: React.FC<{
         fill
         draggable={false}
       />
-      <CardName>{name}</CardName>
-      <CardMana>{mana}</CardMana>
-      <CardAttackValue>{attack}</CardAttackValue>
-      <CardDefenseValue>{defense}</CardDefenseValue>
-      <CardType>{type}</CardType>
-      <CardEffects>{effects.join(", ")}</CardEffects>
-      <CardText>{text}</CardText>
+      <CardName>{card.name}</CardName>
+      <CardMana>{card.mana}</CardMana>
+      <CardAttackValue>{card.attack}</CardAttackValue>
+      <CardDefenseValue>{card.defense}</CardDefenseValue>
+      <CardType>{card.religion_type}</CardType>
+      <CardEffects>{card.effect.join(", ")}</CardEffects>
+      <CardText>{card.text}</CardText>
     </CardContainer>
   );
 };

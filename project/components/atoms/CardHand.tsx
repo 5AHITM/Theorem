@@ -7,7 +7,7 @@ import {
   NotDraggingStyle,
 } from "react-beautiful-dnd";
 import { GameState } from "../../utils/Enum";
-import { CardStance } from "../../utils/Types";
+import { Card, CardStance } from "../../utils/Types";
 import { CardFront } from "./CardFront";
 import { CardHidden } from "./CardHidden";
 
@@ -55,7 +55,14 @@ export const CardHand: React.FC<{
   gameState: GameState;
   changeCardStance: (cardStance: CardStance) => void;
   cardStances: CardStance[];
-}> = ({ isEnemy, getCoordiantes, cards, gameState, changeCardStance, cardStances }) => {
+}> = ({
+  isEnemy,
+  getCoordiantes,
+  cards,
+  gameState,
+  changeCardStance,
+  cardStances,
+}) => {
   function getStyle(
     style: DraggingStyle | NotDraggingStyle,
     snapshot: DraggableStateSnapshot
@@ -111,7 +118,7 @@ export const CardHand: React.FC<{
                 getCoordiantes(e);
               }}
             >
-              {cards.map((card, index) => (
+              {cards.map((card: Card, index) => (
                 <Draggable
                   draggableId={card.key}
                   index={index}
@@ -124,7 +131,6 @@ export const CardHand: React.FC<{
                     if (!e) {
                       return;
                     }
-                    
                   }}
                 >
                   {(provided, snapshot) => (
@@ -135,24 +141,21 @@ export const CardHand: React.FC<{
                       style={getStyle(provided.draggableProps.style, snapshot)}
                       onClick={(e) => {
                         card.stance =
-                          card.stance === "attack" ? "defend" : "attack";
+                          card.stance === "attack" ? "defense" : "attack";
+                        if (card.stance === "defense") {
+                          card.playedStance = "hidden";
+                        }
                         changeCardStance({
                           key: card.key,
                           stance: card.stance,
+                          playedStance: card.playedStance,
                         });
                       }}
                     >
-                      {cardStances.find((c) => c.key === card.key).stance === "attack" ? (
+                      {cardStances.find((c) => c.key === card.key).stance ===
+                      "attack" ? (
                         <CardFront
-                          name={card.name}
-                          text={card.text}
-                          attack={card.attack}
-                          defense={card.defense}
-                          mana={card.mana}
-                          type={card.type}
-                          effects={card.effect}
-                          image={card.img}
-                          key={card.key}
+                          card={card}
                         ></CardFront>
                       ) : (
                         <CardHidden></CardHidden>
