@@ -38,12 +38,13 @@ export const CardField: React.FC<{
   setSelectedCardCoordinates: (e: any) => void;
   selectedCard?: Card;
   addCardPositions: (card: CardCoordinates) => void;
-  attackedCard?: any;
-  enemyAttackingCard?: any;
+  attackedCard?: CardCoordinates;
+  enemyAttackingCard?: Card;
   enemyAttackingFinished: (card: any) => void;
   alreadyAttackedCards?: any[];
   changeCardStance: (card: CardStance) => void;
   cardStances: CardStance[];
+  attackingEnemyFinished: () => void;
 }> = ({
   isPlayer,
   cards,
@@ -61,6 +62,7 @@ export const CardField: React.FC<{
   alreadyAttackedCards,
   changeCardStance,
   cardStances,
+  attackingEnemyFinished,
 }) => {
   if (isPlayer) {
     return (
@@ -92,8 +94,7 @@ export const CardField: React.FC<{
                     : {}
                 }
                 onAnimationComplete={() => {
-                  setEnemySelectedCard([]);
-                  setSelectedCard(undefined);
+                  attackingEnemyFinished();
                 }}
                 ref={(e) => {
                   if (e) {
@@ -129,6 +130,7 @@ export const CardField: React.FC<{
                           !alreadyAttackedCards.includes(card.key) &&
                           stance.playedStance !== "hidden"
                         ) {
+                          console.log("card selected");
                           setSelectedCard(card);
                           setSelectedCardCoordinates([e.clientX, e.clientY]);
                         } else if (
@@ -202,7 +204,9 @@ export const CardField: React.FC<{
                 <CardFront
                   card={card}
                   sizeVariant={SizeVariants.MEDIUM}
-                  cardStance={cardStances.find((c) => c.key === card.key)}
+                  cardStance={cardStances.find(
+                    (stance) => stance.key === card.key
+                  )}
                 ></CardFront>
               ) : (
                 <CardHidden></CardHidden>

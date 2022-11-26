@@ -144,6 +144,8 @@ export const CardHand: React.FC<{
                           card.stance === "attack" ? "defense" : "attack";
                         if (card.stance === "defense") {
                           card.playedStance = "hidden";
+                        }else{
+                          card.playedStance = "open";
                         }
                         changeCardStance({
                           key: card.key,

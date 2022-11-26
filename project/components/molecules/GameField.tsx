@@ -22,12 +22,13 @@ export const GameField: React.FC<{
   setSelectedCardCoordinates: (cardCoordinates: number[]) => void;
   selectedCard?: any;
   addCardPositions: (card: CardCoordinates) => void;
-  attackedCard: any;
-  enemyAttackingCard: any;
+  attackedCard: CardCoordinates;
+  enemyAttackingCard: Card;
   enemyAttackingFinished: (card: any) => void;
   alreadyAttackedCards?: any[];
   changeCardStance: (card: CardStance) => void;
   cardStances: CardStance[];
+  attackingEnemyFinished: () => void;
 }> = ({
   playerCards,
   enemyCards,
@@ -45,6 +46,7 @@ export const GameField: React.FC<{
   alreadyAttackedCards,
   changeCardStance,
   cardStances,
+  attackingEnemyFinished,
 }) => {
   return (
     <GameSideLayout>
@@ -62,6 +64,7 @@ export const GameField: React.FC<{
         enemyAttackingFinished={enemyAttackingFinished}
         changeCardStance={changeCardStance}
         cardStances={cardStances}
+        attackingEnemyFinished={attackingEnemyFinished}
       ></CardField>
       <CardField
         isPlayer={true}
@@ -77,6 +80,7 @@ export const GameField: React.FC<{
         alreadyAttackedCards={alreadyAttackedCards}
         changeCardStance={changeCardStance}
         cardStances={cardStances}
+        attackingEnemyFinished={attackingEnemyFinished}
       ></CardField>
     </GameSideLayout>
   );

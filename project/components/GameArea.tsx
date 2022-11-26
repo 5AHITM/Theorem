@@ -28,11 +28,12 @@ export const GameArea: React.FC<{
   selectedCard?: Card;
   addCardPositions: (card: any) => void;
   attackedCard: CardCoordinates;
-  enemyAttackingCard: any;
+  enemyAttackingCard: Card;
   enemyAttackingFinished: (card: any) => void;
   alreadyAttackedCards?: any[];
   changeCardStance: (card: CardStance) => void;
   cardStances: CardStance[];
+  attackingEnemyFinished: () => void;
 }> = ({
   getCoordiantes,
   playerCards,
@@ -53,6 +54,7 @@ export const GameArea: React.FC<{
   alreadyAttackedCards,
   changeCardStance,
   cardStances,
+  attackingEnemyFinished,
 }) => {
   return (
     <GameAreaLayout>
@@ -82,6 +84,7 @@ export const GameArea: React.FC<{
         alreadyAttackedCards={alreadyAttackedCards}
         changeCardStance={changeCardStance}
         cardStances={cardStances}
+        attackingEnemyFinished={attackingEnemyFinished}
       ></GameField>
       <CardHand
         gameState={gameState}

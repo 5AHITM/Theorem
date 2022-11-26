@@ -106,6 +106,8 @@ export default function Game({
   //card stances
   const [cardStances, setCardStances] = useState<CardStance[]>([]);
 
+  const [results, setResult] = useState<Result[]>([]);
+
   //set up socket io connection
   useEffect(() => {
     const socketInitializer = async () => {
@@ -171,6 +173,14 @@ export default function Game({
     socket.on("playerPlaysCard", (card: Card) => {
       setEnemyCards(enemyCards.slice(1));
       setEnemyFieldCards([...enemyFieldCards, card]);
+      setCardStances([
+        ...cardStances,
+        {
+          key: card.key,
+          stance: card.stance,
+          playedStance: card.playedStance,
+        },
+      ]);
     });
 
     socket.on("changeTurn", (turn: number) => {
@@ -181,31 +191,58 @@ export default function Game({
     socket.on("nextCard", (card: Card) => {
       let newPlayerCards = [card, ...playerCards];
       setPlayerCards(newPlayerCards);
-      setCardStances([...cardStances, {
-        key: card.key,
-        stance: card.stance,
-        playedStance: card.playedStance
-      }]);
+      setCardStances([
+        ...cardStances,
+        {
+          key: card.key,
+          stance: card.stance,
+          playedStance: card.playedStance,
+        },
+      ]);
+    });
+
+    socket.on(
+      "changeStance",
+      (stance: "attack" | "defense", cardKey: string) => {
+        console.log("change stance");
+        let newCardStances = cardStances.map((card) => {
+          if (card.key === cardKey) {
+            card.stance = stance;
+          }
+          return card;
+        });
+        setCardStances(newCardStances);
       }
     );
 
     socket.on(
       "playerAttacks",
-      (attackedCard: Card, attackingCard: Card, result: Result) => {
-        console.log(attackedCard, attackingCard, result);
+      (result: Result) => {
+        console.log(result);
         if (cardPositions) {
           setAttackedCard(
-            cardPositions.find((card) => card.key === attackedCard.key)
+            cardPositions.find((card) => card.key === result.defendingCardKey)
           );
         }
-        setEnemyAttackingCard(attackingCard);
+        let attackingCard = enemyFieldCards.find((card) => card.key === result.attackingCardKey);
+        if(attackingCard){
+          setEnemyAttackingCard(attackingCard);
+        }
+
+        setResult([...results,result]);
       }
     );
-  }, [cardPositions, cardStances, enemyCards, enemyFieldCards, mana, playerCards]);
+  }, [cardPositions, cardStances, enemyCards, enemyFieldCards, mana, playerCards, results]);
 
   function enemyAttackingFinished() {
+    console.log("enemy attacking finished");
     setAttackedCard(undefined);
     setEnemyAttackingCard(undefined);
+  }
+
+  function attackingEnemyFinished() {
+    setEnemySelectedCard([]);
+    setSelectedCard(undefined);
   }
 
   function getCoordiantes(e: HTMLElement) {
@@ -221,7 +258,7 @@ export default function Game({
     socket.emit("drawCard", roomNumber);
   }
 
-  function playCard(key: string, stance: "attack" | "defense") {
+  function playCard(key: string, stance: "open" | "hidden") {
     socket.emit("playerPlaysCard", roomNumber, key, stance);
   }
 
@@ -265,7 +302,10 @@ export default function Game({
         //set state
         setPlayerCards(newPlayerCards);
         setPlayerFieldCards(newPlayerFieldCards);
-        playCard(card.key, card.stance);
+
+        let cardStance = cardStances.find((c) => c.key === card.key);
+
+        playCard(card.key, card.playedStance);
       }
     }
   };
@@ -316,7 +356,6 @@ export default function Game({
         e.clientY - selectedCardCoordinates[1],
       ]);
       socket.emit("playerAttacks", roomNumber, card.key, selectedCard.key);
-      setSelectedCard(undefined);
     }
   }
 
@@ -330,6 +369,14 @@ export default function Game({
         return card.key === cardStance.key ? cardStance : card;
       })
     );
+    if (cardStance.playedStance !== "hidden") {
+      socket.emit(
+        "changeStance",
+        roomNumber,
+        cardStance.stance,
+        cardStance.key
+      );
+    }
   }
 
   const startDrag = function start() {
@@ -392,6 +439,7 @@ export default function Game({
             alreadyAttackedCards={alreadyAttackedCards}
             changeCardStance={changeCardStance}
             cardStances={cardStances}
+            attackingEnemyFinished={attackingEnemyFinished}
           ></GameArea>
           <UtilityArea
             gameState={gameState}
@@ -421,6 +469,7 @@ export default function Game({
         >
           Go Fullscrenmode
         </button>
+        <p>Room number: {roomNumber}</p>
       </WaitingScreenLayout>
     );
   }

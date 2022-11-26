@@ -17,6 +17,8 @@ export interface Card {
 }
 
 export interface Result {
+  attackingCardKey: string;
+  defendingCardKey: string;
   defendingCardDies: boolean;
   attackingCardDies: boolean;
   defendingCardsPlayerDamage: number;
@@ -38,4 +40,3 @@ export interface CardStance {
   key: string;
   playedStance: "open" | "hidden";
 }
-
