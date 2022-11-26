@@ -1,7 +1,7 @@
 import { styled } from "@stitches/react";
 import { motion } from "framer-motion";
 import { Draggable, Droppable } from "react-beautiful-dnd";
-import { GameState } from "../../utils/Enum";
+import { GameState, SizeVariants } from "../../utils/Enum";
 import { Card, CardCoordinates, CardStance } from "../../utils/Types";
 import { CardFront } from "./CardFront";
 import { CardHidden } from "./CardHidden";
@@ -81,7 +81,9 @@ export const CardField: React.FC<{
                   enemySelectedCard.length > 0 &&
                   selectedCard.key === card.key &&
                   cardStances.find((stance) => stance.key === card.key)
-                    ?.stance === "attack"
+                    ?.stance === "attack" &&
+                  cardStances.find((stance) => stance.key === card.key)
+                    ?.playedStance !== "hidden"
                     ? {
                         x: [0, enemySelectedCard[0], 0],
                         y: [0, enemySelectedCard[1], 0],
@@ -118,16 +120,41 @@ export const CardField: React.FC<{
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                       onClick={(e) => {
+                        let stance = cardStances.find(
+                          (stance) => stance.key === card.key
+                        );
+
                         if (
                           gameState === GameState.PLAYER_FIGHTS &&
-                          !alreadyAttackedCards.includes(card.key)
+                          !alreadyAttackedCards.includes(card.key) &&
+                          stance.playedStance !== "hidden"
                         ) {
                           setSelectedCard(card);
                           setSelectedCardCoordinates([e.clientX, e.clientY]);
+                        } else if (
+                          gameState === GameState.PLAYER_DRAWS ||
+                          GameState.PLAYER_PLAYS
+                        ) {
+                          if (stance.playedStance !== "hidden") {
+                            card.stance =
+                              card.stance === "attack" ? "defense" : "attack";
+                            changeCardStance({
+                              key: card.key,
+                              stance: card.stance,
+                              playedStance: card.playedStance,
+                            });
+                          }
                         }
                       }}
                     >
-                      <CardFront card={card}></CardFront>
+                      {card.playedStance === "open" ? (
+                        <CardFront
+                          card={card}
+                          sizeVariant={SizeVariants.MEDIUM}
+                        ></CardFront>
+                      ) : (
+                        <CardHidden></CardHidden>
+                      )}
                     </CardContainer>
                   )}
                 </Draggable>
@@ -140,24 +167,6 @@ export const CardField: React.FC<{
     );
   } else {
     return (
-      // <CardFieldLayout>
-      //   {cards.map((card, index) => {
-      //     return (
-      //       <CardFront
-      //         name={card.name}
-      //         text={card.text}
-      //         attack={card.attack}
-      //         defense={card.defense}
-      //         mana={card.mana}
-      //         type={card.type}
-      //         effects={card.effect}
-      //         image={card.img}
-      //         key={card.key}
-      //       ></CardFront>
-      //     );
-      //   })}
-      // </CardFieldLayout>
-
       <CardFieldLayout>
         {cards.map((card, index) => (
           <motion.div
@@ -185,7 +194,14 @@ export const CardField: React.FC<{
                 }
               }}
             >
-              <CardFront card={card}></CardFront>
+              {card.playedStance === "open" ? (
+                <CardFront
+                  card={card}
+                  sizeVariant={SizeVariants.MEDIUM}
+                ></CardFront>
+              ) : (
+                <CardHidden></CardHidden>
+              )}
             </CardContainer>
           </motion.div>
         ))}

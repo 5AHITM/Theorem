@@ -6,7 +6,7 @@ import {
   Droppable,
   NotDraggingStyle,
 } from "react-beautiful-dnd";
-import { GameState } from "../../utils/Enum";
+import { GameState, SizeVariants } from "../../utils/Enum";
 import { Card, CardStance } from "../../utils/Types";
 import { CardFront } from "./CardFront";
 import { CardHidden } from "./CardHidden";
@@ -156,6 +156,7 @@ export const CardHand: React.FC<{
                       "attack" ? (
                         <CardFront
                           card={card}
+                          sizeVariant={SizeVariants.SMALL}
                         ></CardFront>
                       ) : (
                         <CardHidden></CardHidden>
