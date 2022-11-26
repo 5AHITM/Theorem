@@ -29,6 +29,20 @@ const CardName = styled("p", {
   fontFamily: "Immortal",
   display: "inline",
   fontSize: "60%",
+
+  variants: {
+    size: {
+      [SizeVariants.SMALL]: {
+        fontSize: "30%"
+      },
+      [SizeVariants.MEDIUM]: {
+        fontSize: "60%"
+      },
+      [SizeVariants.LARGE]: {
+        fontSize: "90%"
+      },
+    },
+  },
 });
 
 const CardMana = styled("p", {
@@ -100,9 +114,19 @@ export const CardFront: React.FC<{
   card: Card;
   sizeVariant?: SizeVariants;
   cardStance: CardStance;
-}> = ({ card, sizeVariant }) => {
+}> = ({ card, sizeVariant, cardStance }) => {
+
   if (!sizeVariant) {
     sizeVariant = SizeVariants.MEDIUM;
+  }
+
+  let stanceIcon = "schwert.png"
+  if (cardStance.stance == "defense") {
+    stanceIcon = "schild.png"
+  }
+
+  if (sizeVariant == SizeVariants.SMALL) {
+    stanceIcon = ""
   }
 
   const CardImage = styled("div", {
@@ -116,6 +140,18 @@ export const CardFront: React.FC<{
     backgroundSize: "cover",
   });
 
+  const CardIcon = styled("div", {
+    position: "absolute",
+    top: "-5%",
+    left: "-8%",
+    width: "20%",
+    aspectRatio: 1/1,
+    backgroundImage: "url('" + "/img/icons/" + stanceIcon + "')",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "contain",
+    // borderStyle: "solid"
+  });
+
   return (
     <CardContainer size={sizeVariant}>
       <CardImage></CardImage>
@@ -125,13 +161,14 @@ export const CardFront: React.FC<{
         fill
         draggable={false}
       />
-      <CardName>{card.name}</CardName>
+      <CardName size={sizeVariant}>{card.name}</CardName>
       <CardMana>{card.mana}</CardMana>
       <CardAttackValue>{card.attack}</CardAttackValue>
       <CardDefenseValue>{card.defense}</CardDefenseValue>
       <CardType>{card.religion_type}</CardType>
       <CardEffects>{card.effect.join(", ")}</CardEffects>
       <CardText>{card.text}</CardText>
+      <CardIcon></CardIcon>
     </CardContainer>
   );
 };
