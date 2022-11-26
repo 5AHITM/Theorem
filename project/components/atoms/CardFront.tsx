@@ -1,6 +1,7 @@
 import { styled } from "@stitches/react";
 import Image from "next/image";
 import { relative } from "node:path/win32";
+import { SizeVariants } from "../../utils/Enum";
 import { Card } from "../../utils/Types";
 import CardHiddenSVG from "./svg/CardHiddenSVG";
 
@@ -9,6 +10,14 @@ const CardContainer = styled("div", {
   width: "100%",
   position: "relative",
   aspectRatio: "1105/1556",
+
+  variants: {
+    size: {
+      [SizeVariants.SMALL]: {},
+      [SizeVariants.MEDIUM]: {},
+      [SizeVariants.LARGE]: {},
+    },
+  },
 });
 
 const CardName = styled("p", {
@@ -89,7 +98,12 @@ const CardText = styled("p", {
 
 export const CardFront: React.FC<{
   card: Card;
-}> = ({ card }) => {
+  sizeVariant?: SizeVariants;
+}> = ({ card, sizeVariant }) => {
+  if (!sizeVariant) {
+    sizeVariant = SizeVariants.MEDIUM;
+  }
+
   const CardImage = styled("div", {
     position: "relative",
     top: 0,
@@ -102,7 +116,7 @@ export const CardFront: React.FC<{
   });
 
   return (
-    <CardContainer>
+    <CardContainer size={sizeVariant}>
       <CardImage></CardImage>
       <Image
         src={"/img/card-template.png"}

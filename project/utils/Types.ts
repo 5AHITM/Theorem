@@ -38,3 +38,4 @@ export interface CardStance {
   key: string;
   playedStance: "open" | "hidden";
 }
+

@@ -16,3 +16,10 @@ export enum StandardEffects {
   BOUNTY = "Bounty",
   CAGE = "Cage",
 }
+
+
+export enum SizeVariants {
+  SMALL = "small",
+  MEDIUM = "medium",
+  LARGE = "large",
+}
