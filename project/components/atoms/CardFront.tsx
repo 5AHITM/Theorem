@@ -33,13 +33,13 @@ const CardName = styled("p", {
   variants: {
     size: {
       [SizeVariants.SMALL]: {
-        fontSize: "30%"
+        fontSize: "30%",
       },
       [SizeVariants.MEDIUM]: {
-        fontSize: "60%"
+        fontSize: "60%",
       },
       [SizeVariants.LARGE]: {
-        fontSize: "90%"
+        fontSize: "90%",
       },
     },
   },
@@ -58,13 +58,13 @@ const CardMana = styled("p", {
   variants: {
     size: {
       [SizeVariants.SMALL]: {
-        fontSize: "30%"
+        fontSize: "30%",
       },
       [SizeVariants.MEDIUM]: {
-        fontSize: "60%"
+        fontSize: "60%",
       },
       [SizeVariants.LARGE]: {
-        fontSize: "90%"
+        fontSize: "90%",
       },
     },
   },
@@ -83,13 +83,13 @@ const CardAttackValue = styled("p", {
   variants: {
     size: {
       [SizeVariants.SMALL]: {
-        fontSize: "30%"
+        fontSize: "30%",
       },
       [SizeVariants.MEDIUM]: {
-        fontSize: "60%"
+        fontSize: "60%",
       },
       [SizeVariants.LARGE]: {
-        fontSize: "90%"
+        fontSize: "90%",
       },
     },
   },
@@ -108,13 +108,13 @@ const CardDefenseValue = styled("p", {
   variants: {
     size: {
       [SizeVariants.SMALL]: {
-        fontSize: "30%"
+        fontSize: "30%",
       },
       [SizeVariants.MEDIUM]: {
-        fontSize: "60%"
+        fontSize: "60%",
       },
       [SizeVariants.LARGE]: {
-        fontSize: "90%"
+        fontSize: "90%",
       },
     },
   },
@@ -133,13 +133,13 @@ const CardType = styled("p", {
   variants: {
     size: {
       [SizeVariants.SMALL]: {
-        fontSize: "30%"
+        fontSize: "30%",
       },
       [SizeVariants.MEDIUM]: {
-        fontSize: "60%"
+        fontSize: "60%",
       },
       [SizeVariants.LARGE]: {
-        fontSize: "90%"
+        fontSize: "90%",
       },
     },
   },
@@ -158,13 +158,13 @@ const CardEffects = styled("p", {
   variants: {
     size: {
       [SizeVariants.SMALL]: {
-        fontSize: "30%"
+        fontSize: "30%",
       },
       [SizeVariants.MEDIUM]: {
-        fontSize: "60%"
+        fontSize: "60%",
       },
       [SizeVariants.LARGE]: {
-        fontSize: "90%"
+        fontSize: "90%",
       },
     },
   },
@@ -182,13 +182,13 @@ const CardText = styled("p", {
   variants: {
     size: {
       [SizeVariants.SMALL]: {
-        fontSize: "30%"
+        fontSize: "30%",
       },
       [SizeVariants.MEDIUM]: {
-        fontSize: "60%"
+        fontSize: "60%",
       },
       [SizeVariants.LARGE]: {
-        fontSize: "90%"
+        fontSize: "90%",
       },
     },
   },
@@ -199,18 +199,17 @@ export const CardFront: React.FC<{
   sizeVariant?: SizeVariants;
   cardStance: CardStance;
 }> = ({ card, sizeVariant, cardStance }) => {
-
   if (!sizeVariant) {
     sizeVariant = SizeVariants.MEDIUM;
   }
 
-  let stanceIcon = "schwert.png"
-  if (cardStance.stance == "defense") {
-    stanceIcon = "schild.png"
+  let stanceIcon = "schwert.png";
+  if (cardStance && cardStance.stance == "defense") {
+    stanceIcon = "schild.png";
   }
 
   if (sizeVariant == SizeVariants.SMALL) {
-    stanceIcon = ""
+    stanceIcon = "";
   }
 
   const CardImage = styled("div", {
@@ -229,7 +228,7 @@ export const CardFront: React.FC<{
     top: "-5%",
     left: "-8%",
     width: "20%",
-    aspectRatio: 1/1,
+    aspectRatio: 1 / 1,
     backgroundImage: "url('" + "/img/icons/" + stanceIcon + "')",
     backgroundRepeat: "no-repeat",
     backgroundSize: "contain",

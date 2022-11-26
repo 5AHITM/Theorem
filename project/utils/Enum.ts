@@ -23,3 +23,9 @@ export enum SizeVariants {
   MEDIUM = "medium",
   LARGE = "large",
 }
+
+export enum PlayerAttackable{
+  ATTACKABLE,
+  NOT_ATTACKABLE,
+  GAME_START ,
+}

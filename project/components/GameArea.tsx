@@ -1,5 +1,5 @@
 import { styled } from "@stitches/react";
-import { GameState } from "../utils/Enum";
+import { GameState, PlayerAttackable } from "../utils/Enum";
 import { Card, CardCoordinates, CardStance } from "../utils/Types";
 import { CardHand } from "./atoms/CardHand";
 import { GameField } from "./molecules/GameField";
@@ -34,6 +34,13 @@ export const GameArea: React.FC<{
   changeCardStance: (card: CardStance) => void;
   cardStances: CardStance[];
   attackingEnemyFinished: () => void;
+  cardDied: (attackingCard: boolean) => void;
+  showPlayerIcon: PlayerAttackable;
+  showEnemyIcon: PlayerAttackable;
+  attackPlayer: (e: any) => void;
+  playerCardToDie: Card;
+  enemyCardToDie: Card;
+  changeIntialCardStance: (card: CardStance) => void;
 }> = ({
   getCoordiantes,
   playerCards,
@@ -55,6 +62,13 @@ export const GameArea: React.FC<{
   changeCardStance,
   cardStances,
   attackingEnemyFinished,
+  showPlayerIcon,
+  showEnemyIcon,
+  attackPlayer,
+  enemyCardToDie,
+  playerCardToDie,
+  cardDied,
+  changeIntialCardStance,
 }) => {
   return (
     <GameAreaLayout>
@@ -63,8 +77,10 @@ export const GameArea: React.FC<{
         isEnemy={true}
         getCoordiantes={() => {}}
         cards={enemyCards}
-        changeCardStance={changeCardStance}
+        changeCardStance={changeIntialCardStance}
         cardStances={cardStances}
+        showIcon={showEnemyIcon}
+        attackPlayer={attackPlayer}
       ></CardHand>
 
       <GameField
@@ -85,14 +101,19 @@ export const GameArea: React.FC<{
         changeCardStance={changeCardStance}
         cardStances={cardStances}
         attackingEnemyFinished={attackingEnemyFinished}
+        enemyCardToDie={enemyCardToDie}
+        playerCardToDie={playerCardToDie}
+        cardDied={cardDied}
       ></GameField>
       <CardHand
         gameState={gameState}
         isEnemy={false}
         getCoordiantes={getCoordiantes}
         cards={playerCards}
-        changeCardStance={changeCardStance}
+        changeCardStance={changeIntialCardStance}
         cardStances={cardStances}
+        showIcon={showPlayerIcon}
+        attackPlayer={attackPlayer}
       ></CardHand>
     </GameAreaLayout>
   );

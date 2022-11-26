@@ -1,5 +1,5 @@
 import { styled } from "../stitches.config";
-import { useState, useEffect } from "react";
+import { useState, useEffect, SetStateAction } from "react";
 import { DetailArea } from "../components/DetailArea";
 import { GameArea } from "../components/GameArea";
 import { UtilityArea } from "../components/UtilityArea";
@@ -14,7 +14,7 @@ import * as tweenFunctions from "tween-functions";
 import io from "socket.io-client";
 import { Background } from "../components/atoms/Background";
 import { useRouter } from "next/router";
-import { GameState } from "../utils/Enum";
+import { GameState, PlayerAttackable } from "../utils/Enum";
 import { Card, CardCoordinates, CardStance, Result } from "../utils/Types";
 
 const Layout = styled("div", {
@@ -88,9 +88,6 @@ export default function Game({
   // the coordinates of the selected card
   const [selectedCardCoordinates, setSelectedCardCoordinates] = useState([]);
 
-  //check if fullscreen
-  const [screenModeSet, setScreenModeSet] = useState(false);
-
   //positions of the cards in the player field with the key
   const [cardPositions, setCardPositions] = useState<CardCoordinates[]>([]);
 
@@ -106,7 +103,26 @@ export default function Game({
   //card stances
   const [cardStances, setCardStances] = useState<CardStance[]>([]);
 
-  const [results, setResult] = useState<Result[]>([]);
+  const [result, setResult] = useState<Result>();
+
+  //Card that dies after a fight
+  const [playerCardToDie, setPlayerCardToDie] = useState<Card>();
+
+  const [enemyCardToDie, setEnemyCardToDie] = useState<Card>();
+
+  const [showPlayerIcon, setShowPlayerIcon] = useState<PlayerAttackable>(
+    PlayerAttackable.GAME_START
+  );
+
+  const [showEnemyIcon, setShowEnemyIcon] = useState<PlayerAttackable>(
+    PlayerAttackable.GAME_START
+  );
+
+  const [hasWon, setHasWon] = useState<"won" | "lost" | "undecided">(
+    "undecided"
+  );
+
+  const [firstDraw, setFirstDraw] = useState(true);
 
   //set up socket io connection
   useEffect(() => {
@@ -129,7 +145,6 @@ export default function Game({
       });
     };
     socketInitializer();
-    setScreenModeSet(!window.screenTop && !window.screenY);
   }, [router.query]);
 
   useEffect(() => {
@@ -145,6 +160,11 @@ export default function Game({
   }, [gameState]);
 
   useEffect(() => {
+    console.log(playerCardToDie);
+    console.log(enemyCardToDie);
+  }, [playerCardToDie, enemyCardToDie]);
+
+  useEffect(() => {
     socket.on("connect", () => {
       console.log("connected");
     });
@@ -158,6 +178,9 @@ export default function Game({
       if (starting) {
         setGameState(GameState.PLAYER_DRAWS);
         setMana(1);
+        setShowPlayerIcon(PlayerAttackable.ATTACKABLE);
+      } else {
+        setShowEnemyIcon(PlayerAttackable.ATTACKABLE);
       }
     });
 
@@ -165,8 +188,8 @@ export default function Game({
       console.log("disconnected");
     });
 
-    socket.on("cardDrawn", (id: string) => {
-      setEnemyCards([id, ...enemyCards]);
+    socket.on("cardDrawn", (key: string) => {
+      setEnemyCards([key, ...enemyCards]);
       console.log("card drawn");
     });
 
@@ -181,12 +204,33 @@ export default function Game({
           playedStance: card.playedStance,
         },
       ]);
+      if (card.playedStance === "hidden" || card.stance === "defense") {
+        setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE);
+      }
     });
 
-    socket.on("changeTurn", (turn: number) => {
-      setGameState(GameState.PLAYER_DRAWS);
-      mana + turn < 7 ? setMana(turn) : setMana(7);
-    });
+    socket.on(
+      "changeTurn",
+      (turn: number, enemyCards: Card[], playerCards: Card[]) => {
+        if (showPlayerIcon === PlayerAttackable.GAME_START) {
+          setShowPlayerIcon(PlayerAttackable.ATTACKABLE);
+        }
+        setEnemyFieldCards(enemyCards);
+
+        setPlayerFieldCards(playerCards);
+
+        setGameState(GameState.PLAYER_DRAWS);
+        turn < 7 ? setMana(turn) : setMana(7);
+        setAlreadyAttackedCards([]);
+        setSelectedCard(undefined);
+        setEnemySelectedCard([]);
+        setAttackedCard(undefined);
+        setEnemyAttackingCard(undefined);
+        setPlayerCardToDie(undefined);
+        setEnemyCardToDie(undefined);
+        setResult(undefined);
+      }
+    );
 
     socket.on("nextCard", (card: Card) => {
       let newPlayerCards = [card, ...playerCards];
@@ -201,48 +245,222 @@ export default function Game({
       ]);
     });
 
+    socket.on("drawForFirstTime", (cards: Card[]) => {
+      setPlayerCards(cards);
+      let c: CardStance[] = cardStances;
+      cards.forEach((card) => {
+        c.push({
+          key: card.key,
+          stance: card.stance,
+          playedStance: card.playedStance,
+        });
+      });
+      setCardStances(c);
+    });
+
+    socket.on("enemyDrawForFirstTime", (cards: Card[]) => {
+      setEnemyCards(cards.map((card) => card.key));
+    });
+
     socket.on(
       "changeStance",
       (stance: "attack" | "defense", cardKey: string) => {
-        console.log("change stance");
         let newCardStances = cardStances.map((card) => {
           if (card.key === cardKey) {
             card.stance = stance;
           }
           return card;
         });
+
         setCardStances(newCardStances);
+
+        if (stance === "defense") {
+          setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE);
+        } else {
+          enemyFieldCards.find((card) => card.stance === "defense")
+            ? setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE)
+            : setShowEnemyIcon(PlayerAttackable.ATTACKABLE);
+        }
+      }
+    );
+
+    socket.on("playerAttacksPlayer", (cardKey: string, health: number) => {
+      let attackingCard = enemyFieldCards.find((card) => card.key === cardKey);
+      if (attackingCard) {
+        setEnemyAttackingCard(attackingCard);
+      }
+      setHealth(health);
+    });
+
+    socket.on(
+      "playerAttacks",
+      (result: Result, playerHealth: number, enemyHealth: number) => {
+        if (cardPositions) {
+          let attackedCardCoordinates = cardPositions.find(
+            (card) => card.key === result.defendingCardKey
+          );
+          let attackingCardCoordinates = cardPositions.find(
+            (card) => card.key === result.attackingCardKey
+          );
+          if (attackedCardCoordinates && attackingCardCoordinates) {
+            attackingCardCoordinates.x =
+              attackedCardCoordinates.x - attackingCardCoordinates.x;
+
+            console.log(attackingCardCoordinates);
+
+            attackingCardCoordinates.y =
+              attackedCardCoordinates.y - attackingCardCoordinates.y;
+            setAttackedCard(attackingCardCoordinates);
+          }
+        }
+        let attackingCard = enemyFieldCards.find(
+          (card) => card.key === result.attackingCardKey
+        );
+        if (attackingCard) {
+          setEnemyAttackingCard(attackingCard);
+        }
+
+        setHealth(playerHealth);
+        setEnemyHealth(enemyHealth);
+
+        setResult(result);
       }
     );
 
     socket.on(
-      "playerAttacks",
-      (result: Result) => {
-        console.log(result);
-        if (cardPositions) {
-          setAttackedCard(
-            cardPositions.find((card) => card.key === result.defendingCardKey)
-          );
-        }
-        let attackingCard = enemyFieldCards.find((card) => card.key === result.attackingCardKey);
-        if(attackingCard){
-          setEnemyAttackingCard(attackingCard);
-        }
-
-        setResult([...results,result]);
+      "attackResult",
+      (result: Result, playerHealth: number, enemyHealth: number) => {
+        setResult(result);
+        setHealth(playerHealth);
+        setEnemyHealth(enemyHealth);
       }
     );
-  }, [cardPositions, cardStances, enemyCards, enemyFieldCards, mana, playerCards, results]);
 
+    socket.on("gameOver", (hasWon: "won" | "lost" | "undecided") => {
+      setHasWon(hasWon);
+    });
+  }, [
+    cardPositions,
+    cardStances,
+    enemyCards,
+    enemyFieldCards,
+    health,
+    mana,
+    playerCards,
+    result,
+    showEnemyIcon,
+    showPlayerIcon,
+  ]);
+
+  //after the enemy attack finished
   function enemyAttackingFinished() {
-    console.log("enemy attacking finished");
+    evaluateResult(false);
     setAttackedCard(undefined);
     setEnemyAttackingCard(undefined);
   }
 
+  //after the player attack animation finished
   function attackingEnemyFinished() {
+    evaluateResult(true);
     setEnemySelectedCard([]);
     setSelectedCard(undefined);
+  }
+
+  function evaluateResult(playerAttacked: boolean) {
+    if (result) {
+      //replace defending and attacking card
+      if (playerAttacked) {
+        if (result.attackingCardDies) {
+          setPlayerCardToDie(result.attackingCard);
+          console.log("player card dies");
+        }
+        if (result.defendingCardDies) {
+          setEnemyCardToDie(result.defendingCard);
+          console.log("enemy card dies");
+        }
+        // if player Attacked replace the attacking card in the player field
+        if (!result.attackingCardDies) {
+          let newPlayerFieldCards = playerFieldCards.map((card) => {
+            if (card.key === result.attackingCard.key) {
+              card = result.attackingCard;
+            }
+            return card;
+          });
+          setPlayerFieldCards(newPlayerFieldCards);
+        }
+        if (!result.defendingCardDies) {
+          // replace the defending card in the enemy card field
+          let newEnemyFieldCards = enemyFieldCards.map((card) => {
+            if (card.key === result.defendingCard.key) {
+              card = result.defendingCard;
+            }
+            return card;
+          });
+          setEnemyFieldCards(newEnemyFieldCards);
+        }
+      } else {
+        if (result.attackingCardDies) {
+          setEnemyCardToDie(result.attackingCard);
+          console.log("enemy card dies");
+        } else if (result.defendingCardDies) {
+          setPlayerCardToDie(result.defendingCard);
+          console.log("player card dies");
+        }
+        // if enemy Attacked replace the attacking card in the enemy field
+        if (!result.attackingCardDies) {
+          let newEnemyFieldCards = enemyFieldCards.map((card) => {
+            if (card.key === result.attackingCard.key) {
+              card = result.attackingCard;
+            }
+            return card;
+          });
+          setEnemyFieldCards(newEnemyFieldCards);
+        }
+        if (!result.defendingCardDies) {
+          // replace the defending card in the player card field
+          let newPlayerFieldCards = playerFieldCards.map((card) => {
+            if (card.key === result.defendingCard.key) {
+              card = result.defendingCard;
+            }
+            return card;
+          });
+          setPlayerFieldCards(newPlayerFieldCards);
+        }
+      }
+    }
+  }
+
+  function cardDied(playerCard: boolean) {
+    if (playerCard) {
+      console.log("player card deletion time");
+
+      if (playerFieldCards.find((card) => card.key === playerCardToDie.key)) {
+        let newPlayerFieldCards = playerFieldCards.filter(
+          (card) => card.key !== playerCardToDie.key
+        );
+        setPlayerFieldCards(newPlayerFieldCards);
+        newPlayerFieldCards.find((card) => card.stance === "defense")
+          ? setShowPlayerIcon(PlayerAttackable.NOT_ATTACKABLE)
+          : setShowPlayerIcon(PlayerAttackable.ATTACKABLE);
+
+        setPlayerCardToDie(undefined);
+        console.log("player card deleted");
+      }
+    } else {
+      console.log("enemy card deletion time");
+      if (enemyFieldCards.find((card) => card.key === enemyCardToDie.key)) {
+        let newEnemyFieldCards = enemyFieldCards.filter(
+          (card) => card.key !== enemyCardToDie.key
+        );
+        setEnemyFieldCards(newEnemyFieldCards);
+        newEnemyFieldCards.find((card) => card.stance === "defense")
+          ? setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE)
+          : setShowEnemyIcon(PlayerAttackable.ATTACKABLE);
+
+        setEnemyCardToDie(undefined);
+        console.log("enemy card deleted");
+      }
+    }
   }
 
   function getCoordiantes(e: HTMLElement) {
@@ -255,7 +473,12 @@ export default function Game({
   }
 
   function getNextCard() {
-    socket.emit("drawCard", roomNumber);
+    if (firstDraw) {
+      socket.emit("drawForFirstTime", roomNumber);
+      setFirstDraw(false);
+    } else {
+      socket.emit("drawCard", roomNumber);
+    }
   }
 
   function playCard(key: string, stance: "open" | "hidden") {
@@ -264,12 +487,13 @@ export default function Game({
 
   function changeTurn() {
     socket.emit("changeTurn", roomNumber);
+    if (showEnemyIcon === PlayerAttackable.GAME_START) {
+      setShowEnemyIcon(PlayerAttackable.ATTACKABLE);
+    }
   }
 
   const onDragEnd = (result) => {
     const { destination, source, draggableId } = result;
-
-    console.log(result);
 
     if (!destination && source.droppableId != "cardDeck") {
       return;
@@ -279,7 +503,7 @@ export default function Game({
     }
     if (source.droppableId == "cardDeck" && playerCards.length < 7) {
       getNextCard();
-      setCardDeck(["" + (Number.parseInt(draggableId) + 1)]);
+      setCardDeck(["carddeck" + Number.parseInt(draggableId)]);
       if (GameState.PLAYER_DRAWS) {
         setGameState(GameState.PLAYER_PLAYS);
       }
@@ -302,8 +526,6 @@ export default function Game({
         //set state
         setPlayerCards(newPlayerCards);
         setPlayerFieldCards(newPlayerFieldCards);
-
-        let cardStance = cardStances.find((c) => c.key === card.key);
 
         playCard(card.key, card.playedStance);
       }
@@ -359,16 +581,23 @@ export default function Game({
     }
   }
 
+  function attackPlayer(e) {
+    if (selectedCard && !alreadyAttackedCards.includes(selectedCard.key)) {
+      setAlreadyAttackedCards([...alreadyAttackedCards, selectedCard.key]);
+      setEnemySelectedCard([
+        e.clientX - selectedCardCoordinates[0],
+        e.clientY - selectedCardCoordinates[1],
+      ]);
+      socket.emit("playerAttacksPlayer", roomNumber, selectedCard.key);
+      setEnemyHealth(enemyHealth - selectedCard.attack);
+    }
+  }
+
   function addCardPositions(cardPositionsN: CardCoordinates) {
     setCardPositions([...cardPositions, cardPositionsN]);
   }
 
   function changeCardStance(cardStance: CardStance) {
-    setCardStances(
-      cardStances.map((card) => {
-        return card.key === cardStance.key ? cardStance : card;
-      })
-    );
     if (cardStance.playedStance !== "hidden") {
       socket.emit(
         "changeStance",
@@ -376,7 +605,20 @@ export default function Game({
         cardStance.stance,
         cardStance.key
       );
+      setCardStances(
+        cardStances.map((card) => {
+          return card.key === cardStance.key ? cardStance : card;
+        })
+      );
     }
+  }
+
+  function changeIntialCardStance(cardStance: CardStance) {
+    setCardStances(
+      cardStances.map((card) => {
+        return card.key === cardStance.key ? cardStance : card;
+      })
+    );
   }
 
   const startDrag = function start() {
@@ -405,73 +647,75 @@ export default function Game({
     moveStepByStep(drag, points);
   };
 
-  if (roomFound && screenModeSet) {
-    return (
-      <Layout>
-        <DragDropContext
-          onDragEnd={onDragEnd}
-          onDragStart={(result) => {}}
-          sensors={[useMyCoolSensor]}
-        >
-          <Background></Background>
-          <DetailArea
-            gameState={gameState}
-            cardDeck={cardDeck}
-            drawCard={drawCard}
-          ></DetailArea>
-          <GameArea
-            getCoordiantes={getCoordiantes}
-            playerCards={playerCards}
-            playerFieldCards={playerFieldCards}
-            enemyFieldCards={enemyFieldCards}
-            enemyCards={enemyCards}
-            gameState={gameState}
-            setSelectedCard={setSelectedCard}
-            fightCard={fightCard}
-            enemySelectedCard={enemySelectedCardCoordinates}
-            setEnemySelectedCard={setEnemySelectedCard}
-            setSelectedCardCoordinates={setSelectedCardCoordinates}
-            selectedCard={selectedCard}
-            addCardPositions={addCardPositions}
-            attackedCard={attackedCard}
-            enemyAttackingCard={enemyAttackingCard}
-            enemyAttackingFinished={enemyAttackingFinished}
-            alreadyAttackedCards={alreadyAttackedCards}
-            changeCardStance={changeCardStance}
-            cardStances={cardStances}
-            attackingEnemyFinished={attackingEnemyFinished}
-          ></GameArea>
-          <UtilityArea
-            gameState={gameState}
-            cards={[]}
-            changeGameState={changeGameState}
-            mana={mana}
-            health={health}
-            enemyHealth={enemyHealth}
-          ></UtilityArea>
-        </DragDropContext>
-      </Layout>
-    );
+  if (hasWon !== "undecided") {
+    return <div className="game">You have {hasWon}!</div>;
   } else {
-    return (
-      <WaitingScreenLayout>
-        {roomFound ? (
-          <h1>Room Found</h1>
-        ) : (
-          <h1>Waiting for other player to join</h1>
-        )}
-        <button
-          onClick={() => {
-            if (document.documentElement.requestFullscreen)
-              document.documentElement.requestFullscreen();
-            setScreenModeSet(true);
-          }}
-        >
-          Go Fullscrenmode
-        </button>
-        <p>Room number: {roomNumber}</p>
-      </WaitingScreenLayout>
-    );
+    if (roomFound) {
+      return (
+        <Layout>
+          <DragDropContext
+            onDragEnd={onDragEnd}
+            onDragStart={(result) => {}}
+            sensors={[useMyCoolSensor]}
+          >
+            <Background></Background>
+            <DetailArea
+              gameState={gameState}
+              cardDeck={cardDeck}
+              drawCard={drawCard}
+            ></DetailArea>
+            <GameArea
+              getCoordiantes={getCoordiantes}
+              playerCards={playerCards}
+              playerFieldCards={playerFieldCards}
+              enemyFieldCards={enemyFieldCards}
+              enemyCards={enemyCards}
+              gameState={gameState}
+              setSelectedCard={setSelectedCard}
+              fightCard={fightCard}
+              enemySelectedCard={enemySelectedCardCoordinates}
+              setEnemySelectedCard={setEnemySelectedCard}
+              setSelectedCardCoordinates={setSelectedCardCoordinates}
+              selectedCard={selectedCard}
+              addCardPositions={addCardPositions}
+              attackedCard={attackedCard}
+              enemyAttackingCard={enemyAttackingCard}
+              enemyAttackingFinished={enemyAttackingFinished}
+              alreadyAttackedCards={alreadyAttackedCards}
+              changeCardStance={changeCardStance}
+              changeIntialCardStance={changeIntialCardStance}
+              cardStances={cardStances}
+              attackingEnemyFinished={attackingEnemyFinished}
+              playerCardToDie={playerCardToDie}
+              enemyCardToDie={enemyCardToDie}
+              cardDied={cardDied}
+              showEnemyIcon={showEnemyIcon}
+              showPlayerIcon={showPlayerIcon}
+              attackPlayer={attackPlayer}
+            ></GameArea>
+            <UtilityArea
+              gameState={gameState}
+              cards={[]}
+              changeGameState={changeGameState}
+              mana={mana}
+              health={health}
+              enemyHealth={enemyHealth}
+            ></UtilityArea>
+          </DragDropContext>
+        </Layout>
+      );
+    } else {
+      return (
+        <WaitingScreenLayout>
+          {roomFound ? (
+            <h1>Room Found</h1>
+          ) : (
+            <h1>Waiting for other player to join</h1>
+          )}
+          <p>Room number: {roomNumber}</p>
+        </WaitingScreenLayout>
+      );
+    }
   }
 }
 

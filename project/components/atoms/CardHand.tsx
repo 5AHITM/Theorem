@@ -1,4 +1,5 @@
 import { styled } from "@stitches/react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Draggable,
   DraggableStateSnapshot,
@@ -6,10 +7,11 @@ import {
   Droppable,
   NotDraggingStyle,
 } from "react-beautiful-dnd";
-import { GameState, SizeVariants } from "../../utils/Enum";
+import { GameState, PlayerAttackable, SizeVariants } from "../../utils/Enum";
 import { Card, CardStance } from "../../utils/Types";
 import { CardFront } from "./CardFront";
 import { CardHidden } from "./CardHidden";
+import { PlayerIcon } from "./PlayerIcon";
 
 const CardHandLayout = styled("div", {
   display: "grid",
@@ -48,6 +50,24 @@ const CardHandLayoutWrapper = styled("div", {
   },
 });
 
+const IconDiv = styled("div", {
+  position: "absolute",
+  zIndex: 2,
+  width: "5vw",
+  aspectRatio: 1 / 1,
+  left: "45vw",
+  variants: {
+    isEnemy: {
+      true: {
+        top: "5%",
+      },
+      false: {
+        bottom: "5%",
+      },
+    },
+  },
+});
+
 export const CardHand: React.FC<{
   isEnemy: boolean;
   getCoordiantes: (e: HTMLElement) => void;
@@ -55,6 +75,8 @@ export const CardHand: React.FC<{
   gameState: GameState;
   changeCardStance: (cardStance: CardStance) => void;
   cardStances: CardStance[];
+  showIcon: PlayerAttackable;
+  attackPlayer: (e) => void;
 }> = ({
   isEnemy,
   getCoordiantes,
@@ -62,6 +84,8 @@ export const CardHand: React.FC<{
   gameState,
   changeCardStance,
   cardStances,
+  showIcon,
+  attackPlayer,
 }) => {
   function getStyle(
     style: DraggingStyle | NotDraggingStyle,
@@ -87,6 +111,27 @@ export const CardHand: React.FC<{
   if (isEnemy) {
     return (
       <CardHandLayoutWrapper isEnemy={isEnemy}>
+        <AnimatePresence>
+          {(gameState == GameState.ENEMY_TURN ||
+            gameState == GameState.PLAYER_FIGHTS) &&
+            showIcon === PlayerAttackable.ATTACKABLE && (
+              <motion.div
+                key="enemyIcon"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <IconDiv
+                  isEnemy="true"
+                  onClick={(event) => {
+                    attackPlayer(event);
+                  }}
+                >
+                  <PlayerIcon />
+                </IconDiv>
+              </motion.div>
+            )}
+        </AnimatePresence>
         <CardHandLayout>
           {cards.map((card, index) => {
             return (
@@ -110,6 +155,22 @@ export const CardHand: React.FC<{
       >
         {(provided) => (
           <CardHandLayoutWrapper ref={provided.innerRef} isEnemy="false">
+            <AnimatePresence>
+              {(gameState == GameState.ENEMY_TURN ||
+                gameState == GameState.PLAYER_FIGHTS) &&
+                showIcon === PlayerAttackable.ATTACKABLE && (
+                  <motion.div
+                    key="playerIcon"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <IconDiv isEnemy="false">
+                      <PlayerIcon />
+                    </IconDiv>
+                  </motion.div>
+                )}
+            </AnimatePresence>
             <CardHandLayout
               ref={(e) => {
                 if (!e) {
@@ -122,7 +183,7 @@ export const CardHand: React.FC<{
                 <Draggable
                   draggableId={card.key}
                   index={index}
-                  key={card.key}
+                  key={card.key+"hand"}
                   isDragDisabled={
                     gameState === GameState.PLAYER_FIGHTS ||
                     gameState === GameState.ENEMY_TURN
@@ -144,7 +205,7 @@ export const CardHand: React.FC<{
                           card.stance === "attack" ? "defense" : "attack";
                         if (card.stance === "defense") {
                           card.playedStance = "hidden";
-                        }else{
+                        } else {
                           card.playedStance = "open";
                         }
                         changeCardStance({
@@ -159,7 +220,9 @@ export const CardHand: React.FC<{
                         <CardFront
                           card={card}
                           sizeVariant={SizeVariants.SMALL}
-                          cardStance= {cardStances.find((c) => c.key === card.key)}
+                          cardStance={cardStances.find(
+                            (c) => c.key === card.key
+                          )}
                         ></CardFront>
                       ) : (
                         <CardHidden></CardHidden>

@@ -7,6 +7,8 @@ export interface Card {
   mana: number;
   religion_type: string;
   attack: number;
+  current_attack: number;
+  current_defense: number;
   defense: number;
   text: string;
   img: string;
@@ -27,6 +29,8 @@ export interface Result {
   defendingCardDamage: number;
   effectsHittingAttackingCard: StandardEffects[];
   effectsUsedByDefendingCard: StandardEffects[];
+  attackingCard: Card;
+  defendingCard: Card;
 }
 
 export interface CardCoordinates {

@@ -45,6 +45,9 @@ export const CardField: React.FC<{
   changeCardStance: (card: CardStance) => void;
   cardStances: CardStance[];
   attackingEnemyFinished: () => void;
+  cardDied: (isAttacking: boolean) => void;
+  playerCardToDie: Card;
+  enemyCardToDie: Card;
 }> = ({
   isPlayer,
   cards,
@@ -63,7 +66,27 @@ export const CardField: React.FC<{
   changeCardStance,
   cardStances,
   attackingEnemyFinished,
+  playerCardToDie,
+  enemyCardToDie,
+  cardDied,
 }) => {
+  function getAnimation(key, x, y) {
+    if (
+      (playerCardToDie && playerCardToDie.key === key) ||
+      (enemyCardToDie && enemyCardToDie.key === key)
+    ) {
+      return {
+        opacity: 0,
+        transition: { duration: 1 },
+      };
+    } else {
+      return {
+        x: [0, x, 0],
+        y: [0, y, 0],
+        transition: { duration: 0.5 },
+      };
+    }
+  }
   if (isPlayer) {
     return (
       <Droppable
@@ -78,23 +101,29 @@ export const CardField: React.FC<{
           <CardFieldLayout ref={provided.innerRef}>
             {cards.map((card, index) => (
               <motion.div
-                key={card.key}
+                key={card.key + index}
                 animate={
-                  enemySelectedCard.length > 0 &&
-                  selectedCard.key === card.key &&
-                  cardStances.find((stance) => stance.key === card.key)
-                    ?.stance === "attack" &&
-                  cardStances.find((stance) => stance.key === card.key)
-                    ?.playedStance !== "hidden"
-                    ? {
-                        x: [0, enemySelectedCard[0], 0],
-                        y: [0, enemySelectedCard[1], 0],
-                        transition: { duration: 0.5 },
-                      }
+                  (enemySelectedCard.length > 0 &&
+                    selectedCard.key === card.key &&
+                    cardStances.find((stance) => stance.key === card.key)
+                      ?.stance === "attack" &&
+                    cardStances.find((stance) => stance.key === card.key)
+                      ?.playedStance !== "hidden") ||
+                  (playerCardToDie && playerCardToDie.key === card.key)
+                    ? getAnimation(
+                        card.key,
+                        enemySelectedCard[0],
+                        enemySelectedCard[1]
+                      )
                     : {}
                 }
                 onAnimationComplete={() => {
-                  attackingEnemyFinished();
+                  if (playerCardToDie && playerCardToDie.key === card.key) {
+                    cardDied(true);
+                    console.log("player card died");
+                  } else {
+                    attackingEnemyFinished();
+                  }
                 }}
                 ref={(e) => {
                   if (e) {
@@ -109,7 +138,7 @@ export const CardField: React.FC<{
                 <Draggable
                   draggableId={card.key}
                   index={index}
-                  key={card.key}
+                  key={card.key + "field"}
                   isDragDisabled={
                     gameState === GameState.ENEMY_TURN ||
                     gameState === GameState.PLAYER_FIGHTS
@@ -130,7 +159,6 @@ export const CardField: React.FC<{
                           !alreadyAttackedCards.includes(card.key) &&
                           stance.playedStance !== "hidden"
                         ) {
-                          console.log("card selected");
                           setSelectedCard(card);
                           setSelectedCardCoordinates([e.clientX, e.clientY]);
                         } else if (
@@ -176,31 +204,47 @@ export const CardField: React.FC<{
       <CardFieldLayout>
         {cards.map((card, index) => (
           <motion.div
-            key={card.key}
+            key={card.key + "field"}
             animate={
-              enemyAttackingCard &&
-              attackedCard &&
-              enemyAttackingCard.key === card.key
-                ? {
-                    x: [0, attackedCard.x, 0],
-                    y: [0, attackedCard.y, 0],
-                    transition: { duration: 0.5 },
-                  }
+              (enemyAttackingCard &&
+                attackedCard &&
+                enemyAttackingCard.key === card.key) ||
+              (enemyCardToDie && enemyCardToDie.key === card.key)
+                ? getAnimation(
+                    card.key,
+                    attackedCard ? attackedCard.x : 0,
+                    attackedCard ? attackedCard.y : 0
+                  )
                 : {}
             }
             onAnimationComplete={() => {
-              enemyAttackingFinished(card);
+              if (enemyCardToDie && enemyCardToDie.key === card.key) {
+                cardDied(false);
+                console.log("enemy card died");
+              } else {
+                enemyAttackingFinished(card);
+              }
+            }}
+            ref={(e) => {
+              if (e) {
+                addCardPositions({
+                  key: card.key,
+                  x: e.getBoundingClientRect().x,
+                  y: e.getBoundingClientRect().y,
+                });
+                console.log("addedCardPositions");
+              }
             }}
           >
             <CardContainer
-              key={card.key}
               onClick={(e) => {
                 if (gameState === GameState.PLAYER_FIGHTS) {
                   fightCard(card, e);
                 }
               }}
             >
-              {card.playedStance === "open" ? (
+              {cardStances.find((stance) => stance.key === card.key)
+                .playedStance === "open" ? (
                 <CardFront
                   card={card}
                   sizeVariant={SizeVariants.MEDIUM}

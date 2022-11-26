@@ -13,6 +13,7 @@ import { InferGetServerSidePropsType } from "next/types";
 import * as tweenFunctions from "tween-functions";
 import io from "socket.io-client";
 import { Background } from "../components/atoms/Background";
+import Link from "next/link";
 
 const Layout = styled("div", {
   display: "flex",
@@ -25,7 +26,7 @@ const Layout = styled("div", {
   gap: "1rem",
 });
 
-const StyledLink = styled("a", {
+const StyledLink = styled(Link, {
   backgroundColor: "white",
   border: "1px solid black",
   borderRadius: "0.5rem",
@@ -38,7 +39,37 @@ const StyledLink = styled("a", {
   "&:hover": {
     backgroundColor: "black",
     color: "white",
-    fontWeight: "bold",
+  },
+});
+
+const StyledButton = styled("button", {
+  backgroundColor: "white",
+  border: "1px solid black",
+  borderRadius: "0.5rem",
+  padding: "0.5rem",
+  fontSize: "4rem",
+  cursor: "pointer",
+  transition: "all 0.2s ease-in-out",
+  color: "black",
+  textDecoration: "none",
+  "&:hover": {
+    backgroundColor: "black",
+    color: "white",
+  },
+});
+
+const StyledInput = styled("input", {
+  backgroundColor: "white",
+  border: "1px solid black",
+  borderRadius: "0.5rem",
+  padding: "0.5rem",
+  fontSize: "1rem",
+  cursor: "pointer",
+  transition: "all 0.2s ease-in-out",
+  color: "black",
+  textDecoration: "none",
+  "&:hover": {
+    border: "3px solid black",
   },
 });
 
@@ -49,9 +80,17 @@ export default function Home({
 
   return (
     <Layout>
-      <h1>Home</h1>
-      <label htmlFor="roomNumber">Room Number</label>
-      <input
+      <StyledButton
+        onClick={() => {
+          if (document.documentElement.requestFullscreen)
+            document.documentElement.requestFullscreen();
+        }}
+      >
+        Go Fullscrenmode
+      </StyledButton>
+
+      <label htmlFor="roomNumber">Room Number:</label>
+      <StyledInput
         type="text"
         name="roomNumber"
         value={roomNumber}
