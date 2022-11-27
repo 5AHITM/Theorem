@@ -3,7 +3,6 @@ import Image from "next/image";
 import { relative } from "node:path/win32";
 import { SizeVariants } from "../../utils/Enum";
 import { Card, CardStance } from "../../utils/Types";
-import CardHiddenSVG from "./svg/CardHiddenSVG";
 
 const CardContainer = styled("div", {
   display: "flex",
@@ -206,8 +205,10 @@ export const CardFront: React.FC<{
   let stanceIcon = "schwert.png";
   if (cardStance && cardStance.stance == "defense") {
     stanceIcon = "schild.png";
+    if (card.trapped) {
+      stanceIcon = "schild-trapped.png"
+    }
   }
-
   if (sizeVariant == SizeVariants.SMALL) {
     stanceIcon = "";
   }
