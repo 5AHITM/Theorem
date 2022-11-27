@@ -196,8 +196,9 @@ const CardText = styled("p", {
 export const CardFront: React.FC<{
   card: Card;
   sizeVariant?: SizeVariants;
-  cardStance: CardStance;
-}> = ({ card, sizeVariant, cardStance }) => {
+  cardStance?: CardStance;
+  showCard: (card: Card) => void;
+}> = ({ card, sizeVariant, cardStance, showCard }) => {
   if (!sizeVariant) {
     sizeVariant = SizeVariants.MEDIUM;
   }
@@ -205,23 +206,24 @@ export const CardFront: React.FC<{
   let stanceIcon = "schwert.png";
   if (cardStance && cardStance.stance == "defense") {
     stanceIcon = "schild.png";
-    if (card.trapped) {
-      stanceIcon = "schild-trapped.png"
+    if (cardStance.trapped) {
+      stanceIcon = "schild-trapped.png";
     }
   }
-  if (sizeVariant == SizeVariants.SMALL) {
+  if (sizeVariant == SizeVariants.SMALL || !cardStance) {
     stanceIcon = "";
   }
 
   const CardImage = styled("div", {
     position: "relative",
-    top: 0,
+    top: 5,
     right: 0,
     width: "100%",
     height: "60%",
     backgroundImage: "url('" + "/img/" + card.img + "')",
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
+    borderRadius: "10px 10px 0 0",
   });
 
   const CardIcon = styled("div", {
@@ -237,7 +239,7 @@ export const CardFront: React.FC<{
   });
 
   return (
-    <CardContainer size={sizeVariant}>
+    <CardContainer size={sizeVariant} onMouseOver={() => showCard(card)}>
       <CardImage></CardImage>
       <Image
         src={"/img/card-template.png"}

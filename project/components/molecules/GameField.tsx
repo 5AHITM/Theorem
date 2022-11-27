@@ -29,9 +29,10 @@ export const GameField: React.FC<{
   changeCardStance: (card: CardStance) => void;
   cardStances: CardStance[];
   attackingEnemyFinished: () => void;
-  cardDied: (c:boolean) => void;
+  cardDied: (c: boolean) => void;
   playerCardToDie: Card;
-  enemyCardToDie:Card;
+  enemyCardToDie: Card;
+  showCard: (card: Card) => void;
 }> = ({
   playerCards,
   enemyCards,
@@ -52,7 +53,8 @@ export const GameField: React.FC<{
   attackingEnemyFinished,
   cardDied,
   playerCardToDie,
-  enemyCardToDie
+  enemyCardToDie,
+  showCard,
 }) => {
   return (
     <GameSideLayout>
@@ -74,6 +76,7 @@ export const GameField: React.FC<{
         playerCardToDie={playerCardToDie}
         enemyCardToDie={enemyCardToDie}
         cardDied={cardDied}
+        showCard={showCard}
       ></CardField>
       <CardField
         isPlayer={true}
@@ -93,6 +96,7 @@ export const GameField: React.FC<{
         playerCardToDie={playerCardToDie}
         enemyCardToDie={enemyCardToDie}
         cardDied={cardDied}
+        showCard={showCard}
       ></CardField>
     </GameSideLayout>
   );

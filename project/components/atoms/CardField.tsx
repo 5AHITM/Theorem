@@ -12,7 +12,7 @@ const CardFieldLayout = styled("div", {
   alignItems: "center",
   justifyContent: "center",
   width: "100%",
-  height: "33vh",
+  height: "100%",
 });
 
 const CardContainer = styled("div", {
@@ -21,10 +21,6 @@ const CardContainer = styled("div", {
   alignItems: "center",
   justifyContent: "center",
   margin: "5px",
-});
-
-const CardHandLayoutWrapper = styled("div", {
-  width: "100%",
 });
 
 export const CardField: React.FC<{
@@ -48,6 +44,7 @@ export const CardField: React.FC<{
   cardDied: (isAttacking: boolean) => void;
   playerCardToDie: Card;
   enemyCardToDie: Card;
+  showCard: (card: Card) => void;
 }> = ({
   isPlayer,
   cards,
@@ -69,6 +66,7 @@ export const CardField: React.FC<{
   playerCardToDie,
   enemyCardToDie,
   cardDied,
+  showCard,
 }) => {
   function getAnimation(key, x, y) {
     if (
@@ -81,9 +79,11 @@ export const CardField: React.FC<{
       };
     } else {
       return {
-        x: [0, x, 0],
-        y: [0, y, 0],
-        transition: { duration: 0.5 },
+        x: [0, x, x, 0],
+        y: [0, y, y, 0],
+        zIndex: [0, 1, 1, 0],
+        scale: [1, 1.2, 1, 1],
+        transition: { duration: 1, bounce: 0.5 },
       };
     }
   }
@@ -119,8 +119,8 @@ export const CardField: React.FC<{
                 }
                 onAnimationComplete={() => {
                   if (playerCardToDie && playerCardToDie.key === card.key) {
-                    cardDied(true);
                     console.log("player card died");
+                    cardDied(true);
                   } else {
                     attackingEnemyFinished();
                   }
@@ -172,6 +172,7 @@ export const CardField: React.FC<{
                               key: card.key,
                               stance: card.stance,
                               playedStance: card.playedStance,
+                              trapped: card.trapped,
                             });
                           }
                         }
@@ -185,6 +186,7 @@ export const CardField: React.FC<{
                           )}
                           card={card}
                           sizeVariant={SizeVariants.MEDIUM}
+                          showCard={showCard}
                         ></CardFront>
                       ) : (
                         <CardHidden></CardHidden>
@@ -251,6 +253,7 @@ export const CardField: React.FC<{
                   cardStance={cardStances.find(
                     (stance) => stance.key === card.key
                   )}
+                  showCard={showCard}
                 ></CardFront>
               ) : (
                 <CardHidden></CardHidden>

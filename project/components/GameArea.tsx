@@ -2,6 +2,7 @@ import { styled } from "@stitches/react";
 import { GameState, PlayerAttackable } from "../utils/Enum";
 import { Card, CardCoordinates, CardStance } from "../utils/Types";
 import { CardHand } from "./atoms/CardHand";
+import { GameFieldBackground } from "./atoms/GameFieldBackground";
 import { GameField } from "./molecules/GameField";
 
 const GameAreaLayout = styled("div", {
@@ -41,6 +42,7 @@ export const GameArea: React.FC<{
   playerCardToDie: Card;
   enemyCardToDie: Card;
   changeIntialCardStance: (card: CardStance) => void;
+  showCard: (card: Card) => void;
 }> = ({
   getCoordiantes,
   playerCards,
@@ -69,9 +71,11 @@ export const GameArea: React.FC<{
   playerCardToDie,
   cardDied,
   changeIntialCardStance,
+  showCard,
 }) => {
   return (
     <GameAreaLayout>
+      <GameFieldBackground></GameFieldBackground>
       <CardHand
         gameState={gameState}
         isEnemy={true}
@@ -81,6 +85,7 @@ export const GameArea: React.FC<{
         cardStances={cardStances}
         showIcon={showEnemyIcon}
         attackPlayer={attackPlayer}
+        showCard={showCard}
       ></CardHand>
 
       <GameField
@@ -104,6 +109,7 @@ export const GameArea: React.FC<{
         enemyCardToDie={enemyCardToDie}
         playerCardToDie={playerCardToDie}
         cardDied={cardDied}
+        showCard={showCard}
       ></GameField>
       <CardHand
         gameState={gameState}
@@ -114,6 +120,7 @@ export const GameArea: React.FC<{
         cardStances={cardStances}
         showIcon={showPlayerIcon}
         attackPlayer={attackPlayer}
+        showCard={showCard}
       ></CardHand>
     </GameAreaLayout>
   );

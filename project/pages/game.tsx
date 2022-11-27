@@ -14,7 +14,7 @@ import * as tweenFunctions from "tween-functions";
 import io from "socket.io-client";
 import { Background } from "../components/atoms/Background";
 import { useRouter } from "next/router";
-import { GameState, PlayerAttackable } from "../utils/Enum";
+import { GameState, PlayerAttackable, StandardEffects } from "../utils/Enum";
 import { Card, CardCoordinates, CardStance, Result } from "../utils/Types";
 
 const Layout = styled("div", {
@@ -28,6 +28,7 @@ const Layout = styled("div", {
 });
 
 const WaitingScreenLayout = styled("div", {
+  background: "linear-gradient(180deg, #000000 0%, #000000 100%)",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -35,6 +36,27 @@ const WaitingScreenLayout = styled("div", {
   height: "100vh",
   width: "100vw",
   minHeight: "100%",
+  gap: "1rem",
+});
+
+const StyledButton = styled("button", {
+  color: "white",
+  fontSize: "2rem",
+  backgroundColor: "black",
+  border: "2px solid white",
+  borderRadius: "0.5rem",
+  padding: "0.5rem",
+  cursor: "pointer",
+  transition: "all 0.2s ease-in-out",
+  "&:hover": {
+    backgroundColor: "white",
+    color: "black",
+  },
+});
+
+const StyledHeading = styled("h1", {
+  color: "white",
+  fontSize: "4rem",
 });
 
 let socket;
@@ -124,6 +146,10 @@ export default function Game({
 
   const [firstDraw, setFirstDraw] = useState(true);
 
+  const [zoomCard, setZoomCard] = useState<Card>();
+
+  const [manaConversionAllowed, setManaConversionAllowed] = useState(true);
+
   //set up socket io connection
   useEffect(() => {
     const socketInitializer = async () => {
@@ -148,20 +174,13 @@ export default function Game({
   }, [router.query]);
 
   useEffect(() => {
-    console.log(roomNumber);
-  }, [roomNumber]);
+    console.log("playerFieldCards", playerFieldCards);
+    console.log("enemyFieldCards", enemyFieldCards);
+  }, [enemyFieldCards, playerFieldCards]);
 
   useEffect(() => {
-    console.log(playerCards);
-  }, [playerCards]);
-
-  useEffect(() => {
-    console.log(gameState);
-  }, [gameState]);
-
-  useEffect(() => {
-    console.log(playerCardToDie);
-    console.log(enemyCardToDie);
+    console.log("playerCardToDie", playerCardToDie);
+    console.log("enemyCardToDie", enemyCardToDie);
   }, [playerCardToDie, enemyCardToDie]);
 
   useEffect(() => {
@@ -202,6 +221,7 @@ export default function Game({
           key: card.key,
           stance: card.stance,
           playedStance: card.playedStance,
+          trapped: card.trapped,
         },
       ]);
       if (card.playedStance === "hidden" || card.stance === "defense") {
@@ -211,7 +231,13 @@ export default function Game({
 
     socket.on(
       "changeTurn",
-      (turn: number, enemyCards: Card[], playerCards: Card[]) => {
+      (
+        turn: number,
+        enemyCards: Card[],
+        playerCards: Card[],
+        manaConversionAllowed: boolean
+      ) => {
+        setManaConversionAllowed(manaConversionAllowed);
         if (showPlayerIcon === PlayerAttackable.GAME_START) {
           setShowPlayerIcon(PlayerAttackable.ATTACKABLE);
         }
@@ -224,11 +250,9 @@ export default function Game({
         setAlreadyAttackedCards([]);
         setSelectedCard(undefined);
         setEnemySelectedCard([]);
-        setAttackedCard(undefined);
-        setEnemyAttackingCard(undefined);
+        setResult(undefined);
         setPlayerCardToDie(undefined);
         setEnemyCardToDie(undefined);
-        setResult(undefined);
       }
     );
 
@@ -241,6 +265,7 @@ export default function Game({
           key: card.key,
           stance: card.stance,
           playedStance: card.playedStance,
+          trapped: false,
         },
       ]);
     });
@@ -253,6 +278,7 @@ export default function Game({
           key: card.key,
           stance: card.stance,
           playedStance: card.playedStance,
+          trapped: false,
         });
       });
       setCardStances(c);
@@ -290,11 +316,20 @@ export default function Game({
         setEnemyAttackingCard(attackingCard);
       }
       setHealth(health);
+      //change Card stance to open
     });
 
     socket.on(
       "playerAttacks",
       (result: Result, playerHealth: number, enemyHealth: number) => {
+        let newCardStances = cardStances.map((card: Card) => {
+          if (card.key === result.defendingCardKey) {
+            card.playedStance = "open";
+          }
+          return card;
+        });
+        setCardStances(newCardStances);
+
         if (cardPositions) {
           let attackedCardCoordinates = cardPositions.find(
             (card) => card.key === result.defendingCardKey
@@ -352,31 +387,50 @@ export default function Game({
     showPlayerIcon,
   ]);
 
+  function convertMana(manaToAdd: number) {
+    setMana(mana + manaToAdd);
+    setHealth(health - manaToAdd);
+    setManaConversionAllowed(false);
+    socket.emit("convertMana", roomNumber, manaToAdd);
+  }
+
+  function showCard(card) {
+    setZoomCard(card);
+  }
+
   //after the enemy attack finished
   function enemyAttackingFinished() {
     evaluateResult(false);
-    setAttackedCard(undefined);
-    setEnemyAttackingCard(undefined);
   }
 
   //after the player attack animation finished
   function attackingEnemyFinished() {
     evaluateResult(true);
-    setEnemySelectedCard([]);
-    setSelectedCard(undefined);
   }
 
   function evaluateResult(playerAttacked: boolean) {
     if (result) {
+      if (result.attackingCard.trapped) {
+        //change stance to trapped true
+        setCardStances(
+          cardStances.map((card) => {
+            if (card.key === result.attackingCard.key) {
+              card.trapped = true;
+            }
+            return card;
+          })
+        );
+      }
       //replace defending and attacking card
       if (playerAttacked) {
         if (result.attackingCardDies) {
           setPlayerCardToDie(result.attackingCard);
-          console.log("player card dies");
+          console.log("attacking card dies");
         }
+
         if (result.defendingCardDies) {
           setEnemyCardToDie(result.defendingCard);
-          console.log("enemy card dies");
+          console.log("defending card dies");
         }
         // if player Attacked replace the attacking card in the player field
         if (!result.attackingCardDies) {
@@ -386,6 +440,11 @@ export default function Game({
             }
             return card;
           });
+          setPlayerFieldCards(newPlayerFieldCards);
+        } else {
+          let newPlayerFieldCards = playerFieldCards.filter(
+            (card) => card.key !== result.attackingCard.key
+          );
           setPlayerFieldCards(newPlayerFieldCards);
         }
         if (!result.defendingCardDies) {
@@ -397,14 +456,23 @@ export default function Game({
             return card;
           });
           setEnemyFieldCards(newEnemyFieldCards);
+        } else {
+          let newEnemyFieldCards = enemyFieldCards.filter(
+            (card) => card.key !== result.defendingCard.key
+          );
+          setEnemyFieldCards(newEnemyFieldCards);
         }
+
+        setAttackedCard(undefined);
+        setEnemyAttackingCard(undefined);
       } else {
         if (result.attackingCardDies) {
           setEnemyCardToDie(result.attackingCard);
-          console.log("enemy card dies");
-        } else if (result.defendingCardDies) {
+          console.log("attacking card dies");
+        }
+        if (result.defendingCardDies) {
           setPlayerCardToDie(result.defendingCard);
-          console.log("player card dies");
+          console.log("attacking card dies");
         }
         // if enemy Attacked replace the attacking card in the enemy field
         if (!result.attackingCardDies) {
@@ -414,6 +482,11 @@ export default function Game({
             }
             return card;
           });
+          setEnemyFieldCards(newEnemyFieldCards);
+        } else {
+          let newEnemyFieldCards = enemyFieldCards.filter(
+            (card) => card.key !== result.attackingCard.key
+          );
           setEnemyFieldCards(newEnemyFieldCards);
         }
         if (!result.defendingCardDies) {
@@ -425,7 +498,15 @@ export default function Game({
             return card;
           });
           setPlayerFieldCards(newPlayerFieldCards);
+        } else {
+          let newPlayerFieldCards = playerFieldCards.filter(
+            (card) => card.key !== result.defendingCard.key
+          );
+          setPlayerFieldCards(newPlayerFieldCards);
         }
+
+        setEnemySelectedCard([]);
+        setSelectedCard(undefined);
       }
     }
   }
@@ -570,15 +651,22 @@ export default function Game({
     }
   }
 
-  function fightCard(card, e) {
-    if (selectedCard) {
-      setAlreadyAttackedCards([...alreadyAttackedCards, selectedCard.key]);
-      setEnemySelectedCard([
-        e.clientX - selectedCardCoordinates[0],
-        e.clientY - selectedCardCoordinates[1],
-      ]);
-      socket.emit("playerAttacks", roomNumber, card.key, selectedCard.key);
-    }
+  function fightCard(card: Card, e) {
+    setAlreadyAttackedCards([...alreadyAttackedCards, selectedCard.key]);
+    setEnemySelectedCard([
+      e.clientX - selectedCardCoordinates[0],
+      e.clientY - selectedCardCoordinates[1],
+    ]);
+    socket.emit("playerAttacks", roomNumber, card.key, selectedCard.key);
+
+    //change card stance to open
+    let newCardStances = cardStances.map((cardn: Card) => {
+      if (card.key === cardn.key) {
+        cardn.playedStance = "open";
+      }
+      return cardn;
+    });
+    setCardStances(newCardStances);
   }
 
   function attackPlayer(e) {
@@ -648,7 +736,11 @@ export default function Game({
   };
 
   if (hasWon !== "undecided") {
-    return <div className="game">You have {hasWon}!</div>;
+    return (
+      <WaitingScreenLayout>
+        <StyledHeading>You have {hasWon}!</StyledHeading>
+      </WaitingScreenLayout>
+    );
   } else {
     if (roomFound) {
       return (
@@ -658,13 +750,14 @@ export default function Game({
             onDragStart={(result) => {}}
             sensors={[useMyCoolSensor]}
           >
-            <Background></Background>
             <DetailArea
               gameState={gameState}
               cardDeck={cardDeck}
               drawCard={drawCard}
+              zoomCard={zoomCard}
             ></DetailArea>
             <GameArea
+              showCard={showCard}
               getCoordiantes={getCoordiantes}
               playerCards={playerCards}
               playerFieldCards={playerFieldCards}
@@ -700,6 +793,8 @@ export default function Game({
               mana={mana}
               health={health}
               enemyHealth={enemyHealth}
+              convertMana={convertMana}
+              manaConversionAllowed={manaConversionAllowed}
             ></UtilityArea>
           </DragDropContext>
         </Layout>
@@ -708,11 +803,18 @@ export default function Game({
       return (
         <WaitingScreenLayout>
           {roomFound ? (
-            <h1>Room Found</h1>
+            <StyledHeading>Room Found</StyledHeading>
           ) : (
-            <h1>Waiting for other player to join</h1>
+            <StyledHeading>Waiting for other player to join</StyledHeading>
           )}
-          <p>Room number: {roomNumber}</p>
+          <StyledButton
+            onClick={() => {
+              //copy roomnumber to clipboard
+              navigator.clipboard.writeText(roomNumber);
+            }}
+          >
+            Room number: {roomNumber}
+          </StyledButton>
         </WaitingScreenLayout>
       );
     }

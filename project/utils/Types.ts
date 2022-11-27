@@ -43,4 +43,5 @@ export interface CardStance {
   stance: "attack" | "defense";
   key: string;
   playedStance: "open" | "hidden";
+  trapped: boolean;
 }

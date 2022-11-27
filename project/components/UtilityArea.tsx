@@ -10,6 +10,7 @@ const UtilityAreaLayout = styled("div", {
   alignItems: "center",
   justifyContent: "center",
   height: "100%",
+  backgroundColor: "black",
 });
 
 export const UtilityArea: React.FC<{
@@ -19,7 +20,18 @@ export const UtilityArea: React.FC<{
   health: number;
   enemyHealth: number;
   mana: number;
-}> = ({ gameState, cards, changeGameState, health, mana, enemyHealth }) => {
+  convertMana: (mana: number) => void;
+  manaConversionAllowed: boolean;
+}> = ({
+  gameState,
+  cards,
+  changeGameState,
+  health,
+  mana,
+  enemyHealth,
+  manaConversionAllowed,
+  convertMana,
+}) => {
   return (
     <UtilityAreaLayout>
       <PlayerUtilities
@@ -28,6 +40,8 @@ export const UtilityArea: React.FC<{
         health={health}
         mana={mana}
         enemyHealth={enemyHealth}
+        manaConversionAllowed={manaConversionAllowed}
+        convertMana={convertMana}
       ></PlayerUtilities>
       <CardGraveyard cards={[]}></CardGraveyard>
     </UtilityAreaLayout>

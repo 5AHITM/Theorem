@@ -30,6 +30,7 @@ const CurrentGameStatus = styled("h2", {
   fontSize: "1.5rem",
   fontWeight: "bold",
   padding: "0.5rem",
+  color: "white",
 });
 
 const HealthBar = styled("h3", {
@@ -60,8 +61,38 @@ const InfoBox = styled("div", {
   justifyContent: "center",
   height: "100%",
   width: "100%",
-  backgroundColor: "white",
   borderRadius: "0.5rem",
+});
+
+const ConvertManaButtonsLayout = styled("div", {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  height: "100%",
+  width: "100%",
+  borderRadius: "0.5rem",
+  gap: "0.5rem",
+});
+
+const ConvertManaButton = styled("button", {
+  backgroundColor: "blue",
+  color: "white",
+  fontSize: "1.5rem",
+  fontWeight: "bold",
+  "&:hover:enabled": {
+    backgroundColor: "darkblue",
+    cursor: "pointer",
+  },
+  padding: "0.5rem",
+  borderRadius: "0.5rem",
+});
+
+const ManaConversionTag = styled("h3", {
+  color: "white",
+  fontSize: "1.5rem",
+  fontWeight: "bold",
+  padding: "0.5rem",
 });
 
 export const PlayerUtilities: React.FC<{
@@ -70,7 +101,17 @@ export const PlayerUtilities: React.FC<{
   health: number;
   mana: number;
   enemyHealth: number;
-}> = ({ gameState, changeGameState, health, mana, enemyHealth }) => {
+  convertMana: (mana: number) => void;
+  manaConversionAllowed: boolean;
+}> = ({
+  gameState,
+  changeGameState,
+  health,
+  mana,
+  enemyHealth,
+  convertMana,
+  manaConversionAllowed,
+}) => {
   return (
     <UtilityAreaLayout>
       <InfoBox>
@@ -90,6 +131,55 @@ export const PlayerUtilities: React.FC<{
       >
         Next Phase
       </TurnButton>
+
+      <ConvertManaButtonsLayout>
+        <ManaConversionTag>Mana Conversion</ManaConversionTag>
+        <ConvertManaButton
+          onClick={() => {
+            convertMana(1);
+          }}
+          disabled={
+            !manaConversionAllowed ||
+            1 >= health ||
+            gameState === GameState.ENEMY_TURN ||
+            gameState === GameState.PLAYER_FIGHTS
+              ? true
+              : false
+          }
+        >
+          1
+        </ConvertManaButton>
+        <ConvertManaButton
+          onClick={() => {
+            convertMana(1);
+          }}
+          disabled={
+            !manaConversionAllowed ||
+            2 >= health ||
+            gameState === GameState.ENEMY_TURN ||
+            gameState === GameState.PLAYER_FIGHTS
+              ? true
+              : false
+          }
+        >
+          2
+        </ConvertManaButton>
+        <ConvertManaButton
+          onClick={() => {
+            convertMana(1);
+          }}
+          disabled={
+            !manaConversionAllowed ||
+            3 >= health ||
+            gameState === GameState.ENEMY_TURN ||
+            gameState === GameState.PLAYER_FIGHTS
+              ? true
+              : false
+          }
+        >
+          3
+        </ConvertManaButton>
+      </ConvertManaButtonsLayout>
     </UtilityAreaLayout>
   );
 };

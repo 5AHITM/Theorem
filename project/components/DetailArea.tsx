@@ -1,21 +1,16 @@
 import { styled } from "@stitches/react";
-import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  FluidDragActions,
-  SensorAPI,
-} from "react-beautiful-dnd";
+import { Draggable, Droppable } from "react-beautiful-dnd";
 import { CardHidden } from "./atoms/CardHidden";
-import { Dispatch, MutableRefObject, SetStateAction, useRef } from "react";
 import { CardFront } from "./atoms/CardFront";
-import { GameState } from "../utils/Enum";
+import { GameState, SizeVariants } from "../utils/Enum";
+import { Card } from "../utils/Types";
 
 const DetailAreaLayout = styled("div", {
   display: "flex",
   flexDirection: "column",
   flex: 2,
   height: "100%",
+  backgroundColor: "black",
 });
 
 const ZoomCardArea = styled("div", {
@@ -24,6 +19,10 @@ const ZoomCardArea = styled("div", {
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "center",
+});
+
+const CardContainer = styled("div", {
+  width: "80%",
 });
 
 const CardDeckArea = styled("div", {
@@ -50,7 +49,8 @@ export const DetailArea: React.FC<{
   cardDeck: string[];
   drawCard: () => void;
   gameState: GameState;
-}> = ({ cardDeck, drawCard, gameState }) => {
+  zoomCard: Card;
+}> = ({ cardDeck, drawCard, gameState, zoomCard }) => {
   function getStyle(style, snapshot) {
     if (!snapshot.isDropAnimating) {
       return style;
@@ -71,7 +71,17 @@ export const DetailArea: React.FC<{
   return (
     <DetailAreaLayout>
       <ZoomCardArea>
-        <h2>Zoom Card Area</h2>
+        <CardContainer>
+          {zoomCard ? (
+            <CardFront
+              card={zoomCard}
+              sizeVariant={SizeVariants.LARGE}
+              showCard={() => {}}
+            ></CardFront>
+          ) : (
+            <CardHidden></CardHidden>
+          )}
+        </CardContainer>
       </ZoomCardArea>
       <CardDeckArea>
         <CardButton

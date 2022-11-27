@@ -1,21 +1,11 @@
 import { styled } from "../stitches.config";
 import { useState, useEffect } from "react";
-import { DetailArea } from "../components/DetailArea";
-import { GameArea } from "../components/GameArea";
-import { UtilityArea } from "../components/UtilityArea";
-import {
-  DragDropContext,
-  FluidDragActions,
-  resetServerContext,
-  SensorAPI,
-} from "react-beautiful-dnd";
+import { resetServerContext } from "react-beautiful-dnd";
 import { InferGetServerSidePropsType } from "next/types";
-import * as tweenFunctions from "tween-functions";
-import io from "socket.io-client";
-import { Background } from "../components/atoms/Background";
 import Link from "next/link";
 
 const Layout = styled("div", {
+  background: "linear-gradient(180deg, #000000 0%, #2c2c2c 100%)",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -27,40 +17,40 @@ const Layout = styled("div", {
 });
 
 const StyledLink = styled(Link, {
-  backgroundColor: "white",
-  border: "1px solid black",
+  backgroundColor: "black",
+  border: "1px solid white",
   borderRadius: "0.5rem",
   padding: "0.5rem",
   fontSize: "1rem",
   cursor: "pointer",
   transition: "all 0.2s ease-in-out",
-  color: "black",
+  color: "white",
   textDecoration: "none",
   "&:hover": {
-    backgroundColor: "black",
-    color: "white",
+    backgroundColor: "white",
+    color: "black",
   },
 });
 
 const StyledButton = styled("button", {
-  backgroundColor: "white",
-  border: "1px solid black",
+  backgroundColor: "black",
+  border: "2px solid white",
   borderRadius: "0.5rem",
   padding: "0.5rem",
   fontSize: "4rem",
   cursor: "pointer",
   transition: "all 0.2s ease-in-out",
-  color: "black",
+  color: "white",
   textDecoration: "none",
   "&:hover": {
-    backgroundColor: "black",
-    color: "white",
+    backgroundColor: "white",
+    color: "black",
   },
 });
 
 const StyledInput = styled("input", {
   backgroundColor: "white",
-  border: "1px solid black",
+  border: "2px solid white",
   borderRadius: "0.5rem",
   padding: "0.5rem",
   fontSize: "1rem",
@@ -69,7 +59,7 @@ const StyledInput = styled("input", {
   color: "black",
   textDecoration: "none",
   "&:hover": {
-    border: "3px solid black",
+    border: "3px solid white",
   },
 });
 
@@ -86,7 +76,7 @@ export default function Home({
             document.documentElement.requestFullscreen();
         }}
       >
-        Go Fullscrenmode
+        Go Fullscreenmode
       </StyledButton>
 
       <label htmlFor="roomNumber">Room Number:</label>

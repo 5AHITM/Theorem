@@ -19,16 +19,16 @@ const CardHandLayout = styled("div", {
   alignItems: "center",
   justifyContent: "center",
   width: "100%",
-
+  height: "100%",
   overflow: "hidden",
 });
 
 const CardContainer = styled("div", {
-  display: "flex",
-  flexDirection: "column",
+  margin: "0 auto",
   alignItems: "center",
   justifyContent: "center",
-  width: "80%",
+  alignSelf: "center",
+  width: "85%",
   overflow: "hidden",
   transition: "all 0.2s ease-in-out",
 });
@@ -77,6 +77,7 @@ export const CardHand: React.FC<{
   cardStances: CardStance[];
   showIcon: PlayerAttackable;
   attackPlayer: (e) => void;
+  showCard: (card: Card) => void;
 }> = ({
   isEnemy,
   getCoordiantes,
@@ -86,6 +87,7 @@ export const CardHand: React.FC<{
   cardStances,
   showIcon,
   attackPlayer,
+  showCard,
 }) => {
   function getStyle(
     style: DraggingStyle | NotDraggingStyle,
@@ -183,7 +185,7 @@ export const CardHand: React.FC<{
                 <Draggable
                   draggableId={card.key}
                   index={index}
-                  key={card.key+"hand"}
+                  key={card.key + "hand"}
                   isDragDisabled={
                     gameState === GameState.PLAYER_FIGHTS ||
                     gameState === GameState.ENEMY_TURN
@@ -212,6 +214,7 @@ export const CardHand: React.FC<{
                           key: card.key,
                           stance: card.stance,
                           playedStance: card.playedStance,
+                          trapped: card.trapped,
                         });
                       }}
                     >
@@ -223,6 +226,7 @@ export const CardHand: React.FC<{
                           cardStance={cardStances.find(
                             (c) => c.key === card.key
                           )}
+                          showCard={showCard}
                         ></CardFront>
                       ) : (
                         <CardHidden></CardHidden>
