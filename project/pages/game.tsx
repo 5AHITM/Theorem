@@ -165,7 +165,7 @@ export default function Game({
       };
 
       // We just call it because we don't need anything else out of it
-      socket = io("http://localhost:4000", {
+      socket = io("http://3.72.194.14:4000", {
         query,
         withCredentials: true,
       });
