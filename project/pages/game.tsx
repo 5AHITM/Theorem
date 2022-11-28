@@ -165,7 +165,7 @@ export default function Game({
       };
 
       // We just call it because we don't need anything else out of it
-      socket = io("http://3.72.194.14:4000", {
+      socket = io(process.env.SOCKET_IO_URL, {
         query,
         withCredentials: true,
       });
