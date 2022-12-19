@@ -11,11 +11,11 @@ import {
 } from "react-beautiful-dnd";
 import { InferGetServerSidePropsType } from "next/types";
 import * as tweenFunctions from "tween-functions";
-import io from "socket.io-client";
-import { Background } from "../components/atoms/Background";
+import io, { Socket } from "socket.io-client";
 import { useRouter } from "next/router";
-import { GameState, PlayerAttackable, StandardEffects } from "../utils/Enum";
+import { GameState, PlayerAttackable } from "../utils/Enum";
 import { Card, CardCoordinates, CardStance, Result } from "../utils/Types";
+import { DefaultEventsMap } from "@socket.io/component-emitter";
 
 const Layout = styled("div", {
   display: "flex",
@@ -59,7 +59,7 @@ const StyledHeading = styled("h1", {
   fontSize: "4rem",
 });
 
-let socket;
+let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 
 export default function Game({
   data,
@@ -102,7 +102,7 @@ export default function Game({
   // the card that has been selected for the players game field to attack with
   const [selectedCard, setSelectedCard] = useState<Card>();
 
-  // the card that has been selected from the enemy game field to attack
+  // the card that has been selected by the enemy to be attacked
   const [enemySelectedCardCoordinates, setEnemySelectedCard] = useState<
     number[]
   >([]);
@@ -150,38 +150,24 @@ export default function Game({
 
   const [manaConversionAllowed, setManaConversionAllowed] = useState(true);
 
-  //set up socket io connection
+  //set up socket io connection only once
   useEffect(() => {
     const socketInitializer = async () => {
+      console.log(process.env.NEXT_PUBLIC_SOCKET_IO_URL);
       //get query params
       const { roomNumber, isPrivate } = router.query;
-
-      //if roomNumber is not undefined, then we are joining a room
-
       const query = {
         token: "WEB",
         roomId: roomNumber,
         isPrivate: isPrivate,
       };
-
-      // We just call it because we don't need anything else out of it
-      socket = io(process.env.SOCKET_IO_URL, {
+      socket = io(process.env.NEXT_PUBLIC_SOCKET_IO_URL, {
         query,
         withCredentials: true,
       });
     };
     socketInitializer();
   }, [router.query]);
-
-  useEffect(() => {
-    console.log("playerFieldCards", playerFieldCards);
-    console.log("enemyFieldCards", enemyFieldCards);
-  }, [enemyFieldCards, playerFieldCards]);
-
-  useEffect(() => {
-    console.log("playerCardToDie", playerCardToDie);
-    console.log("enemyCardToDie", enemyCardToDie);
-  }, [playerCardToDie, enemyCardToDie]);
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -207,11 +193,13 @@ export default function Game({
       console.log("disconnected");
     });
 
+    //if enemy draws a card
     socket.on("cardDrawn", (key: string) => {
       setEnemyCards([key, ...enemyCards]);
       console.log("card drawn");
     });
 
+    //if enemy plays a card
     socket.on("playerPlaysCard", (card: Card) => {
       setEnemyCards(enemyCards.slice(1));
       setEnemyFieldCards([...enemyFieldCards, card]);
@@ -229,6 +217,7 @@ export default function Game({
       }
     });
 
+    //if the enemy changes turn
     socket.on(
       "changeTurn",
       (
@@ -256,6 +245,7 @@ export default function Game({
       }
     );
 
+    //server sends the next card from the deck
     socket.on("nextCard", (card: Card) => {
       let newPlayerCards = [card, ...playerCards];
       setPlayerCards(newPlayerCards);
@@ -270,6 +260,7 @@ export default function Game({
       ]);
     });
 
+    //server sends the first 5 card from the deck
     socket.on("drawForFirstTime", (cards: Card[]) => {
       setPlayerCards(cards);
       let c: CardStance[] = cardStances;
@@ -284,10 +275,12 @@ export default function Game({
       setCardStances(c);
     });
 
+    //server sends the first 5 card from the deck for the enemy
     socket.on("enemyDrawForFirstTime", (cards: Card[]) => {
       setEnemyCards(cards.map((card) => card.key));
     });
 
+    //enemy changes the stance of a card
     socket.on(
       "changeStance",
       (stance: "attack" | "defense", cardKey: string) => {
@@ -310,6 +303,7 @@ export default function Game({
       }
     );
 
+    //enemy attacks a player directly
     socket.on("playerAttacksPlayer", (cardKey: string, health: number) => {
       let attackingCard = enemyFieldCards.find((card) => card.key === cardKey);
       if (attackingCard) {
@@ -319,6 +313,7 @@ export default function Game({
       //change Card stance to open
     });
 
+    //enemy attacks a card
     socket.on(
       "playerAttacks",
       (result: Result, playerHealth: number, enemyHealth: number) => {
@@ -362,6 +357,7 @@ export default function Game({
       }
     );
 
+    //the attack result of a fight
     socket.on(
       "attackResult",
       (result: Result, playerHealth: number, enemyHealth: number) => {
@@ -374,11 +370,16 @@ export default function Game({
     socket.on("gameOver", (hasWon: "won" | "lost" | "undecided") => {
       setHasWon(hasWon);
     });
+
+    socket.on("enemyConvertMana", (mana) => {
+      setEnemyHealth(enemyHealth - mana);
+    });
   }, [
     cardPositions,
     cardStances,
     enemyCards,
     enemyFieldCards,
+    enemyHealth,
     health,
     mana,
     playerCards,
@@ -408,6 +409,7 @@ export default function Game({
     evaluateResult(true);
   }
 
+  //after the player attack animation finished
   function evaluateResult(playerAttacked: boolean) {
     if (result) {
       if (result.attackingCard.trapped) {
@@ -462,9 +464,8 @@ export default function Game({
           );
           setEnemyFieldCards(newEnemyFieldCards);
         }
-
-        setAttackedCard(undefined);
-        setEnemyAttackingCard(undefined);
+        setEnemySelectedCard([]);
+        setSelectedCard(undefined);
       } else {
         if (result.attackingCardDies) {
           setEnemyCardToDie(result.attackingCard);
@@ -504,13 +505,13 @@ export default function Game({
           );
           setPlayerFieldCards(newPlayerFieldCards);
         }
-
-        setEnemySelectedCard([]);
-        setSelectedCard(undefined);
+        setAttackedCard(undefined);
+        setEnemyAttackingCard(undefined);
       }
     }
   }
 
+  //after the enemy attack animation finished
   function cardDied(playerCard: boolean) {
     if (playerCard) {
       console.log("player card deletion time");
@@ -520,9 +521,6 @@ export default function Game({
           (card) => card.key !== playerCardToDie.key
         );
         setPlayerFieldCards(newPlayerFieldCards);
-        newPlayerFieldCards.find((card) => card.stance === "defense")
-          ? setShowPlayerIcon(PlayerAttackable.NOT_ATTACKABLE)
-          : setShowPlayerIcon(PlayerAttackable.ATTACKABLE);
 
         setPlayerCardToDie(undefined);
         console.log("player card deleted");
@@ -534,16 +532,19 @@ export default function Game({
           (card) => card.key !== enemyCardToDie.key
         );
         setEnemyFieldCards(newEnemyFieldCards);
-        newEnemyFieldCards.find((card) => card.stance === "defense")
-          ? setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE)
-          : setShowEnemyIcon(PlayerAttackable.ATTACKABLE);
-
         setEnemyCardToDie(undefined);
         console.log("enemy card deleted");
       }
     }
+    playerFieldCards.find((card) => card.stance === "defense")
+      ? setShowPlayerIcon(PlayerAttackable.NOT_ATTACKABLE)
+      : setShowPlayerIcon(PlayerAttackable.ATTACKABLE);
+    enemyFieldCards.find((card) => card.stance === "defense")
+      ? setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE)
+      : setShowEnemyIcon(PlayerAttackable.ATTACKABLE);
   }
 
+  //gets the coordinates for the cardhand for later animation of drawing
   function getCoordiantes(e: HTMLElement) {
     if (pos.length === 1) {
       setPos([
@@ -553,6 +554,7 @@ export default function Game({
     }
   }
 
+  //get the next card to draw
   function getNextCard() {
     if (firstDraw) {
       socket.emit("drawForFirstTime", roomNumber);
@@ -562,10 +564,12 @@ export default function Game({
     }
   }
 
+  //play a card from the hand
   function playCard(key: string, stance: "open" | "hidden") {
     socket.emit("playerPlaysCard", roomNumber, key, stance);
   }
 
+  //change the turn
   function changeTurn() {
     socket.emit("changeTurn", roomNumber);
     if (showEnemyIcon === PlayerAttackable.GAME_START) {
@@ -613,12 +617,13 @@ export default function Game({
     }
   };
 
+  //used for beatiful dnd drawing
   let api: SensorAPI;
-
   const useMyCoolSensor = (value: SensorAPI) => {
     api = value;
   };
 
+  //tweening animation for drawing
   function moveStepByStep(drag: FluidDragActions, values: any[]) {
     requestAnimationFrame(() => {
       const newPosition = values.shift();
@@ -632,12 +637,14 @@ export default function Game({
     });
   }
 
+  //draw a card
   function drawCard() {
     if (playerCards.length < 7) {
       startDrag();
     }
   }
 
+  //changes the game state
   function changeGameState() {
     if (gameState === GameState.PLAYER_DRAWS) {
       setGameState(GameState.PLAYER_PLAYS);
@@ -651,6 +658,7 @@ export default function Game({
     }
   }
 
+  //fight a card
   function fightCard(card: Card, e) {
     setAlreadyAttackedCards([...alreadyAttackedCards, selectedCard.key]);
     setEnemySelectedCard([
@@ -669,6 +677,7 @@ export default function Game({
     setCardStances(newCardStances);
   }
 
+  //attack the enemy directly
   function attackPlayer(e) {
     if (selectedCard && !alreadyAttackedCards.includes(selectedCard.key)) {
       setAlreadyAttackedCards([...alreadyAttackedCards, selectedCard.key]);
@@ -681,10 +690,12 @@ export default function Game({
     }
   }
 
+  //tracks all the card positions that are on both gamefields for animation
   function addCardPositions(cardPositionsN: CardCoordinates) {
     setCardPositions([...cardPositions, cardPositionsN]);
   }
 
+  //changes card stance through an enemy attack
   function changeCardStance(cardStance: CardStance) {
     if (cardStance.playedStance !== "hidden") {
       socket.emit(
@@ -701,6 +712,7 @@ export default function Game({
     }
   }
 
+  //changes the card stance if its played hidden or open
   function changeIntialCardStance(cardStance: CardStance) {
     setCardStances(
       cardStances.map((card) => {
