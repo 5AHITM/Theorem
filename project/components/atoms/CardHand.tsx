@@ -27,10 +27,18 @@ const CardContainer = styled("div", {
   margin: "0 auto",
   alignItems: "center",
   justifyContent: "center",
-  alignSelf: "center",
+  alignSelf: "end",
   width: "85%",
   overflow: "hidden",
   transition: "all 0.2s ease-in-out",
+  variants: {
+    rotated: {
+      ["true"]: {
+        transform: "rotate(180deg)",
+        paddingTop: "30%",
+      },
+    },
+  },
 });
 
 const CardHandLayoutWrapper = styled("div", {
@@ -137,7 +145,7 @@ export const CardHand: React.FC<{
         <CardHandLayout>
           {cards.map((card, index) => {
             return (
-              <CardContainer key={card}>
+              <CardContainer key={card} rotated="true">
                 <CardHidden></CardHidden>
               </CardContainer>
             );
@@ -181,60 +189,71 @@ export const CardHand: React.FC<{
                 getCoordiantes(e);
               }}
             >
-              {cards.map((card: Card, index) => (
-                <Draggable
-                  draggableId={card.key}
-                  index={index}
-                  key={card.key + "hand"}
-                  isDragDisabled={
-                    gameState === GameState.PLAYER_FIGHTS ||
-                    gameState === GameState.ENEMY_TURN
-                  }
-                  ref={(e) => {
-                    if (!e) {
-                      return;
-                    }
-                  }}
-                >
-                  {(provided, snapshot) => (
-                    <CardContainer
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      style={getStyle(provided.draggableProps.style, snapshot)}
-                      onClick={(e) => {
-                        card.stance =
-                          card.stance === "attack" ? "defense" : "attack";
-                        if (card.stance === "defense") {
-                          card.playedStance = "hidden";
-                        } else {
-                          card.playedStance = "open";
+              <AnimatePresence>
+                {cards.map((card: Card, index) => (
+                  <motion.div
+                    key={card.key + "motion"}
+                    initial={{ y: 100, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                  >
+                    <Draggable
+                      draggableId={card.key}
+                      index={index}
+                      key={card.key + "hand"}
+                      isDragDisabled={
+                        gameState === GameState.PLAYER_FIGHTS ||
+                        gameState === GameState.ENEMY_TURN
+                      }
+                      ref={(e) => {
+                        if (!e) {
+                          return;
                         }
-                        changeCardStance({
-                          key: card.key,
-                          stance: card.stance,
-                          playedStance: card.playedStance,
-                          trapped: card.trapped,
-                        });
                       }}
                     >
-                      {cardStances.find((c) => c.key === card.key).stance ===
-                      "attack" ? (
-                        <CardFront
-                          card={card}
-                          sizeVariant={SizeVariants.SMALL}
-                          cardStance={cardStances.find(
-                            (c) => c.key === card.key
+                      {(provided, snapshot) => (
+                        <CardContainer
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={getStyle(
+                            provided.draggableProps.style,
+                            snapshot
                           )}
-                          showCard={showCard}
-                        ></CardFront>
-                      ) : (
-                        <CardHidden></CardHidden>
+                          onClick={() => {
+                            card.stance =
+                              card.stance === "attack" ? "defense" : "attack";
+                            if (card.stance === "defense") {
+                              card.playedStance = "hidden";
+                            } else {
+                              card.playedStance = "open";
+                            }
+                            changeCardStance({
+                              key: card.key,
+                              stance: card.stance,
+                              playedStance: card.playedStance,
+                              trapped: card.trapped,
+                            });
+                          }}
+                        >
+                          {cardStances.find((c) => c.key === card.key)
+                            .stance === "attack" ? (
+                            <CardFront
+                              card={card}
+                              sizeVariant={SizeVariants.SMALL}
+                              cardStance={cardStances.find(
+                                (c) => c.key === card.key
+                              )}
+                              showCard={showCard}
+                            ></CardFront>
+                          ) : (
+                            <CardHidden></CardHidden>
+                          )}
+                        </CardContainer>
                       )}
-                    </CardContainer>
-                  )}
-                </Draggable>
-              ))}
+                    </Draggable>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
               {provided.placeholder}
             </CardHandLayout>
           </CardHandLayoutWrapper>

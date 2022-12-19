@@ -75,9 +75,6 @@ export default function Game({
   // roomNumber for socket io
   const [roomNumber, setRoomNumber] = useState("");
 
-  // A draggable placeholder for the card deck to draw
-  const [cardDeck, setCardDeck] = useState(["0"]);
-
   // The position of the card hand
   const [pos, setPos] = useState([0]);
 
@@ -586,14 +583,7 @@ export default function Game({
     if (destination?.droppableId === source.droppableId) {
       return;
     }
-    if (source.droppableId == "cardDeck" && playerCards.length < 7) {
-      getNextCard();
-      setCardDeck(["carddeck" + Number.parseInt(draggableId)]);
-      if (GameState.PLAYER_DRAWS) {
-        setGameState(GameState.PLAYER_PLAYS);
-      }
-      //copy array
-    } else if (
+    if (
       destination.droppableId == "playerField" &&
       source.droppableId == "playerHand" &&
       playerFieldCards.length < 5
@@ -640,11 +630,14 @@ export default function Game({
   //draw a card
   function drawCard() {
     if (playerCards.length < 7) {
-      startDrag();
+      getNextCard();
+      if (GameState.PLAYER_DRAWS) {
+        setGameState(GameState.PLAYER_PLAYS);
+      }
     }
   }
 
-  //changes the game state
+  // Change the game state from drawing to playing to fighting to enemy turn.
   function changeGameState() {
     if (gameState === GameState.PLAYER_DRAWS) {
       setGameState(GameState.PLAYER_PLAYS);
@@ -721,32 +714,6 @@ export default function Game({
     );
   }
 
-  const startDrag = function start() {
-    const preDrag = api.tryGetLock(cardDeck[0]);
-
-    if (!preDrag && pos.length > 0) {
-      return;
-    }
-
-    const endX = pos[0];
-
-    const endY = pos[1];
-
-    const start = { x: 0, y: 0 };
-    const end = { x: endX, y: endY };
-    const drag = preDrag.fluidLift(start);
-
-    const points = [];
-
-    for (let i = 0; i < 20; i++) {
-      points.push({
-        x: tweenFunctions.easeOutCirc(i, start.x, end.x, 20),
-        y: tweenFunctions.easeOutCirc(i, start.y, end.y, 20),
-      });
-    }
-    moveStepByStep(drag, points);
-  };
-
   if (hasWon !== "undecided") {
     return (
       <WaitingScreenLayout>
@@ -764,7 +731,6 @@ export default function Game({
           >
             <DetailArea
               gameState={gameState}
-              cardDeck={cardDeck}
               drawCard={drawCard}
               zoomCard={zoomCard}
             ></DetailArea>
