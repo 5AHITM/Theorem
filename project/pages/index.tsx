@@ -1,8 +1,7 @@
 import { styled } from "../stitches.config";
-import { useState, useEffect } from "react";
-import { resetServerContext } from "react-beautiful-dnd";
-import { InferGetServerSidePropsType } from "next/types";
+import { useState } from "react";
 import Link from "next/link";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 const Layout = styled("div", {
   background: "linear-gradient(180deg, #000000 0%, #2c2c2c 100%)",
@@ -63,45 +62,47 @@ const StyledInput = styled("input", {
   },
 });
 
-export default function Home({
-  data,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Home() {
   const [roomNumber, setRoomNumber] = useState("");
 
-  return (
-    <Layout>
-      <StyledButton
-        onClick={() => {
-          if (document.documentElement.requestFullscreen)
-            document.documentElement.requestFullscreen();
-        }}
-      >
-        Go Fullscreenmode
-      </StyledButton>
+  const { data: session } = useSession();
 
-      <label htmlFor="roomNumber">Room Number:</label>
-      <StyledInput
-        type="text"
-        name="roomNumber"
-        value={roomNumber}
-        onChange={(v) => setRoomNumber(v.target.value)}
-      />
+  if (session) {
+    return (
+      <Layout>
+        <StyledButton
+          onClick={() => {
+            if (document.documentElement.requestFullscreen)
+              document.documentElement.requestFullscreen();
+          }}
+        >
+          Go Fullscreenmode
+        </StyledButton>
 
-      <StyledLink href={"/game?roomNumber=" + roomNumber}>Join Room</StyledLink>
+        <label htmlFor="roomNumber">Room Number:</label>
+        <StyledInput
+          type="text"
+          name="roomNumber"
+          value={roomNumber}
+          onChange={(v) => setRoomNumber(v.target.value)}
+        />
 
-      <StyledLink href="/game?isPrivate=true">Create Room</StyledLink>
+        <StyledLink href={"/game?roomNumber=" + roomNumber}>
+          Join Room
+        </StyledLink>
 
-      <StyledLink href="/game">Search</StyledLink>
-    </Layout>
-  );
+        <StyledLink href="/game?isPrivate=true">Create Room</StyledLink>
+
+        <StyledLink href="/game">Search</StyledLink>
+
+        <button onClick={() => signOut()}>Sign out</button>
+      </Layout>
+    );
+  } else {
+    return (
+      <Layout>
+        <button onClick={() => signIn()}>Sign in</button>
+      </Layout>
+    );
+  }
 }
-
-export const getServerSideProps = async () => {
-  resetServerContext();
-
-  // Fetch data from external API
-  const data = [];
-
-  // Pass data to the page via props
-  return { props: { data } };
-};

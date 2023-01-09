@@ -1,8 +1,8 @@
 import { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { globalCss } from "../stitches.config";
-import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { SessionProvider } from "next-auth/react";
 
 const globalStyles = globalCss({
   "*": {
@@ -18,17 +18,16 @@ const globalStyles = globalCss({
   },
 });
 
-function App({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   globalStyles();
 
   const router = useRouter();
-  const queryClient = new QueryClient();
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <SessionProvider session={session}>
       <Component {...pageProps} router={router} />
       <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    </SessionProvider>
   );
 }
 
