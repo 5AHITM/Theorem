@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { globalCss } from "../stitches.config";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { SessionProvider } from "next-auth/react";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 const globalStyles = globalCss({
   "*": {
@@ -18,6 +19,8 @@ const globalStyles = globalCss({
   },
 });
 
+const queryClient = new QueryClient();
+
 function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   globalStyles();
 
@@ -25,8 +28,10 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} router={router} />
-      <ReactQueryDevtools initialIsOpen={false} />
+      <QueryClientProvider client={queryClient}>
+        <Component {...pageProps} router={router} />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
     </SessionProvider>
   );
 }

@@ -150,7 +150,6 @@ export default function Game({
   //set up socket io connection only once
   useEffect(() => {
     const socketInitializer = async () => {
-      console.log(process.env.NEXT_PUBLIC_SOCKET_IO_URL);
       //get query params
       const { roomNumber, isPrivate } = router.query;
       const query = {
