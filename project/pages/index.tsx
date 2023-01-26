@@ -65,44 +65,30 @@ const StyledInput = styled("input", {
 export default function Home() {
   const [roomNumber, setRoomNumber] = useState("");
 
-  const { data: session } = useSession();
+  return (
+    <Layout>
+      <StyledButton
+        onClick={() => {
+          if (document.documentElement.requestFullscreen)
+            document.documentElement.requestFullscreen();
+        }}
+      >
+        Go Fullscreenmode
+      </StyledButton>
 
-  if (session) {
-    return (
-      <Layout>
-        <StyledButton
-          onClick={() => {
-            if (document.documentElement.requestFullscreen)
-              document.documentElement.requestFullscreen();
-          }}
-        >
-          Go Fullscreenmode
-        </StyledButton>
+      <label htmlFor="roomNumber">Room Number:</label>
+      <StyledInput
+        type="text"
+        name="roomNumber"
+        value={roomNumber}
+        onChange={(v) => setRoomNumber(v.target.value)}
+      />
 
-        <label htmlFor="roomNumber">Room Number:</label>
-        <StyledInput
-          type="text"
-          name="roomNumber"
-          value={roomNumber}
-          onChange={(v) => setRoomNumber(v.target.value)}
-        />
+      <StyledLink href={"/game?roomNumber=" + roomNumber}>Join Room</StyledLink>
 
-        <StyledLink href={"/game?roomNumber=" + roomNumber}>
-          Join Room
-        </StyledLink>
+      <StyledLink href="/game?isPrivate=true">Create Room</StyledLink>
 
-        <StyledLink href="/game?isPrivate=true">Create Room</StyledLink>
-
-        <StyledLink href="/game">Search</StyledLink>
-
-        <button onClick={() => signOut()}>Sign out</button>
-      </Layout>
-    );
-  } else {
-    return (
-      <Layout>
-        <button onClick={() => signIn()}>Sign in</button>
-      </Layout>
-    );
-  }
+      <StyledLink href="/game">Search</StyledLink>
+    </Layout>
+  );
 }
