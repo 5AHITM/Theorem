@@ -33,7 +33,6 @@ export const GameArea: React.FC<{
   enemyAttackingFinished: (card: any) => void;
   alreadyAttackedCards?: any[];
   changeCardStance: (card: CardStance) => void;
-  cardStances: CardStance[];
   attackingEnemyFinished: () => void;
   cardDied: (attackingCard: boolean) => void;
   showPlayerIcon: PlayerAttackable;
@@ -62,7 +61,6 @@ export const GameArea: React.FC<{
   enemyAttackingFinished,
   alreadyAttackedCards,
   changeCardStance,
-  cardStances,
   attackingEnemyFinished,
   showPlayerIcon,
   showEnemyIcon,
@@ -82,7 +80,6 @@ export const GameArea: React.FC<{
         getCoordiantes={() => {}}
         cards={enemyCards}
         changeCardStance={changeIntialCardStance}
-        cardStances={cardStances}
         showIcon={showEnemyIcon}
         attackPlayer={attackPlayer}
         showCard={showCard}
@@ -104,7 +101,6 @@ export const GameArea: React.FC<{
         enemyAttackingFinished={enemyAttackingFinished}
         alreadyAttackedCards={alreadyAttackedCards}
         changeCardStance={changeCardStance}
-        cardStances={cardStances}
         attackingEnemyFinished={attackingEnemyFinished}
         enemyCardToDie={enemyCardToDie}
         playerCardToDie={playerCardToDie}
@@ -117,7 +113,6 @@ export const GameArea: React.FC<{
         getCoordiantes={getCoordiantes}
         cards={playerCards}
         changeCardStance={changeIntialCardStance}
-        cardStances={cardStances}
         showIcon={showPlayerIcon}
         attackPlayer={attackPlayer}
         showCard={showCard}

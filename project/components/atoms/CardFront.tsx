@@ -196,17 +196,18 @@ const CardText = styled("p", {
 export const CardFront: React.FC<{
   card: Card;
   sizeVariant?: SizeVariants;
-  cardStance?: CardStance;
+  cardStance?: "attack" | "defense";
+  trapped: boolean;
   showCard: (card: Card) => void;
-}> = ({ card, sizeVariant, cardStance, showCard }) => {
+}> = ({ card, sizeVariant, cardStance, showCard, trapped }) => {
   if (!sizeVariant) {
     sizeVariant = SizeVariants.MEDIUM;
   }
 
   let stanceIcon = "schwert.png";
-  if (cardStance && cardStance.stance == "defense") {
+  if (cardStance && cardStance == "defense") {
     stanceIcon = "schild.png";
-    if (cardStance.trapped) {
+    if (trapped) {
       stanceIcon = "schild-trapped.png";
     }
   }

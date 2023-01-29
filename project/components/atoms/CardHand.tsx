@@ -82,7 +82,6 @@ export const CardHand: React.FC<{
   cards: any[];
   gameState: GameState;
   changeCardStance: (cardStance: CardStance) => void;
-  cardStances: CardStance[];
   showIcon: PlayerAttackable;
   attackPlayer: (e) => void;
   showCard: (card: Card) => void;
@@ -92,7 +91,6 @@ export const CardHand: React.FC<{
   cards,
   gameState,
   changeCardStance,
-  cardStances,
   showIcon,
   attackPlayer,
   showCard,
@@ -235,14 +233,13 @@ export const CardHand: React.FC<{
                             });
                           }}
                         >
-                          {cardStances.find((c) => c.key === card.key)
-                            .stance === "attack" ? (
+                          {cards.find((c) => c.key === card.key).stance ===
+                          "attack" ? (
                             <CardFront
                               card={card}
                               sizeVariant={SizeVariants.SMALL}
-                              cardStance={cardStances.find(
-                                (c) => c.key === card.key
-                              )}
+                              cardStance={card.stance}
+                              trapped={card.trapped}
                               showCard={showCard}
                             ></CardFront>
                           ) : (

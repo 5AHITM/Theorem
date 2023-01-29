@@ -107,9 +107,6 @@ export default function Game({
   // the coordinates of the selected card
   const [selectedCardCoordinates, setSelectedCardCoordinates] = useState([]);
 
-  //positions of the cards in the player field with the key
-  const [cardPositions, setCardPositions] = useState<CardCoordinates[]>([]);
-
   //card that is being attacked by the enemy
   const [attackedCard, setAttackedCard] = useState<CardCoordinates>();
 
@@ -118,9 +115,6 @@ export default function Game({
 
   //cards that have already attacked
   const [alreadyAttackedCards, setAlreadyAttackedCards] = useState([]);
-
-  //card stances
-  const [cardStances, setCardStances] = useState<CardStance[]>([]);
 
   const [result, setResult] = useState<Result>();
 
@@ -199,15 +193,6 @@ export default function Game({
     socket.on("playerPlaysCard", (card: Card) => {
       setEnemyCards(enemyCards.slice(1));
       setEnemyFieldCards([...enemyFieldCards, card]);
-      setCardStances([
-        ...cardStances,
-        {
-          key: card.key,
-          stance: card.stance,
-          playedStance: card.playedStance,
-          trapped: card.trapped,
-        },
-      ]);
       if (card.playedStance === "hidden" || card.stance === "defense") {
         setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE);
       }
@@ -245,30 +230,11 @@ export default function Game({
     socket.on("nextCard", (card: Card) => {
       let newPlayerCards = [card, ...playerCards];
       setPlayerCards(newPlayerCards);
-      setCardStances([
-        ...cardStances,
-        {
-          key: card.key,
-          stance: card.stance,
-          playedStance: card.playedStance,
-          trapped: false,
-        },
-      ]);
     });
 
     //server sends the first 5 card from the deck
     socket.on("drawForFirstTime", (cards: Card[]) => {
       setPlayerCards(cards);
-      let c: CardStance[] = cardStances;
-      cards.forEach((card) => {
-        c.push({
-          key: card.key,
-          stance: card.stance,
-          playedStance: card.playedStance,
-          trapped: false,
-        });
-      });
-      setCardStances(c);
     });
 
     //server sends the first 5 card from the deck for the enemy
@@ -280,14 +246,14 @@ export default function Game({
     socket.on(
       "changeStance",
       (stance: "attack" | "defense", cardKey: string) => {
-        let newCardStances = cardStances.map((card) => {
+        let newEnemyFieldCards = enemyFieldCards.map((card) => {
           if (card.key === cardKey) {
             card.stance = stance;
           }
           return card;
         });
 
-        setCardStances(newCardStances);
+        setEnemyFieldCards(newEnemyFieldCards);
 
         if (stance === "defense") {
           setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE);
@@ -313,32 +279,36 @@ export default function Game({
     socket.on(
       "playerAttacks",
       (result: Result, playerHealth: number, enemyHealth: number) => {
-        let newCardStances = cardStances.map((card: Card) => {
+        let newPlayerFieldCards = playerFieldCards.map((card: Card) => {
           if (card.key === result.defendingCardKey) {
             card.playedStance = "open";
           }
           return card;
         });
-        setCardStances(newCardStances);
+        setPlayerFieldCards(newPlayerFieldCards);
 
-        if (cardPositions) {
-          let attackedCardCoordinates = cardPositions.find(
-            (card) => card.key === result.defendingCardKey
-          );
-          let attackingCardCoordinates = cardPositions.find(
-            (card) => card.key === result.attackingCardKey
-          );
-          if (attackedCardCoordinates && attackingCardCoordinates) {
-            attackingCardCoordinates.x =
-              attackedCardCoordinates.x - attackingCardCoordinates.x;
+        let attackedCardCoordinates = playerFieldCards.find(
+          (card) => card.key === result.defendingCardKey
+        ).coordinates;
+        let attackingCardCoordinates = enemyFieldCards.find(
+          (card) => card.key === result.attackingCardKey
+        ).coordinates;
+        if (attackedCardCoordinates && attackingCardCoordinates) {
+          attackedCardCoordinates.x =
+            attackedCardCoordinates.x - attackingCardCoordinates.x;
 
-            console.log(attackingCardCoordinates);
+          attackedCardCoordinates.y =
+            attackedCardCoordinates.y - attackingCardCoordinates.y;
 
-            attackingCardCoordinates.y =
-              attackedCardCoordinates.y - attackingCardCoordinates.y;
-            setAttackedCard(attackingCardCoordinates);
-          }
+          let attackedCard = {
+            key: result.defendingCardKey,
+            x: attackedCardCoordinates.x,
+            y: attackedCardCoordinates.y,
+          };
+
+          setAttackedCard(attackedCard);
         }
+
         let attackingCard = enemyFieldCards.find(
           (card) => card.key === result.attackingCardKey
         );
@@ -371,14 +341,13 @@ export default function Game({
       setEnemyHealth(enemyHealth - mana);
     });
   }, [
-    cardPositions,
-    cardStances,
     enemyCards,
     enemyFieldCards,
     enemyHealth,
     health,
     mana,
     playerCards,
+    playerFieldCards,
     result,
     showEnemyIcon,
     showPlayerIcon,
@@ -413,20 +382,21 @@ export default function Game({
 
   function afterFightAnimation(playerAttacked: boolean) {
     if (result) {
-      if (result.attackingCard.trapped) {
-        //change stance to trapped true
-        setCardStances(
-          cardStances.map((card) => {
-            if (card.key === result.attackingCard.key) {
-              card.trapped = true;
-            }
-            return card;
-          })
-        );
-      }
       //replace defending and attacking card
       if (playerAttacked) {
         // if player Attacked replace the attacking card in the player field
+        if (result.attackingCard.trapped) {
+          //change stance to trapped true
+          setPlayerFieldCards(
+            playerFieldCards.map((card) => {
+              if (card.key === result.attackingCard.key) {
+                card.trapped = true;
+              }
+              return card;
+            })
+          );
+        }
+
         if (!result.attackingCardDies) {
           let newPlayerFieldCards = playerFieldCards.map((card) => {
             if (card.key === result.attackingCard.key) {
@@ -460,6 +430,18 @@ export default function Game({
           ? setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE)
           : setShowEnemyIcon(PlayerAttackable.ATTACKABLE);
       } else {
+        if (result.attackingCard.trapped) {
+          //change stance to trapped true
+          setEnemyFieldCards(
+            enemyFieldCards.map((card) => {
+              if (card.key === result.attackingCard.key) {
+                card.trapped = true;
+              }
+              return card;
+            })
+          );
+        }
+
         // if enemy Attacked replace the attacking card in the enemy field
         if (!result.attackingCardDies) {
           let newEnemyFieldCards = enemyFieldCards.map((card) => {
@@ -676,13 +658,13 @@ export default function Game({
     socket.emit("playerAttacks", roomNumber, card.key, selectedCard.key);
 
     //change card stance to open
-    let newCardStances = cardStances.map((cardn: Card) => {
+    let newCardStances = enemyFieldCards.map((cardn: Card) => {
       if (card.key === cardn.key) {
         cardn.playedStance = "open";
       }
       return cardn;
     });
-    setCardStances(newCardStances);
+    setEnemyFieldCards(newCardStances);
   }
 
   //attack the enemy directly
@@ -700,7 +682,14 @@ export default function Game({
 
   //tracks all the card positions that are on both gamefields for animation
   function addCardPositions(cardPositionsN: CardCoordinates) {
-    setCardPositions([...cardPositions, cardPositionsN]);
+    let newPlayerFieldCards = playerFieldCards.map((card) => {
+      if (card.key === cardPositionsN.key) {
+        card.coordinates.x = cardPositionsN.x;
+        card.coordinates.y = cardPositionsN.y;
+      }
+      return card;
+    });
+    setPlayerFieldCards(newPlayerFieldCards);
   }
 
   //changes card stance through an enemy attack
@@ -712,21 +701,39 @@ export default function Game({
         cardStance.stance,
         cardStance.key
       );
-      setCardStances(
-        cardStances.map((card) => {
-          return card.key === cardStance.key ? cardStance : card;
-        })
-      );
+
+      let newPlayerFieldCards = playerFieldCards.map((card) => {
+        if (card.key === cardStance.key) {
+          card.stance = cardStance.stance;
+        }
+        return card;
+      });
+
+      setPlayerFieldCards(newPlayerFieldCards);
+    } else {
+      let newPlayerFieldCards = playerFieldCards.map((card) => {
+        if (card.key === cardStance.key) {
+          card.stance = "defense";
+          card.playedStance = "open";
+        }
+        return card;
+      });
+
+      setPlayerFieldCards(newPlayerFieldCards);
     }
   }
 
   //changes the card stance if its played hidden or open
   function changeIntialCardStance(cardStance: CardStance) {
-    setCardStances(
-      cardStances.map((card) => {
-        return card.key === cardStance.key ? cardStance : card;
-      })
-    );
+    let newPlayerHandCards = playerCards.map((card) => {
+      if (card.key === cardStance.key) {
+        card.playedStance == "hidden"
+          ? (card.playedStance = "open")
+          : (card.playedStance = "hidden");
+      }
+      return card;
+    });
+    setPlayerCards(newPlayerHandCards);
   }
 
   if (hasWon !== "undecided") {
@@ -770,7 +777,6 @@ export default function Game({
               alreadyAttackedCards={alreadyAttackedCards}
               changeCardStance={changeCardStance}
               changeIntialCardStance={changeIntialCardStance}
-              cardStances={cardStances}
               attackingEnemyFinished={attackingEnemyFinished}
               playerCardToDie={playerCardToDie}
               enemyCardToDie={enemyCardToDie}
