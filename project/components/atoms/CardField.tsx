@@ -157,7 +157,8 @@ export const CardField: React.FC<{
                         if (
                           gameState === GameState.PLAYER_FIGHTS &&
                           !alreadyAttackedCards.includes(card.key) &&
-                          stance.playedStance !== "hidden"
+                          stance.playedStance !== "hidden" &&
+                          stance.stance === "attack"
                         ) {
                           setSelectedCard(card);
                           setSelectedCardCoordinates([e.clientX, e.clientY]);
@@ -220,6 +221,8 @@ export const CardField: React.FC<{
                 : {}
             }
             onAnimationComplete={() => {
+              console.log(enemyCardToDie);
+              console.log(card.key);
               if (enemyCardToDie && enemyCardToDie.key === card.key) {
                 cardDied(false);
                 console.log("enemy card died");

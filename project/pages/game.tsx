@@ -398,15 +398,20 @@ export default function Game({
   //after the enemy attack finished
   function enemyAttackingFinished() {
     evaluateResult(false);
+
+    setAttackedCard(undefined);
+    setEnemyAttackingCard(undefined);
   }
 
   //after the player attack animation finished
   function attackingEnemyFinished() {
     evaluateResult(true);
+
+    setEnemySelectedCard([]);
+    setSelectedCard(undefined);
   }
 
-  //after the player attack animation finished
-  function evaluateResult(playerAttacked: boolean) {
+  function afterFightAnimation(playerAttacked: boolean) {
     if (result) {
       if (result.attackingCard.trapped) {
         //change stance to trapped true
@@ -421,15 +426,6 @@ export default function Game({
       }
       //replace defending and attacking card
       if (playerAttacked) {
-        if (result.attackingCardDies) {
-          setPlayerCardToDie(result.attackingCard);
-          console.log("attacking card dies");
-        }
-
-        if (result.defendingCardDies) {
-          setEnemyCardToDie(result.defendingCard);
-          console.log("defending card dies");
-        }
         // if player Attacked replace the attacking card in the player field
         if (!result.attackingCardDies) {
           let newPlayerFieldCards = playerFieldCards.map((card) => {
@@ -460,17 +456,10 @@ export default function Game({
           );
           setEnemyFieldCards(newEnemyFieldCards);
         }
-        setEnemySelectedCard([]);
-        setSelectedCard(undefined);
+        enemyFieldCards.find((card) => card.stance === "defense")
+          ? setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE)
+          : setShowEnemyIcon(PlayerAttackable.ATTACKABLE);
       } else {
-        if (result.attackingCardDies) {
-          setEnemyCardToDie(result.attackingCard);
-          console.log("attacking card dies");
-        }
-        if (result.defendingCardDies) {
-          setPlayerCardToDie(result.defendingCard);
-          console.log("attacking card dies");
-        }
         // if enemy Attacked replace the attacking card in the enemy field
         if (!result.attackingCardDies) {
           let newEnemyFieldCards = enemyFieldCards.map((card) => {
@@ -501,14 +490,44 @@ export default function Game({
           );
           setPlayerFieldCards(newPlayerFieldCards);
         }
-        setAttackedCard(undefined);
-        setEnemyAttackingCard(undefined);
+
+        playerFieldCards.find((card) => card.stance === "defense")
+          ? setShowPlayerIcon(PlayerAttackable.NOT_ATTACKABLE)
+          : setShowPlayerIcon(PlayerAttackable.ATTACKABLE);
+      }
+    }
+  }
+
+  //after the player attack animation finished
+  function evaluateResult(playerAttacked: boolean) {
+    if (result) {
+      //replace defending and attacking card
+      if (playerAttacked) {
+        if (result.attackingCardDies) {
+          setPlayerCardToDie(result.attackingCard);
+          console.log("attacking card dies");
+        }
+
+        if (result.defendingCardDies) {
+          setEnemyCardToDie(result.defendingCard);
+          console.log("defending card dies");
+        }
+      } else {
+        if (result.attackingCardDies) {
+          setEnemyCardToDie(result.attackingCard);
+          console.log("attacking card dies");
+        }
+        if (result.defendingCardDies) {
+          setPlayerCardToDie(result.defendingCard);
+          console.log("attacking card dies");
+        }
       }
     }
   }
 
   //after the enemy attack animation finished
   function cardDied(playerCard: boolean) {
+    console.log("card died");
     if (playerCard) {
       console.log("player card deletion time");
 
@@ -520,6 +539,13 @@ export default function Game({
 
         setPlayerCardToDie(undefined);
         console.log("player card deleted");
+        console.log(
+          newPlayerFieldCards.find((card) => card.stance === "defense")
+        );
+
+        newPlayerFieldCards.find((card) => card.stance === "defense")
+          ? setShowPlayerIcon(PlayerAttackable.NOT_ATTACKABLE)
+          : setShowPlayerIcon(PlayerAttackable.ATTACKABLE);
       }
     } else {
       console.log("enemy card deletion time");
@@ -530,14 +556,14 @@ export default function Game({
         setEnemyFieldCards(newEnemyFieldCards);
         setEnemyCardToDie(undefined);
         console.log("enemy card deleted");
+        console.log(
+          newEnemyFieldCards.find((card) => card.stance === "defense")
+        );
+        newEnemyFieldCards.find((card) => card.stance === "defense")
+          ? setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE)
+          : setShowEnemyIcon(PlayerAttackable.ATTACKABLE);
       }
     }
-    playerFieldCards.find((card) => card.stance === "defense")
-      ? setShowPlayerIcon(PlayerAttackable.NOT_ATTACKABLE)
-      : setShowPlayerIcon(PlayerAttackable.ATTACKABLE);
-    enemyFieldCards.find((card) => card.stance === "defense")
-      ? setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE)
-      : setShowEnemyIcon(PlayerAttackable.ATTACKABLE);
   }
 
   //gets the coordinates for the cardhand for later animation of drawing
@@ -601,6 +627,10 @@ export default function Game({
         setPlayerCards(newPlayerCards);
         setPlayerFieldCards(newPlayerFieldCards);
 
+        if (card.playedStance === "hidden") {
+          setShowPlayerIcon(PlayerAttackable.NOT_ATTACKABLE);
+        }
+
         playCard(card.key, card.playedStance);
       }
     }
@@ -611,20 +641,6 @@ export default function Game({
   const useMyCoolSensor = (value: SensorAPI) => {
     api = value;
   };
-
-  //tweening animation for drawing
-  function moveStepByStep(drag: FluidDragActions, values: any[]) {
-    requestAnimationFrame(() => {
-      const newPosition = values.shift();
-      drag.move(newPosition);
-
-      if (values.length) {
-        moveStepByStep(drag, values);
-      } else {
-        drag.drop();
-      }
-    });
-  }
 
   //draw a card
   function drawCard() {
@@ -758,7 +774,7 @@ export default function Game({
               attackingEnemyFinished={attackingEnemyFinished}
               playerCardToDie={playerCardToDie}
               enemyCardToDie={enemyCardToDie}
-              cardDied={cardDied}
+              cardDied={afterFightAnimation}
               showEnemyIcon={showEnemyIcon}
               showPlayerIcon={showPlayerIcon}
               attackPlayer={attackPlayer}
