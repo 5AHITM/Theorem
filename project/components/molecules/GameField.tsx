@@ -21,7 +21,7 @@ export const GameField: React.FC<{
   setEnemySelectedCard?: (card: any) => void;
   setSelectedCardCoordinates: (cardCoordinates: number[]) => void;
   selectedCard?: any;
-  addCardPositions: (card: CardCoordinates) => void;
+  addCardPositions: (card: CardCoordinates, player: boolean) => void;
   attackedCard: CardCoordinates;
   enemyAttackingCard: Card;
   enemyAttackingFinished: (card: any) => void;

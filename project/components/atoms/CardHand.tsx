@@ -220,11 +220,11 @@ export const CardHand: React.FC<{
                           onClick={() => {
                             card.stance =
                               card.stance === "attack" ? "defense" : "attack";
-                            if (card.stance === "defense") {
-                              card.playedStance = "hidden";
-                            } else {
-                              card.playedStance = "open";
-                            }
+                            card.playedStance =
+                              card.playedStance === "open" ? "hidden" : "open";
+
+                            console.log(card);
+
                             changeCardStance({
                               key: card.key,
                               stance: card.stance,
@@ -233,8 +233,7 @@ export const CardHand: React.FC<{
                             });
                           }}
                         >
-                          {cards.find((c) => c.key === card.key).stance ===
-                          "attack" ? (
+                          {card.stance === "attack" ? (
                             <CardFront
                               card={card}
                               sizeVariant={SizeVariants.SMALL}

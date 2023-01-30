@@ -33,7 +33,7 @@ export const CardField: React.FC<{
   setEnemySelectedCard: (card: number[]) => void;
   setSelectedCardCoordinates: (e: any) => void;
   selectedCard?: Card;
-  addCardPositions: (card: CardCoordinates) => void;
+  addCardPositions: (card: CardCoordinates, player: boolean) => void;
   attackedCard?: CardCoordinates;
   enemyAttackingCard?: Card;
   enemyAttackingFinished: (card: any) => void;
@@ -122,11 +122,14 @@ export const CardField: React.FC<{
                 }}
                 ref={(e) => {
                   if (e) {
-                    addCardPositions({
-                      key: card.key,
-                      x: e.getBoundingClientRect().x,
-                      y: e.getBoundingClientRect().y,
-                    });
+                    addCardPositions(
+                      {
+                        key: card.key,
+                        x: e.getBoundingClientRect().x,
+                        y: e.getBoundingClientRect().y,
+                      },
+                      true
+                    );
                   }
                 }}
               >
@@ -221,11 +224,14 @@ export const CardField: React.FC<{
             }}
             ref={(e) => {
               if (e) {
-                addCardPositions({
-                  key: card.key,
-                  x: e.getBoundingClientRect().x,
-                  y: e.getBoundingClientRect().y,
-                });
+                addCardPositions(
+                  {
+                    key: card.key,
+                    x: e.getBoundingClientRect().x,
+                    y: e.getBoundingClientRect().y,
+                  },
+                  false
+                );
                 console.log("addedCardPositions");
               }
             }}
@@ -233,6 +239,7 @@ export const CardField: React.FC<{
             <CardContainer
               onClick={(e) => {
                 if (gameState === GameState.PLAYER_FIGHTS) {
+                  if (enemyCardToDie && enemyCardToDie.key === card.key) return;
                   fightCard(card, e);
                 }
               }}

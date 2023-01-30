@@ -27,7 +27,7 @@ export const GameArea: React.FC<{
   setEnemySelectedCard?: (card: number[]) => void;
   setSelectedCardCoordinates: (e: any) => void;
   selectedCard?: Card;
-  addCardPositions: (card: any) => void;
+  addCardPositions: (card: any, player: boolean) => void;
   attackedCard: CardCoordinates;
   enemyAttackingCard: Card;
   enemyAttackingFinished: (card: any) => void;
