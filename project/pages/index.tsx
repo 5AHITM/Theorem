@@ -65,11 +65,11 @@ const StyledInput = styled("input", {
 export default function Home() {
   const [roomNumber, setRoomNumber] = useState("");
 
-  const { data: session } = useSession();
+  //const { data: session } = useSession();
 
-  const test = process.env.TEST;
+  const test = true;
 
-  if (session || test) {
+  if (test) {
     return (
       <Layout>
         <StyledButton
@@ -100,14 +100,14 @@ export default function Home() {
         </StyledLink>
 
         <StyledLink href="/game">Search</StyledLink>
-        {test && <button onClick={() => signOut()}>Sign out</button>}
+        {/* {!test && <button onClick={() => signOut()}>Sign out</button>} */}
       </Layout>
     );
   } else {
-    return (
-      <Layout>
-        <button onClick={() => signIn("google")}>Sign in with Google</button>
-      </Layout>
-    );
+    // return (
+    //   <Layout>
+    //     <button onClick={() => signIn("google")}>Sign in with Google</button>
+    //   </Layout>
+    // );
   }
 }

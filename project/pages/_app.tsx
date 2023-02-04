@@ -27,12 +27,12 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const router = useRouter();
 
   return (
-    <SessionProvider session={session}>
-      <QueryClientProvider client={queryClient}>
-        <Component {...pageProps} router={router} />
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </SessionProvider>
+    //<SessionProvider session={session}>
+    <QueryClientProvider client={queryClient}>
+      <Component {...pageProps} router={router} />
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+    //</SessionProvider>
   );
 }
 
