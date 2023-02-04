@@ -67,7 +67,9 @@ export default function Home() {
 
   const { data: session } = useSession();
 
-  if (session) {
+  const test = process.env.TEST;
+
+  if (session || test) {
     return (
       <Layout>
         <StyledButton
@@ -94,14 +96,13 @@ export default function Home() {
         <StyledLink href="/game?isPrivate=true">Create Room</StyledLink>
 
         <StyledLink href="/game">Search</StyledLink>
-
-        <button onClick={() => signOut()}>Sign out</button>
+        {test && <button onClick={() => signOut()}>Sign out</button>}
       </Layout>
     );
   } else {
     return (
       <Layout>
-        <button onClick={() => signIn()}>Sign in</button>
+        <button onClick={() => signIn("google")}>Sign in with Google</button>
       </Layout>
     );
   }
