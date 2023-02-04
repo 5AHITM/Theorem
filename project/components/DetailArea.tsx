@@ -87,6 +87,7 @@ export const DetailArea: React.FC<{
                   card={zoomCard}
                   sizeVariant={SizeVariants.LARGE}
                   showCard={() => {}}
+                  trapped={false}
                 ></CardFront>
               </motion.div>
             ) : (
