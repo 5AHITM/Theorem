@@ -18,9 +18,16 @@ export function connect(room: string = "") {
     gameRoomID = room;
   }
 
-  socket = io(
-    "http://localhost:4000?token=WEB&roomId=" + gameRoomID + "&isPrivate=true"
-  );
+  const query = {
+    token: "WEB",
+    roomId: gameRoomID,
+    isPrivate: true,
+  };
+
+  socket = io(process.env.NEXT_PUBLIC_SOCKET_IO_URL, {
+    query,
+    withCredentials: true,
+  });
 
   // ============== basic socket events ==============
   socket.on("connect", () => {
