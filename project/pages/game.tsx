@@ -386,6 +386,7 @@ export default function Game({
       setEnemyHealth(enemyHealth - mana);
     });
   }, [
+    botEnemy,
     enemyCards,
     enemyFieldCards,
     enemyHealth,
