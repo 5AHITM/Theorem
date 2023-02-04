@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 import { GameState, PlayerAttackable } from "../utils/Enum";
 import { Card, CardCoordinates, CardStance, Result } from "../utils/Types";
 import { DefaultEventsMap } from "@socket.io/component-emitter";
+import { connect } from "../utils/socket";
 
 const Layout = styled("div", {
   display: "flex",
@@ -141,11 +142,16 @@ export default function Game({
 
   const [manaConversionAllowed, setManaConversionAllowed] = useState(true);
 
+  const [botEnemy, setBotEnemy] = useState(false);
+
   //set up socket io connection only once
   useEffect(() => {
     const socketInitializer = async () => {
       //get query params
-      const { roomNumber, isPrivate } = router.query;
+      const { roomNumber, isPrivate, botEnemy } = router.query;
+      if (botEnemy) {
+        setBotEnemy(true);
+      }
       const query = {
         token: "WEB",
         roomId: roomNumber,
@@ -166,6 +172,9 @@ export default function Game({
 
     socket.on("gameRoomID", (roomId: string) => {
       setRoomNumber(roomId);
+      if (botEnemy) {
+        connect(roomId);
+      }
     });
 
     socket.on("startGame", (starting: boolean) => {

@@ -95,6 +95,10 @@ export default function Home() {
 
         <StyledLink href="/game?isPrivate=true">Create Room</StyledLink>
 
+        <StyledLink href="/game?isPrivate=true&botEnemy=true">
+          Play against the Bot
+        </StyledLink>
+
         <StyledLink href="/game">Search</StyledLink>
         {test && <button onClick={() => signOut()}>Sign out</button>}
       </Layout>
