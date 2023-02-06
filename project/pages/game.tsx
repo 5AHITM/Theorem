@@ -293,7 +293,7 @@ export default function Game({
         if (stance === "defense") {
           setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE);
         } else {
-          enemyFieldCards.find((card) => card.stance === "defense")
+          newEnemyFieldCards.find((card) => card.stance === "defense")
             ? setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE)
             : setShowEnemyIcon(PlayerAttackable.ATTACKABLE);
         }
@@ -430,99 +430,98 @@ export default function Game({
     if (result) {
       let newPlayerFieldCards = playerFieldCards;
       let newEnemyFieldCards = enemyFieldCards;
-      //replace defending and attacking card
-      if (playerAttacked) {
-        // if player Attacked replace the attacking card in the player field
-        if (result.attackingCard.trapped) {
-          //change stance to trapped true
-          newPlayerFieldCards.map((card) => {
-            if (card.key === result.attackingCard.key) {
-              card.trapped = true;
-            }
-            return card;
-          });
+
+      newPlayerFieldCards = newPlayerFieldCards.map((card) => {
+        if (card.key == result.attackingCardKey) {
+          result.attackingCard.coordinates = card.coordinates;
+          console.log("result.attackingCard", result.attackingCard);
+          card = result.attackingCard;
+          if (result.attackingCard.trapped) {
+            card.trapped = true;
+          }
+        }
+        if (card.key == result.defendingCardKey) {
+          result.defendingCard.coordinates = card.coordinates;
+          console.log("result.defendingCard", result.defendingCard);
+          card = result.defendingCard;
         }
 
-        if (!result.attackingCardDies) {
-          newPlayerFieldCards.map((card) => {
-            if (card.key === result.attackingCard.key) {
-              result.attackingCard.coordinates = card.coordinates;
-              console.log("result.attackingCard", result.attackingCard);
-              card = result.attackingCard;
-            }
-            return card;
-          });
-        } else {
-          newPlayerFieldCards.filter(
-            (card) => card.key !== result.attackingCard.key
-          );
-        }
+        return card;
+      });
 
-        if (!result.defendingCardDies) {
-          // replace the defending card in the enemy card field
-          newEnemyFieldCards.map((card) => {
-            if (card.key === result.defendingCard.key) {
-              result.defendingCard.coordinates = card.coordinates;
-              console.log("result.defendingCard", result.defendingCard);
-              card = result.defendingCard;
-            }
-            return card;
-          });
-        } else {
-          newEnemyFieldCards.filter(
-            (card) => card.key !== result.defendingCard.key
-          );
-        }
+      if (result.attackingCardDies) {
+        newPlayerFieldCards = newPlayerFieldCards.filter(
+          (card) => card.key != result.attackingCardKey
+        );
       } else {
-        if (result.attackingCard.trapped) {
-          //change stance to trapped true
-
-          newEnemyFieldCards.map((card) => {
-            if (card.key === result.attackingCard.key) {
-              card.trapped = true;
-            }
-            return card;
-          });
-        }
-
-        // if enemy Attacked replace the attacking card in the enemy field
-        if (!result.attackingCardDies) {
-          newEnemyFieldCards.map((card) => {
-            if (card.key === result.attackingCard.key) {
-              result.attackingCard.coordinates = card.coordinates;
-              console.log("result.attackingCard", result.attackingCard);
-              card = result.attackingCard;
-            }
-            return card;
-          });
-        } else {
-          newEnemyFieldCards.filter(
-            (card) => card.key !== result.attackingCard.key
-          );
-        }
-        if (!result.defendingCardDies) {
-          // replace the defending card in the player card field
-          newPlayerFieldCards.map((card) => {
-            if (card.key === result.defendingCard.key) {
-              result.defendingCard.coordinates = card.coordinates;
-              console.log("result.defendingCard", result.defendingCard);
-              card = result.defendingCard;
-            }
-            return card;
-          });
-        } else {
-          newPlayerFieldCards.filter(
-            (card) => card.key !== result.defendingCard.key
-          );
-        }
+        newPlayerFieldCards = newPlayerFieldCards.filter(
+          (card) => card.key != result.defendingCardKey
+        );
       }
-      newEnemyFieldCards.find((card) => card.stance === "defense")
-        ? setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE)
-        : setShowEnemyIcon(PlayerAttackable.ATTACKABLE);
 
-      newPlayerFieldCards.find((card) => card.stance === "defense")
-        ? setShowPlayerIcon(PlayerAttackable.NOT_ATTACKABLE)
-        : setShowPlayerIcon(PlayerAttackable.ATTACKABLE);
+      newEnemyFieldCards = newEnemyFieldCards.map((card) => {
+        if (card.key == result.attackingCardKey) {
+          result.attackingCard.coordinates = card.coordinates;
+          console.log("result.attackingCard", result.attackingCard);
+          card = result.attackingCard;
+          if (result.attackingCard.trapped) {
+            card.trapped = true;
+          }
+        }
+        if (card.key == result.defendingCardKey) {
+          result.defendingCard.coordinates = card.coordinates;
+          console.log("result.defendingCard", result.defendingCard);
+          card = result.defendingCard;
+        }
+        return card;
+      });
+
+      if (result.attackingCardDies) {
+        newEnemyFieldCards = newEnemyFieldCards.filter(
+          (card) => card.key != result.attackingCardKey
+        );
+      } else {
+        newEnemyFieldCards = newEnemyFieldCards.filter(
+          (card) => card.key != result.defendingCardKey
+        );
+      }
+      console.log("===============================");
+
+      console.log("Attackability will now be evaluated");
+
+      console.log(newPlayerFieldCards);
+      console.log(newEnemyFieldCards);
+
+      console.log(result.attackingCardKey);
+      console.log(result.defendingCardKey);
+
+      let enemyAttackable = newEnemyFieldCards.find(
+        (card) => card.stance === "defense"
+      )
+        ? false
+        : true;
+
+      let playerAttackable = newPlayerFieldCards.find(
+        (card) => card.stance === "defense"
+      )
+        ? false
+        : true;
+
+      console.log("enemyAttackable: ", enemyAttackable);
+      console.log("playerAttackable: ", playerAttackable);
+
+      if (enemyAttackable) {
+        setShowEnemyIcon(PlayerAttackable.ATTACKABLE);
+      } else {
+        setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE);
+      }
+
+      if (playerAttackable) {
+        setShowPlayerIcon(PlayerAttackable.ATTACKABLE);
+      } else {
+        setShowPlayerIcon(PlayerAttackable.NOT_ATTACKABLE);
+      }
+
       setPlayerFieldCards(newPlayerFieldCards);
       setEnemyFieldCards(newEnemyFieldCards);
     }
@@ -556,47 +555,6 @@ export default function Game({
       }
     }
   }
-
-  //after the enemy attack animation finished
-  // function cardDied(playerCard: boolean) {
-  //   console.log("card died");
-  //   if (playerCard) {
-  //     console.log("player card deletion time");
-
-  //     if (playerFieldCards.find((card) => card.key === playerCardToDie.key)) {
-  //       let newPlayerFieldCards = playerFieldCards.filter(
-  //         (card) => card.key !== playerCardToDie.key
-  //       );
-  //       setPlayerFieldCards(newPlayerFieldCards);
-
-  //       setPlayerCardToDie(undefined);
-  //       console.log("player card deleted");
-  //       console.log(
-  //         newPlayerFieldCards.find((card) => card.stance === "defense")
-  //       );
-
-  //       newPlayerFieldCards.find((card) => card.stance === "defense")
-  //         ? setShowPlayerIcon(PlayerAttackable.NOT_ATTACKABLE)
-  //         : setShowPlayerIcon(PlayerAttackable.ATTACKABLE);
-  //     }
-  //   } else {
-  //     console.log("enemy card deletion time");
-  //     if (enemyFieldCards.find((card) => card.key === enemyCardToDie.key)) {
-  //       let newEnemyFieldCards = enemyFieldCards.filter(
-  //         (card) => card.key !== enemyCardToDie.key
-  //       );
-  //       setEnemyFieldCards(newEnemyFieldCards);
-  //       setEnemyCardToDie(undefined);
-  //       console.log("enemy card deleted");
-  //       console.log(
-  //         newEnemyFieldCards.find((card) => card.stance === "defense")
-  //       );
-  //       newEnemyFieldCards.find((card) => card.stance === "defense")
-  //         ? setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE)
-  //         : setShowEnemyIcon(PlayerAttackable.ATTACKABLE);
-  //     }
-  //   }
-  // }
 
   //gets the coordinates for the cardhand for later animation of drawing
   function getCoordiantes(e: HTMLElement) {
