@@ -473,10 +473,6 @@ export default function Game({
             (card) => card.key !== result.defendingCard.key
           );
         }
-
-        newEnemyFieldCards.find((card) => card.stance === "defense")
-          ? setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE)
-          : setShowEnemyIcon(PlayerAttackable.ATTACKABLE);
       } else {
         if (result.attackingCard.trapped) {
           //change stance to trapped true
@@ -519,11 +515,14 @@ export default function Game({
             (card) => card.key !== result.defendingCard.key
           );
         }
-
-        newPlayerFieldCards.find((card) => card.stance === "defense")
-          ? setShowPlayerIcon(PlayerAttackable.NOT_ATTACKABLE)
-          : setShowPlayerIcon(PlayerAttackable.ATTACKABLE);
       }
+      newEnemyFieldCards.find((card) => card.stance === "defense")
+        ? setShowEnemyIcon(PlayerAttackable.NOT_ATTACKABLE)
+        : setShowEnemyIcon(PlayerAttackable.ATTACKABLE);
+
+      newPlayerFieldCards.find((card) => card.stance === "defense")
+        ? setShowPlayerIcon(PlayerAttackable.NOT_ATTACKABLE)
+        : setShowPlayerIcon(PlayerAttackable.ATTACKABLE);
       setPlayerFieldCards(newPlayerFieldCards);
       setEnemyFieldCards(newEnemyFieldCards);
     }
