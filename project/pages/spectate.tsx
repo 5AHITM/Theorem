@@ -128,7 +128,7 @@ export default function Spectate() {
     }
 
     function getRunningGames() {
-        console.log("requesting running games")
+        //console.log("requesting running games")
         socket.emit("runningGames");
     }
 
