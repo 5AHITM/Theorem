@@ -85,6 +85,7 @@ export const CardHand: React.FC<{
   showIcon: PlayerAttackable;
   attackPlayer: (e) => void;
   showCard: (card: Card) => void;
+  getPlayerIconCoordiantes: (e: HTMLElement) => void;
 }> = ({
   isEnemy,
   getCoordiantes,
@@ -94,6 +95,7 @@ export const CardHand: React.FC<{
   showIcon,
   attackPlayer,
   showCard,
+  getPlayerIconCoordiantes,
 }) => {
   function getStyle(
     style: DraggingStyle | NotDraggingStyle,
@@ -173,7 +175,15 @@ export const CardHand: React.FC<{
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                   >
-                    <IconDiv isEnemy="false">
+                    <IconDiv
+                      isEnemy="false"
+                      ref={(e) => {
+                        if (!e) {
+                          return;
+                        }
+                        getPlayerIconCoordiantes(e);
+                      }}
+                    >
                       <PlayerIcon />
                     </IconDiv>
                   </motion.div>

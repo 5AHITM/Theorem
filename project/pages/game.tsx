@@ -79,6 +79,8 @@ export default function Game({
   // The position of the card hand
   const [pos, setPos] = useState([0]);
 
+  const [playerIconPos, setPlayerIconPos] = useState([0]);
+
   // The cards the player has in hand
   const [playerCards, setPlayerCards] = useState<Card[]>([]);
 
@@ -336,8 +338,8 @@ export default function Game({
 
         if (attackedCardCoordinates && attackingCardCoordinates) {
           let distanceX =
-            attackingCardCoordinates.coordinates.x -
-            attackedCardCoordinates.coordinates.x;
+            attackedCardCoordinates.coordinates.x -
+            attackingCardCoordinates.coordinates.x;
 
           let distanceY =
             attackedCardCoordinates.coordinates.y -
@@ -350,7 +352,7 @@ export default function Game({
           };
 
           console.log("attacked Card", attackedCard);
-
+          setPlayerFieldCards(newPlayerFieldCards);
           setAttackedCard(attackedCard);
         }
 
@@ -556,12 +558,21 @@ export default function Game({
     }
   }
 
-  //gets the coordinates for the cardhand for later animation of drawing
+  //obsolete function
   function getCoordiantes(e: HTMLElement) {
     if (pos.length === 1) {
       setPos([
         e.getBoundingClientRect().x - e.getClientRects()[0].x * 0.15,
         e.getClientRects()[0].y * 0.12,
+      ]);
+    }
+  }
+
+  function getPlayerIconCoordiantes(e: HTMLElement) {
+    if (playerIconPos.length === 1) {
+      setPlayerIconPos([
+        e.getBoundingClientRect().x,
+        e.getBoundingClientRect().y,
       ]);
     }
   }
@@ -778,6 +789,7 @@ export default function Game({
               zoomCard={zoomCard}
             ></DetailArea>
             <GameArea
+              playerIconPos={playerIconPos}
               showCard={showCard}
               getCoordiantes={getCoordiantes}
               playerCards={playerCards}
@@ -805,6 +817,7 @@ export default function Game({
               showEnemyIcon={showEnemyIcon}
               showPlayerIcon={showPlayerIcon}
               attackPlayer={attackPlayer}
+              getPlayerIconCoordiantes={getPlayerIconCoordiantes}
             ></GameArea>
             <UtilityArea
               gameState={gameState}

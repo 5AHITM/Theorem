@@ -42,6 +42,8 @@ export const GameArea: React.FC<{
   enemyCardToDie: Card;
   changeIntialCardStance: (card: CardStance) => void;
   showCard: (card: Card) => void;
+  getPlayerIconCoordiantes: (e: HTMLElement) => void;
+  playerIconPos: number[];
 }> = ({
   getCoordiantes,
   playerCards,
@@ -70,6 +72,8 @@ export const GameArea: React.FC<{
   cardDied,
   changeIntialCardStance,
   showCard,
+  getPlayerIconCoordiantes,
+  playerIconPos,
 }) => {
   return (
     <GameAreaLayout>
@@ -83,6 +87,7 @@ export const GameArea: React.FC<{
         showIcon={showEnemyIcon}
         attackPlayer={attackPlayer}
         showCard={showCard}
+        getPlayerIconCoordiantes={getPlayerIconCoordiantes}
       ></CardHand>
 
       <GameField
@@ -106,6 +111,7 @@ export const GameArea: React.FC<{
         playerCardToDie={playerCardToDie}
         cardDied={cardDied}
         showCard={showCard}
+        playerIconPos={playerIconPos}
       ></GameField>
       <CardHand
         gameState={gameState}
@@ -116,6 +122,7 @@ export const GameArea: React.FC<{
         showIcon={showPlayerIcon}
         attackPlayer={attackPlayer}
         showCard={showCard}
+        getPlayerIconCoordiantes={getPlayerIconCoordiantes}
       ></CardHand>
     </GameAreaLayout>
   );

@@ -32,6 +32,7 @@ export const GameField: React.FC<{
   playerCardToDie: Card;
   enemyCardToDie: Card;
   showCard: (card: Card) => void;
+  playerIconPos: number[];
 }> = ({
   playerCards,
   enemyCards,
@@ -53,6 +54,7 @@ export const GameField: React.FC<{
   playerCardToDie,
   enemyCardToDie,
   showCard,
+  playerIconPos,
 }) => {
   return (
     <GameSideLayout>
@@ -74,6 +76,7 @@ export const GameField: React.FC<{
         enemyCardToDie={enemyCardToDie}
         cardDied={cardDied}
         showCard={showCard}
+        playerIconPos={playerIconPos}
       ></CardField>
       <CardField
         isPlayer={true}
@@ -93,6 +96,7 @@ export const GameField: React.FC<{
         enemyCardToDie={enemyCardToDie}
         cardDied={cardDied}
         showCard={showCard}
+        playerIconPos={playerIconPos}
       ></CardField>
     </GameSideLayout>
   );

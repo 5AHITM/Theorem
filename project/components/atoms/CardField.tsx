@@ -44,6 +44,7 @@ export const CardField: React.FC<{
   playerCardToDie: Card;
   enemyCardToDie: Card;
   showCard: (card: Card) => void;
+  playerIconPos: number[];
 }> = ({
   isPlayer,
   cards,
@@ -64,6 +65,7 @@ export const CardField: React.FC<{
   enemyCardToDie,
   cardDied,
   showCard,
+  playerIconPos,
 }) => {
   function getAnimation(key, x, y) {
     if (
@@ -74,13 +76,35 @@ export const CardField: React.FC<{
         opacity: 0,
         transition: { duration: 1 },
       };
-    } else {
+    } else if (
+      (enemyAttackingCard && attackedCard) ||
+      (selectedCard && enemySelectedCard)
+    ) {
       return {
         x: [0, x, x, 0],
         y: [0, y, y, 0],
         zIndex: [0, 1, 1, 0],
         scale: [1, 1.2, 1, 1],
         transition: { duration: 1, bounce: 0.5 },
+      };
+    } else {
+      console.log("player icon pos");
+      console.log(playerIconPos);
+      return {
+        x: [
+          0,
+          playerIconPos[0] - enemyAttackingCard.coordinates.x,
+          playerIconPos[0] - enemyAttackingCard.coordinates.x,
+          0,
+        ],
+        y: [
+          0,
+          playerIconPos[1] - enemyAttackingCard.coordinates.y,
+          playerIconPos[1] - enemyAttackingCard.coordinates.y,
+          0,
+        ],
+        zIndex: [0, 1, 1, 0],
+        scale: [1, 1.2, 1, 1],
       };
     }
   }
@@ -201,9 +225,7 @@ export const CardField: React.FC<{
           <motion.div
             key={card.key + "field"}
             animate={
-              (enemyAttackingCard &&
-                attackedCard &&
-                enemyAttackingCard.key === card.key) ||
+              (enemyAttackingCard && enemyAttackingCard.key === card.key) ||
               (enemyCardToDie && enemyCardToDie.key === card.key)
                 ? getAnimation(
                     card.key,
