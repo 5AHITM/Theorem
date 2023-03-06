@@ -21,18 +21,18 @@ export const GameField: React.FC<{
   setEnemySelectedCard?: (card: any) => void;
   setSelectedCardCoordinates: (cardCoordinates: number[]) => void;
   selectedCard?: any;
-  addCardPositions: (card: CardCoordinates) => void;
+  addCardPositions: (card: CardCoordinates, player: boolean) => void;
   attackedCard: CardCoordinates;
   enemyAttackingCard: Card;
   enemyAttackingFinished: (card: any) => void;
   alreadyAttackedCards?: any[];
   changeCardStance: (card: CardStance) => void;
-  cardStances: CardStance[];
   attackingEnemyFinished: () => void;
   cardDied: (c: boolean) => void;
   playerCardToDie: Card;
   enemyCardToDie: Card;
   showCard: (card: Card) => void;
+  playerIconPos: number[];
 }> = ({
   playerCards,
   enemyCards,
@@ -49,12 +49,12 @@ export const GameField: React.FC<{
   enemyAttackingFinished,
   alreadyAttackedCards,
   changeCardStance,
-  cardStances,
   attackingEnemyFinished,
   cardDied,
   playerCardToDie,
   enemyCardToDie,
   showCard,
+  playerIconPos,
 }) => {
   return (
     <GameSideLayout>
@@ -71,12 +71,12 @@ export const GameField: React.FC<{
         enemyAttackingCard={enemyAttackingCard}
         enemyAttackingFinished={enemyAttackingFinished}
         changeCardStance={changeCardStance}
-        cardStances={cardStances}
         attackingEnemyFinished={attackingEnemyFinished}
         playerCardToDie={playerCardToDie}
         enemyCardToDie={enemyCardToDie}
         cardDied={cardDied}
         showCard={showCard}
+        playerIconPos={playerIconPos}
       ></CardField>
       <CardField
         isPlayer={true}
@@ -91,12 +91,12 @@ export const GameField: React.FC<{
         enemyAttackingFinished={enemyAttackingFinished}
         alreadyAttackedCards={alreadyAttackedCards}
         changeCardStance={changeCardStance}
-        cardStances={cardStances}
         attackingEnemyFinished={attackingEnemyFinished}
         playerCardToDie={playerCardToDie}
         enemyCardToDie={enemyCardToDie}
         cardDied={cardDied}
         showCard={showCard}
+        playerIconPos={playerIconPos}
       ></CardField>
     </GameSideLayout>
   );

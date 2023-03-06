@@ -33,18 +33,18 @@ export const CardField: React.FC<{
   setEnemySelectedCard: (card: number[]) => void;
   setSelectedCardCoordinates: (e: any) => void;
   selectedCard?: Card;
-  addCardPositions: (card: CardCoordinates) => void;
+  addCardPositions: (card: CardCoordinates, player: boolean) => void;
   attackedCard?: CardCoordinates;
   enemyAttackingCard?: Card;
   enemyAttackingFinished: (card: any) => void;
   alreadyAttackedCards?: any[];
   changeCardStance: (card: CardStance) => void;
-  cardStances: CardStance[];
   attackingEnemyFinished: () => void;
   cardDied: (isAttacking: boolean) => void;
   playerCardToDie: Card;
   enemyCardToDie: Card;
   showCard: (card: Card) => void;
+  playerIconPos: number[];
 }> = ({
   isPlayer,
   cards,
@@ -52,7 +52,6 @@ export const CardField: React.FC<{
   setSelectedCard,
   fightCard,
   enemySelectedCard,
-  setEnemySelectedCard,
   setSelectedCardCoordinates,
   selectedCard,
   addCardPositions,
@@ -61,12 +60,12 @@ export const CardField: React.FC<{
   enemyAttackingFinished,
   alreadyAttackedCards,
   changeCardStance,
-  cardStances,
   attackingEnemyFinished,
   playerCardToDie,
   enemyCardToDie,
   cardDied,
   showCard,
+  playerIconPos,
 }) => {
   function getAnimation(key, x, y) {
     if (
@@ -77,13 +76,35 @@ export const CardField: React.FC<{
         opacity: 0,
         transition: { duration: 1 },
       };
-    } else {
+    } else if (
+      (enemyAttackingCard && attackedCard) ||
+      (selectedCard && enemySelectedCard)
+    ) {
       return {
         x: [0, x, x, 0],
         y: [0, y, y, 0],
         zIndex: [0, 1, 1, 0],
         scale: [1, 1.2, 1, 1],
         transition: { duration: 1, bounce: 0.5 },
+      };
+    } else {
+      console.log("player icon pos");
+      console.log(playerIconPos);
+      return {
+        x: [
+          0,
+          playerIconPos[0] - enemyAttackingCard.coordinates.x,
+          playerIconPos[0] - enemyAttackingCard.coordinates.x,
+          0,
+        ],
+        y: [
+          0,
+          playerIconPos[1] - enemyAttackingCard.coordinates.y,
+          playerIconPos[1] - enemyAttackingCard.coordinates.y,
+          0,
+        ],
+        zIndex: [0, 1, 1, 0],
+        scale: [1, 1.2, 1, 1],
       };
     }
   }
@@ -105,10 +126,8 @@ export const CardField: React.FC<{
                 animate={
                   (enemySelectedCard.length > 0 &&
                     selectedCard.key === card.key &&
-                    cardStances.find((stance) => stance.key === card.key)
-                      ?.stance === "attack" &&
-                    cardStances.find((stance) => stance.key === card.key)
-                      ?.playedStance !== "hidden") ||
+                    card.stance === "attack" &&
+                    card.playedStance !== "hidden") ||
                   (playerCardToDie && playerCardToDie.key === card.key)
                     ? getAnimation(
                         card.key,
@@ -127,11 +146,14 @@ export const CardField: React.FC<{
                 }}
                 ref={(e) => {
                   if (e) {
-                    addCardPositions({
-                      key: card.key,
-                      x: e.getBoundingClientRect().x,
-                      y: e.getBoundingClientRect().y,
-                    });
+                    addCardPositions(
+                      {
+                        key: card.key,
+                        x: e.getBoundingClientRect().x,
+                        y: e.getBoundingClientRect().y,
+                      },
+                      true
+                    );
                   }
                 }}
               >
@@ -150,14 +172,11 @@ export const CardField: React.FC<{
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                       onClick={(e) => {
-                        let stance = cardStances.find(
-                          (stance) => stance.key === card.key
-                        );
-
                         if (
                           gameState === GameState.PLAYER_FIGHTS &&
                           !alreadyAttackedCards.includes(card.key) &&
-                          stance.playedStance !== "hidden"
+                          card.playedStance !== "hidden" &&
+                          card.stance === "attack"
                         ) {
                           setSelectedCard(card);
                           setSelectedCardCoordinates([e.clientX, e.clientY]);
@@ -165,7 +184,7 @@ export const CardField: React.FC<{
                           gameState === GameState.PLAYER_DRAWS ||
                           gameState === GameState.PLAYER_PLAYS
                         ) {
-                          if (stance.playedStance !== "hidden") {
+                          if (card.playedStance !== "hidden") {
                             card.stance =
                               card.stance === "attack" ? "defense" : "attack";
                             changeCardStance({
@@ -178,13 +197,11 @@ export const CardField: React.FC<{
                         }
                       }}
                     >
-                      {cardStances.find((stance) => stance.key === card.key)
-                        .playedStance === "open" ? (
+                      {card.playedStance === "open" ? (
                         <CardFront
-                          cardStance={cardStances.find(
-                            (stance) => stance.key === card.key
-                          )}
+                          cardStance={card.stance}
                           card={card}
+                          trapped={card.trapped}
                           sizeVariant={SizeVariants.MEDIUM}
                           showCard={showCard}
                         ></CardFront>
@@ -208,9 +225,7 @@ export const CardField: React.FC<{
           <motion.div
             key={card.key + "field"}
             animate={
-              (enemyAttackingCard &&
-                attackedCard &&
-                enemyAttackingCard.key === card.key) ||
+              (enemyAttackingCard && enemyAttackingCard.key === card.key) ||
               (enemyCardToDie && enemyCardToDie.key === card.key)
                 ? getAnimation(
                     card.key,
@@ -220,6 +235,8 @@ export const CardField: React.FC<{
                 : {}
             }
             onAnimationComplete={() => {
+              console.log(enemyCardToDie);
+              console.log(card.key);
               if (enemyCardToDie && enemyCardToDie.key === card.key) {
                 cardDied(false);
                 console.log("enemy card died");
@@ -229,11 +246,14 @@ export const CardField: React.FC<{
             }}
             ref={(e) => {
               if (e) {
-                addCardPositions({
-                  key: card.key,
-                  x: e.getBoundingClientRect().x,
-                  y: e.getBoundingClientRect().y,
-                });
+                addCardPositions(
+                  {
+                    key: card.key,
+                    x: e.getBoundingClientRect().x,
+                    y: e.getBoundingClientRect().y,
+                  },
+                  false
+                );
                 console.log("addedCardPositions");
               }
             }}
@@ -241,18 +261,17 @@ export const CardField: React.FC<{
             <CardContainer
               onClick={(e) => {
                 if (gameState === GameState.PLAYER_FIGHTS) {
+                  if (enemyCardToDie && enemyCardToDie.key === card.key) return;
                   fightCard(card, e);
                 }
               }}
             >
-              {cardStances.find((stance) => stance.key === card.key)
-                .playedStance === "open" ? (
+              {card.playedStance === "open" ? (
                 <CardFront
                   card={card}
                   sizeVariant={SizeVariants.MEDIUM}
-                  cardStance={cardStances.find(
-                    (stance) => stance.key === card.key
-                  )}
+                  cardStance={card.stance}
+                  trapped={card.trapped}
                   showCard={showCard}
                 ></CardFront>
               ) : (
