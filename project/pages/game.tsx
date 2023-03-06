@@ -17,6 +17,7 @@ import { GameState, PlayerAttackable } from "../utils/Enum";
 import { Card, CardCoordinates, CardStance, Result } from "../utils/Types";
 import { DefaultEventsMap } from "@socket.io/component-emitter";
 import { connect } from "../utils/socket";
+import Link from "next/link";
 
 const Layout = styled("div", {
   display: "flex",
@@ -26,6 +27,22 @@ const Layout = styled("div", {
   height: "100vh",
   width: "100vw",
   minHeight: "100%",
+});
+
+const StyledLink = styled(Link, {
+  backgroundColor: "black",
+  border: "1px solid white",
+  borderRadius: "0.5rem",
+  padding: "0.5rem",
+  fontSize: "1rem",
+  cursor: "pointer",
+  transition: "all 0.2s ease-in-out",
+  color: "white",
+  textDecoration: "none",
+  "&:hover": {
+    backgroundColor: "white",
+    color: "black",
+  },
 });
 
 const WaitingScreenLayout = styled("div", {
@@ -333,9 +350,6 @@ export default function Game({
           (card) => card.key === result.attackingCardKey
         );
 
-        console.log("attackedCardCoordinates", attackedCardCoordinates);
-        console.log("attackingCardCoordinates", attackingCardCoordinates);
-
         if (attackedCardCoordinates && attackingCardCoordinates) {
           let distanceX =
             attackedCardCoordinates.coordinates.x -
@@ -487,15 +501,6 @@ export default function Game({
           (card) => card.key != result.defendingCardKey
         );
       }
-      console.log("===============================");
-
-      console.log("Attackability will now be evaluated");
-
-      console.log(newPlayerFieldCards);
-      console.log(newEnemyFieldCards);
-
-      console.log(result.attackingCardKey);
-      console.log(result.defendingCardKey);
 
       let enemyAttackable = newEnemyFieldCards.find(
         (card) => card.stance === "defense"
@@ -702,6 +707,9 @@ export default function Game({
 
   //tracks all the card positions that are on both gamefields for animation
   function addCardPositions(cardPositionsN: CardCoordinates, player: boolean) {
+    console.log("========================");
+    console.log(cardPositionsN);
+    console.log(player);
     if (player) {
       let newPlayerFieldCards = playerFieldCards.map((card) => {
         if (card.key === cardPositionsN.key) {
@@ -772,6 +780,7 @@ export default function Game({
     return (
       <WaitingScreenLayout>
         <StyledHeading>You have {hasWon}!</StyledHeading>
+        <StyledLink href={"/"}> Back to the Homepage</StyledLink>
       </WaitingScreenLayout>
     );
   } else {
