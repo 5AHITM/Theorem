@@ -214,7 +214,6 @@ export default function Game({
     //if enemy draws a card
     socket.on("cardDrawn", (key: string) => {
       setEnemyCards([key, ...enemyCards]);
-      console.log("card drawn");
     });
 
     //if enemy plays a card
@@ -242,17 +241,27 @@ export default function Game({
         }
 
         enemyCards.map((card) => {
-          card.coordinates = {
-            x: 0,
-            y: 0,
-          };
+          card.coordinates = enemyFieldCards.find(
+            (enemyCard) => card.key === enemyCard.key
+          )
+            ? enemyFieldCards.find((enemyCard) => card.key === enemyCard.key)
+                ?.coordinates
+            : (card.coordinates = {
+                x: 0,
+                y: 0,
+              });
         });
 
         playerCards.map((card) => {
-          card.coordinates = {
-            x: 0,
-            y: 0,
-          };
+          card.coordinates = playerFieldCards.find(
+            (enemyCard) => card.key === enemyCard.key
+          )
+            ? playerFieldCards.find((enemyCard) => card.key === enemyCard.key)
+                ?.coordinates
+            : (card.coordinates = {
+                x: 0,
+                y: 0,
+              });
         });
 
         setEnemyFieldCards(enemyCards);
@@ -340,9 +349,6 @@ export default function Game({
           return card;
         });
 
-        console.log("Enemy is attacking");
-        console.log("result", result);
-
         let attackedCardCoordinates = playerFieldCards.find(
           (card) => card.key === result.defendingCardKey
         );
@@ -351,6 +357,9 @@ export default function Game({
         );
 
         if (attackedCardCoordinates && attackingCardCoordinates) {
+          console.log(attackedCardCoordinates);
+          console.log(attackingCardCoordinates);
+
           let distanceX =
             attackedCardCoordinates.coordinates.x -
             attackingCardCoordinates.coordinates.x;
@@ -387,7 +396,6 @@ export default function Game({
     socket.on(
       "attackResult",
       (result: Result, playerHealth: number, enemyHealth: number) => {
-        console.log("attackResult");
         setResult(result);
         setHealth(playerHealth);
         setEnemyHealth(enemyHealth);
@@ -465,16 +473,6 @@ export default function Game({
         return card;
       });
 
-      if (result.attackingCardDies) {
-        newPlayerFieldCards = newPlayerFieldCards.filter(
-          (card) => card.key != result.attackingCardKey
-        );
-      } else {
-        newPlayerFieldCards = newPlayerFieldCards.filter(
-          (card) => card.key != result.defendingCardKey
-        );
-      }
-
       newEnemyFieldCards = newEnemyFieldCards.map((card) => {
         if (card.key == result.attackingCardKey) {
           result.attackingCard.coordinates = card.coordinates;
@@ -491,6 +489,16 @@ export default function Game({
         }
         return card;
       });
+
+      if (result.attackingCardDies) {
+        newPlayerFieldCards = newPlayerFieldCards.filter(
+          (card) => card.key != result.attackingCardKey
+        );
+      } else {
+        newPlayerFieldCards = newPlayerFieldCards.filter(
+          (card) => card.key != result.defendingCardKey
+        );
+      }
 
       if (result.attackingCardDies) {
         newEnemyFieldCards = newEnemyFieldCards.filter(
@@ -513,9 +521,6 @@ export default function Game({
       )
         ? false
         : true;
-
-      console.log("enemyAttackable: ", enemyAttackable);
-      console.log("playerAttackable: ", playerAttackable);
 
       if (enemyAttackable) {
         setShowEnemyIcon(PlayerAttackable.ATTACKABLE);
@@ -543,21 +548,17 @@ export default function Game({
       if (playerAttacked) {
         if (result.attackingCardDies) {
           setPlayerCardToDie(result.attackingCard);
-          console.log("attacking card dies");
         }
 
         if (result.defendingCardDies) {
           setEnemyCardToDie(result.defendingCard);
-          console.log("defending card dies");
         }
       } else {
         if (result.attackingCardDies) {
           setEnemyCardToDie(result.attackingCard);
-          console.log("attacking card dies");
         }
         if (result.defendingCardDies) {
           setPlayerCardToDie(result.defendingCard);
-          console.log("attacking card dies");
         }
       }
     }
@@ -707,9 +708,6 @@ export default function Game({
 
   //tracks all the card positions that are on both gamefields for animation
   function addCardPositions(cardPositionsN: CardCoordinates, player: boolean) {
-    console.log("========================");
-    console.log(cardPositionsN);
-    console.log(player);
     if (player) {
       let newPlayerFieldCards = playerFieldCards.map((card) => {
         if (card.key === cardPositionsN.key) {
