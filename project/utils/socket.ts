@@ -39,7 +39,6 @@ export function connect(room: string = "") {
   socket.on("gameOver", (result: string) => {
     console.log("game ended: KI " + result);
     socket.disconnect();
-    process.exit(0);
   });
 
   // ============== before game start events ==============
@@ -176,11 +175,11 @@ export function connect(room: string = "") {
     }
     console.log(
       "Attack Result: " +
-        result +
-        ", my health: " +
-        myHealth +
-        ", enemy health: " +
-        enemyHealth
+      result +
+      ", my health: " +
+      myHealth +
+      ", enemy health: " +
+      enemyHealth
     );
     logEnemyPlayedCards("socket: playerAttacks");
     logPlayedCards();
@@ -200,11 +199,11 @@ export function connect(room: string = "") {
     }
     console.log(
       "Attack Result: " +
-        result +
-        ", my health: " +
-        myHealth +
-        ", enemy health: " +
-        enemyHealth
+      result +
+      ", my health: " +
+      myHealth +
+      ", enemy health: " +
+      enemyHealth
     );
     logEnemyPlayedCards("socket: attackResult");
     logPlayedCards();
@@ -318,12 +317,12 @@ function logEnemyPlayedCards(method: string = "") {
   enemyPlayed.forEach((card) => {
     console.log(
       card.name +
-        " " +
-        card.attack +
-        "/" +
-        card.defense +
-        " stance: " +
-        card.stance
+      " " +
+      card.attack +
+      "/" +
+      card.defense +
+      " stance: " +
+      card.stance
     );
   });
   console.log("======================================");
