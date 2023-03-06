@@ -73,6 +73,12 @@ export function KI_playCard(enemyPlayed: PlayedCard[], played: PlayedCard[], ava
 
 export function KI_attackCard(enemyPlayed: PlayedCard[], played: PlayedCard[], health: number, enemyHealth: number): [PlayedCard, PlayedCard | null][] | null {
 
+    //log all cards played by the enemy
+    console.log("enemys cards: " + enemyPlayed.length)
+    for (const card of enemyPlayed) {
+        console.table(card)
+    }
+
     //all defense cards of enemy
     let enemyDefenseCards = enemyPlayed.filter((card) => card.stance == Stance.DEFENSE)
 

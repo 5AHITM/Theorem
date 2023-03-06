@@ -17,8 +17,8 @@ export interface AvailableCard {
 }
 
 export enum Stance {
-    ATTACK,
-    DEFENSE
+    ATTACK = "attack",
+    DEFENSE = "defense",
 }
 
 export interface Result {

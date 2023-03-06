@@ -136,14 +136,18 @@ export function connect(room: string = "") {
             let attacks: [PlayedCard, PlayedCard | null][] | null =
               KI_attackCard(enemyPlayed, played, myHealth, enemyHealth);
             if (attacks != null) {
+              let index = 0;
               attacks.forEach((attack) => {
-                let attackingCard = attack[0];
-                let defendingCard = attack[1];
-                if (defendingCard != null) {
-                  attackWith(attackingCard, defendingCard);
-                } else {
-                  attackWith(attackingCard, null);
-                }
+                index++;
+                setTimeout(() => {
+                  let attackingCard = attack[0];
+                  let defendingCard = attack[1];
+                  if (defendingCard != null) {
+                    attackWith(attackingCard, defendingCard);
+                  } else {
+                    attackWith(attackingCard, null);
+                  }
+                }, index * 1000);
               });
             } else {
               console.log("Not attacking");

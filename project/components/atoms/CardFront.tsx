@@ -239,11 +239,35 @@ export const CardFront: React.FC<{
     // borderStyle: "solid"
   });
 
+  let templateURL = "/img/card-template.png";
+  switch (card.religion_type.split("/")[0]) {
+    case "Knight":
+      templateURL = "/img/card-template-knight.png";
+      break;
+    case "Romulus":
+      templateURL = "/img/card-template-romulus.png";
+      break;
+    case "Steampunk":
+      templateURL = "/img/card-template-steampunk.png";
+      break;
+    case "Vikings":
+      templateURL = "/img/card-template-vikings.png";
+      break;
+    case "Earthling":
+      templateURL = "/img/card-template-earthlings.png";
+      break;
+    case "Titan":
+      templateURL = "/img/card-template-titans.png";
+      break;
+    default:
+        templateURL = "/img/card-template.png";
+  }
+
   return (
     <CardContainer size={sizeVariant} onMouseOver={() => showCard(card)}>
       <CardImage></CardImage>
       <Image
-        src={"/img/card-template.png"}
+        src={templateURL}
         alt={"template"}
         fill
         draggable={false}
