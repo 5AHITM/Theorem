@@ -163,6 +163,8 @@ export default function Game({
 
   const [botEnemy, setBotEnemy] = useState(false);
 
+  const [attacking, setAttacking] = useState(false);
+
   //set up socket io connection only once
   useEffect(() => {
     const socketInitializer = async () => {
@@ -675,26 +677,32 @@ export default function Game({
 
   //fight a card
   function fightCard(card: Card, e) {
-    setAlreadyAttackedCards([...alreadyAttackedCards, selectedCard.key]);
-    setEnemySelectedCard([
-      e.clientX - selectedCardCoordinates[0],
-      e.clientY - selectedCardCoordinates[1],
-    ]);
-    socket.emit("playerAttacks", roomNumber, card.key, selectedCard.key);
+    if (enemySelectedCardCoordinates.length === 0) {
+      setAlreadyAttackedCards([...alreadyAttackedCards, selectedCard.key]);
+      setEnemySelectedCard([
+        e.clientX - selectedCardCoordinates[0],
+        e.clientY - selectedCardCoordinates[1],
+      ]);
+      socket.emit("playerAttacks", roomNumber, card.key, selectedCard.key);
 
-    //change card stance to open
-    let newCardStances = enemyFieldCards.map((cardn: Card) => {
-      if (card.key === cardn.key) {
-        cardn.playedStance = "open";
-      }
-      return cardn;
-    });
-    setEnemyFieldCards(newCardStances);
+      //change card stance to open
+      let newCardStances = enemyFieldCards.map((cardn: Card) => {
+        if (card.key === cardn.key) {
+          cardn.playedStance = "open";
+        }
+        return cardn;
+      });
+      setEnemyFieldCards(newCardStances);
+    }
   }
 
   //attack the enemy directly
   function attackPlayer(e) {
-    if (selectedCard && !alreadyAttackedCards.includes(selectedCard.key)) {
+    if (
+      selectedCard &&
+      !alreadyAttackedCards.includes(selectedCard.key) &&
+      enemySelectedCardCoordinates.length === 0
+    ) {
       setAlreadyAttackedCards([...alreadyAttackedCards, selectedCard.key]);
       setEnemySelectedCard([
         e.clientX - selectedCardCoordinates[0],
