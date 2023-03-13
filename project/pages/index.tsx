@@ -37,7 +37,7 @@ const StyledButton = styled("button", {
   border: "2px solid white",
   borderRadius: "0.5rem",
   padding: "0.5rem",
-  fontSize: "4rem",
+  fontSize: "2rem",
   cursor: "pointer",
   transition: "all 0.2s ease-in-out",
   color: "white",
@@ -56,6 +56,7 @@ const StyledInput = styled("input", {
   fontSize: "1rem",
   cursor: "pointer",
   transition: "all 0.2s ease-in-out",
+  width: "10rem",
   color: "black",
   textDecoration: "none",
   "&:hover": {

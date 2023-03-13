@@ -163,7 +163,7 @@ export default function Game({
 
   const [botEnemy, setBotEnemy] = useState(false);
 
-  const [attacking, setAttacking] = useState(false);
+  const [currentFightingCard, setCurrentFightingCard] = useState<Card>();
 
   //set up socket io connection only once
   useEffect(() => {
@@ -698,17 +698,15 @@ export default function Game({
 
   //attack the enemy directly
   function attackPlayer(e) {
-    if (
-      selectedCard &&
-      !alreadyAttackedCards.includes(selectedCard.key) &&
-      enemySelectedCardCoordinates.length === 0
-    ) {
+    if (selectedCard && !alreadyAttackedCards.includes(selectedCard.key)) {
       setAlreadyAttackedCards([...alreadyAttackedCards, selectedCard.key]);
       setEnemySelectedCard([
         e.clientX - selectedCardCoordinates[0],
         e.clientY - selectedCardCoordinates[1],
       ]);
       socket.emit("playerAttacksPlayer", roomNumber, selectedCard.key);
+      const card = selectedCard;
+      setCurrentFightingCard(card);
 
       setEnemyHealth(enemyHealth - selectedCard.attack);
     }
@@ -833,6 +831,7 @@ export default function Game({
               showPlayerIcon={showPlayerIcon}
               attackPlayer={attackPlayer}
               getPlayerIconCoordiantes={getPlayerIconCoordiantes}
+              currentFightingCard={currentFightingCard}
             ></GameArea>
             <UtilityArea
               gameState={gameState}
