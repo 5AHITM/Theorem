@@ -2,6 +2,7 @@ import { styled } from "../stitches.config";
 import { useState } from "react";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { Logo } from "../components/atoms/Logo";
 
 const Layout = styled("div", {
   background: "linear-gradient(180deg, #000000 0%, #2c2c2c 100%)",
@@ -36,7 +37,7 @@ const StyledButton = styled("button", {
   border: "2px solid white",
   borderRadius: "0.5rem",
   padding: "0.5rem",
-  fontSize: "4rem",
+  fontSize: "2rem",
   cursor: "pointer",
   transition: "all 0.2s ease-in-out",
   color: "white",
@@ -55,11 +56,28 @@ const StyledInput = styled("input", {
   fontSize: "1rem",
   cursor: "pointer",
   transition: "all 0.2s ease-in-out",
+  width: "10rem",
   color: "black",
   textDecoration: "none",
   "&:hover": {
     border: "3px solid white",
   },
+});
+
+const LayoutBox = styled("div", {
+  height: "fit-content",
+});
+
+const StyledLabel = styled("label", {
+  color: "white",
+});
+
+const StyledSection = styled("section", {
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "1rem",
 });
 
 export default function Home() {
@@ -72,32 +90,42 @@ export default function Home() {
   if (test) {
     return (
       <Layout>
-        <StyledButton
-          onClick={() => {
-            if (document.documentElement.requestFullscreen)
-              document.documentElement.requestFullscreen();
-          }}
-        >
-          Go Fullscreenmode
-        </StyledButton>
+        <LayoutBox>
+          <Logo></Logo>
+        </LayoutBox>
+        <StyledSection>
+          <StyledButton
+            onClick={() => {
+              if (document.documentElement.requestFullscreen)
+                document.documentElement.requestFullscreen();
+            }}
+          >
+            Go Fullscreenmode
+          </StyledButton>
+        </StyledSection>
 
-        <label htmlFor="roomNumber">Room Number:</label>
-        <StyledInput
-          type="text"
-          name="roomNumber"
-          value={roomNumber}
-          onChange={(v) => setRoomNumber(v.target.value)}
-        />
+        <StyledSection>
+          <StyledInput
+            type="text"
+            name="roomNumber"
+            value={roomNumber}
+            onChange={(v) => setRoomNumber(v.target.value)}
+            placeholder="Room Number"
+          />
+          <StyledLink href={"/game?roomNumber=" + roomNumber}>
+            Join Room
+          </StyledLink>
+        </StyledSection>
 
-        <StyledLink href={"/game?roomNumber=" + roomNumber}>
-          Join Room
-        </StyledLink>
+        <StyledSection>
+          <StyledLink href="/game?isPrivate=true">Create Room</StyledLink>
+        </StyledSection>
 
-        <StyledLink href="/game?isPrivate=true">Create Room</StyledLink>
-
-        <StyledLink href="/game?isPrivate=true&botEnemy=true">
-          Play against the Bot
-        </StyledLink>
+        <StyledSection>
+          <StyledLink href="/game?isPrivate=true&botEnemy=true">
+            Play against the Bot
+          </StyledLink>
+        </StyledSection>
 
         <StyledLink href="/game">Search</StyledLink>
         {/* {!test && <button onClick={() => signOut()}>Sign out</button>} */}

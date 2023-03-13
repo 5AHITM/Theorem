@@ -45,6 +45,7 @@ export const CardField: React.FC<{
   enemyCardToDie: Card;
   showCard: (card: Card) => void;
   playerIconPos: number[];
+  currentFightingCard: Card;
 }> = ({
   isPlayer,
   cards,
@@ -66,6 +67,7 @@ export const CardField: React.FC<{
   cardDied,
   showCard,
   playerIconPos,
+  currentFightingCard,
 }) => {
   function getAnimation(key, x, y) {
     if (
@@ -126,6 +128,7 @@ export const CardField: React.FC<{
                 animate={
                   (enemySelectedCard.length > 0 &&
                     selectedCard.key === card.key &&
+                    currentFightingCard.key === card.key &&
                     card.stance === "attack" &&
                     card.playedStance !== "hidden") ||
                   (playerCardToDie && playerCardToDie.key === card.key)
