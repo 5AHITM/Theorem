@@ -105,17 +105,22 @@ export const CardHand: React.FC<{
       return style;
     }
 
+    console.log(snapshot.draggingOver);
     const { moveTo, curve, duration } = snapshot.dropAnimation;
     const translate = `translate(${moveTo.x}px, ${moveTo.y}px)`;
 
-    // patching the existing style
-    return {
-      ...style,
-      transformOrigin: "top left",
-      transform: `${translate} scale(1.65)`,
-      // slowing down the drop because we can
-      transition: `all ${curve} ${duration + 1}s`,
-    };
+    if (snapshot.draggingOver === "playerField") {
+      // patching the existing style
+      return {
+        ...style,
+        transformOrigin: "top left",
+        transform: `${translate} scale(1.65)`,
+        // slowing down the drop because we can
+        transition: `all ${curve} ${duration + 1}s`,
+      };
+    }
+
+    return style;
   }
 
   if (isEnemy) {
