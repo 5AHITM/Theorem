@@ -685,6 +685,8 @@ export default function Game({
       ]);
       socket.emit("playerAttacks", roomNumber, card.key, selectedCard.key);
 
+      setCurrentFightingCard(selectedCard);
+
       //change card stance to open
       let newCardStances = enemyFieldCards.map((cardn: Card) => {
         if (card.key === cardn.key) {
@@ -705,8 +707,7 @@ export default function Game({
         e.clientY - selectedCardCoordinates[1],
       ]);
       socket.emit("playerAttacksPlayer", roomNumber, selectedCard.key);
-      const card = selectedCard;
-      setCurrentFightingCard(card);
+      setCurrentFightingCard(selectedCard);
 
       setEnemyHealth(enemyHealth - selectedCard.attack);
     }
@@ -788,64 +789,63 @@ export default function Game({
       </WaitingScreenLayout>
     );
   } else {
-      return (
-        <Layout>
-          <DragDropContext
-            onDragEnd={onDragEnd}
-            onDragStart={(result) => {}}
-            sensors={[useMyCoolSensor]}
-          >
-            <DetailArea
-              gameState={gameState}
-              drawCard={drawCard}
-              zoomCard={zoomCard}
-            ></DetailArea>
-            <GameArea
-              playerIconPos={playerIconPos}
-              showCard={showCard}
-              getCoordiantes={getCoordiantes}
-              playerCards={playerCards}
-              playerFieldCards={playerFieldCards}
-              enemyFieldCards={enemyFieldCards}
-              enemyCards={enemyCards}
-              gameState={gameState}
-              setSelectedCard={setSelectedCard}
-              fightCard={fightCard}
-              enemySelectedCard={enemySelectedCardCoordinates}
-              setEnemySelectedCard={setEnemySelectedCard}
-              setSelectedCardCoordinates={setSelectedCardCoordinates}
-              selectedCard={selectedCard}
-              addCardPositions={addCardPositions}
-              attackedCard={attackedCard}
-              enemyAttackingCard={enemyAttackingCard}
-              enemyAttackingFinished={enemyAttackingFinished}
-              alreadyAttackedCards={alreadyAttackedCards}
-              changeCardStance={changeCardStance}
-              changeIntialCardStance={changeIntialCardStance}
-              attackingEnemyFinished={attackingEnemyFinished}
-              playerCardToDie={playerCardToDie}
-              enemyCardToDie={enemyCardToDie}
-              cardDied={afterFightAnimation}
-              showEnemyIcon={showEnemyIcon}
-              showPlayerIcon={showPlayerIcon}
-              attackPlayer={attackPlayer}
-              getPlayerIconCoordiantes={getPlayerIconCoordiantes}
-              currentFightingCard={currentFightingCard}
-            ></GameArea>
-            <UtilityArea
-              gameState={gameState}
-              cards={[]}
-              changeGameState={changeGameState}
-              mana={mana}
-              health={health}
-              enemyHealth={enemyHealth}
-              convertMana={convertMana}
-              manaConversionAllowed={manaConversionAllowed}
-            ></UtilityArea>
-          </DragDropContext>
-        </Layout>
-      );
-    
+    return (
+      <Layout>
+        <DragDropContext
+          onDragEnd={onDragEnd}
+          onDragStart={(result) => {}}
+          sensors={[useMyCoolSensor]}
+        >
+          <DetailArea
+            gameState={gameState}
+            drawCard={drawCard}
+            zoomCard={zoomCard}
+          ></DetailArea>
+          <GameArea
+            playerIconPos={playerIconPos}
+            showCard={showCard}
+            getCoordiantes={getCoordiantes}
+            playerCards={playerCards}
+            playerFieldCards={playerFieldCards}
+            enemyFieldCards={enemyFieldCards}
+            enemyCards={enemyCards}
+            gameState={gameState}
+            setSelectedCard={setSelectedCard}
+            fightCard={fightCard}
+            enemySelectedCard={enemySelectedCardCoordinates}
+            setEnemySelectedCard={setEnemySelectedCard}
+            setSelectedCardCoordinates={setSelectedCardCoordinates}
+            selectedCard={selectedCard}
+            addCardPositions={addCardPositions}
+            attackedCard={attackedCard}
+            enemyAttackingCard={enemyAttackingCard}
+            enemyAttackingFinished={enemyAttackingFinished}
+            alreadyAttackedCards={alreadyAttackedCards}
+            changeCardStance={changeCardStance}
+            changeIntialCardStance={changeIntialCardStance}
+            attackingEnemyFinished={attackingEnemyFinished}
+            playerCardToDie={playerCardToDie}
+            enemyCardToDie={enemyCardToDie}
+            cardDied={afterFightAnimation}
+            showEnemyIcon={showEnemyIcon}
+            showPlayerIcon={showPlayerIcon}
+            attackPlayer={attackPlayer}
+            getPlayerIconCoordiantes={getPlayerIconCoordiantes}
+            currentFightingCard={currentFightingCard}
+          ></GameArea>
+          <UtilityArea
+            gameState={gameState}
+            cards={[]}
+            changeGameState={changeGameState}
+            mana={mana}
+            health={health}
+            enemyHealth={enemyHealth}
+            convertMana={convertMana}
+            manaConversionAllowed={manaConversionAllowed}
+          ></UtilityArea>
+        </DragDropContext>
+      </Layout>
+    );
   }
 }
 
