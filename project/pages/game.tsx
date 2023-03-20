@@ -34,7 +34,7 @@ const StyledLink = styled(Link, {
   border: "1px solid white",
   borderRadius: "0.5rem",
   padding: "0.5rem",
-  fontSize: "1rem",
+  fontSize: "2rem",
   cursor: "pointer",
   transition: "all 0.2s ease-in-out",
   color: "white",
@@ -70,6 +70,20 @@ const StyledButton = styled("button", {
     backgroundColor: "white",
     color: "black",
   },
+});
+
+const Overlay = styled("div", {
+  position: "absolute",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  backgroundColor: "rgba(0, 0, 0, 0.5)",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 100,
 });
 
 const StyledHeading = styled("h1", {
@@ -170,6 +184,11 @@ export default function Game({
     const socketInitializer = async () => {
       //get query params
       const { roomNumber, isPrivate, botEnemy } = router.query;
+
+      console.log("botEnemy", botEnemy);
+      console.log("isPrivate", isPrivate);
+      console.log("roomNumber", roomNumber);
+
       if (botEnemy) {
         setBotEnemy(true);
       }
@@ -770,6 +789,10 @@ export default function Game({
     }
   }
 
+  function copyToClickboard() {
+    navigator.clipboard.writeText(roomNumber);
+  }
+
   //changes the card stance if its played hidden or open
   function changeIntialCardStance(cardStance: CardStance) {
     let newPlayerHandCards = playerCards.map((card) => {
@@ -790,61 +813,77 @@ export default function Game({
     );
   } else {
     return (
-      <Layout>
-        <DragDropContext
-          onDragEnd={onDragEnd}
-          onDragStart={(result) => {}}
-          sensors={[useMyCoolSensor]}
-        >
-          <DetailArea
-            gameState={gameState}
-            drawCard={drawCard}
-            zoomCard={zoomCard}
-          ></DetailArea>
-          <GameArea
-            playerIconPos={playerIconPos}
-            showCard={showCard}
-            getCoordiantes={getCoordiantes}
-            playerCards={playerCards}
-            playerFieldCards={playerFieldCards}
-            enemyFieldCards={enemyFieldCards}
-            enemyCards={enemyCards}
-            gameState={gameState}
-            setSelectedCard={setSelectedCard}
-            fightCard={fightCard}
-            enemySelectedCard={enemySelectedCardCoordinates}
-            setEnemySelectedCard={setEnemySelectedCard}
-            setSelectedCardCoordinates={setSelectedCardCoordinates}
-            selectedCard={selectedCard}
-            addCardPositions={addCardPositions}
-            attackedCard={attackedCard}
-            enemyAttackingCard={enemyAttackingCard}
-            enemyAttackingFinished={enemyAttackingFinished}
-            alreadyAttackedCards={alreadyAttackedCards}
-            changeCardStance={changeCardStance}
-            changeIntialCardStance={changeIntialCardStance}
-            attackingEnemyFinished={attackingEnemyFinished}
-            playerCardToDie={playerCardToDie}
-            enemyCardToDie={enemyCardToDie}
-            cardDied={afterFightAnimation}
-            showEnemyIcon={showEnemyIcon}
-            showPlayerIcon={showPlayerIcon}
-            attackPlayer={attackPlayer}
-            getPlayerIconCoordiantes={getPlayerIconCoordiantes}
-            currentFightingCard={currentFightingCard}
-          ></GameArea>
-          <UtilityArea
-            gameState={gameState}
-            cards={[]}
-            changeGameState={changeGameState}
-            mana={mana}
-            health={health}
-            enemyHealth={enemyHealth}
-            convertMana={convertMana}
-            manaConversionAllowed={manaConversionAllowed}
-          ></UtilityArea>
-        </DragDropContext>
-      </Layout>
+      <>
+        {!roomFound && (
+          <Overlay>
+            <StyledHeading>Room number:</StyledHeading>
+            <StyledButton
+              onClick={(e) => {
+                copyToClickboard();
+              }}
+            >
+              {roomNumber}
+            </StyledButton>
+            <StyledHeading>Waiting for the other player</StyledHeading>
+            <StyledLink href={"/"}> Back to the Homepage</StyledLink>
+          </Overlay>
+        )}
+        <Layout>
+          <DragDropContext
+            onDragEnd={onDragEnd}
+            onDragStart={(result) => {}}
+            sensors={[useMyCoolSensor]}
+          >
+            <DetailArea
+              gameState={gameState}
+              drawCard={drawCard}
+              zoomCard={zoomCard}
+            ></DetailArea>
+            <GameArea
+              playerIconPos={playerIconPos}
+              showCard={showCard}
+              getCoordiantes={getCoordiantes}
+              playerCards={playerCards}
+              playerFieldCards={playerFieldCards}
+              enemyFieldCards={enemyFieldCards}
+              enemyCards={enemyCards}
+              gameState={gameState}
+              setSelectedCard={setSelectedCard}
+              fightCard={fightCard}
+              enemySelectedCard={enemySelectedCardCoordinates}
+              setEnemySelectedCard={setEnemySelectedCard}
+              setSelectedCardCoordinates={setSelectedCardCoordinates}
+              selectedCard={selectedCard}
+              addCardPositions={addCardPositions}
+              attackedCard={attackedCard}
+              enemyAttackingCard={enemyAttackingCard}
+              enemyAttackingFinished={enemyAttackingFinished}
+              alreadyAttackedCards={alreadyAttackedCards}
+              changeCardStance={changeCardStance}
+              changeIntialCardStance={changeIntialCardStance}
+              attackingEnemyFinished={attackingEnemyFinished}
+              playerCardToDie={playerCardToDie}
+              enemyCardToDie={enemyCardToDie}
+              cardDied={afterFightAnimation}
+              showEnemyIcon={showEnemyIcon}
+              showPlayerIcon={showPlayerIcon}
+              attackPlayer={attackPlayer}
+              getPlayerIconCoordiantes={getPlayerIconCoordiantes}
+              currentFightingCard={currentFightingCard}
+            ></GameArea>
+            <UtilityArea
+              gameState={gameState}
+              cards={[]}
+              changeGameState={changeGameState}
+              mana={mana}
+              health={health}
+              enemyHealth={enemyHealth}
+              convertMana={convertMana}
+              manaConversionAllowed={manaConversionAllowed}
+            ></UtilityArea>
+          </DragDropContext>
+        </Layout>
+      </>
     );
   }
 }
