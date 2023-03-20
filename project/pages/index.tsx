@@ -1,8 +1,13 @@
 import { styled } from "../stitches.config";
 import { useState } from "react";
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
 import { Logo } from "../components/atoms/Logo";
+import { GameSelection } from "../components/molecules/GameSelection";
+import { Fullscreen } from "../components/molecules/Fullscreen";
+import Image from "next/image";
+import { InferGetServerSidePropsType } from "next";
+import { getServerSideProps } from "./game";
+
 
 const Layout = styled("div", {
   background: "linear-gradient(180deg, #000000 0%, #2c2c2c 100%)",
@@ -64,78 +69,73 @@ const StyledInput = styled("input", {
   },
 });
 
-const LayoutBox = styled("div", {
-  height: "fit-content",
-});
+const GameSelectionWrapper = styled("div", {
+  position: "absolute",
+  bottom: "0",
+  left: "0",
+  width: "100%",
+})
 
-const StyledLabel = styled("label", {
-  color: "white",
-});
+const WrapLogo = styled("div", {
+  position: "absolute",
+  width: "35vw",
+  height: "35vh",
+  top: "5%",
+  right: "5%",
+  zIndex: "10"
+})
 
-const StyledSection = styled("section", {
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "1rem",
-});
-
-export default function Home() {
+export default function Home({
+  data,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [roomNumber, setRoomNumber] = useState("");
 
-  //const { data: session } = useSession();
+  return (
+    <>
+      <WrapLogo>
+        <Image
+          alt={"Logo"}
+          src={"/img/allerEchtesTheoremLogo.png"}
+          fill
+          draggable={false}
+        />
+      </WrapLogo>
+      {/* <Layout> */}
+      {/* <StyledButton
+          onClick={() => {
+            if (document.documentElement.requestFullscreen)
+              document.documentElement.requestFullscreen();
+          }}
+        >
+          Go Fullscreenmode
+        </StyledButton> */}
+      <Image
+        alt={"Background"}
+        src={"/img/backgroundMenu.png"}
+        fill
+        draggable={false}
+      />
+      <Fullscreen></Fullscreen>
 
-  const test = true;
-
-  if (test) {
-    return (
-      <Layout>
-        <LayoutBox>
-          <Logo></Logo>
-        </LayoutBox>
-        <StyledSection>
-          <StyledButton
-            onClick={() => {
-              if (document.documentElement.requestFullscreen)
-                document.documentElement.requestFullscreen();
-            }}
-          >
-            Go Fullscreenmode
-          </StyledButton>
-        </StyledSection>
-
-        <StyledSection>
+      {/* <label htmlFor="roomNumber">Room Number:</label>
           <StyledInput
             type="text"
             name="roomNumber"
             value={roomNumber}
             onChange={(v) => setRoomNumber(v.target.value)}
-            placeholder="Room Number"
-          />
-          <StyledLink href={"/game?roomNumber=" + roomNumber}>
-            Join Room
-          </StyledLink>
-        </StyledSection>
+          /> */}
 
-        <StyledSection>
+      {/* <StyledLink href={"/game?roomNumber=" + roomNumber}>Join Room</StyledLink>
+
           <StyledLink href="/game?isPrivate=true">Create Room</StyledLink>
-        </StyledSection>
 
-        <StyledSection>
-          <StyledLink href="/game?isPrivate=true&botEnemy=true">
-            Play against the Bot
-          </StyledLink>
-        </StyledSection>
+          <StyledLink href="/game">Search</StyledLink>
 
-        <StyledLink href="/game">Search</StyledLink>
-        {/* {!test && <button onClick={() => signOut()}>Sign out</button>} */}
-      </Layout>
-    );
-  } else {
-    // return (
-    //   <Layout>
-    //     <button onClick={() => signIn("google")}>Sign in with Google</button>
-    //   </Layout>
-    // );
-  }
+        </Layout> */}
+
+      <GameSelectionWrapper>
+        <GameSelection></GameSelection>
+      </GameSelectionWrapper>
+    </>
+  );
 }
