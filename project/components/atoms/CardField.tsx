@@ -128,6 +128,7 @@ export const CardField: React.FC<{
                 animate={
                   (enemySelectedCard.length > 0 &&
                     selectedCard.key === card.key &&
+                    currentFightingCard &&
                     currentFightingCard.key === card.key &&
                     card.stance === "attack" &&
                     card.playedStance !== "hidden") ||
