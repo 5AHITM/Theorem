@@ -17,6 +17,7 @@ const QuickPlay = styled("a", {
     fontSize: "200%",
     textDecoration: "none",
     color: "#373737",
+    borderRadius: "0.2rem",
     "&:active": {
         backgroundColor: "#353534",
         color: "white"
@@ -41,6 +42,7 @@ const CreateRoom = styled("a", {
     textDecoration: "none",
     paddingLeft: "auto",
     paddingRight: "auto",
+    borderRadius: "0.2rem",
     "&:active": {
         backgroundColor: "LightGray",
         color: "Black"
@@ -65,6 +67,7 @@ const PlayBot = styled("a", {
     textDecoration: "none",
     paddingLeft: "auto",
     paddingRight: "auto",
+    borderRadius: "0.2rem",
     "&:active": {
         backgroundColor: "LightGray",
         color: "Black"
@@ -93,6 +96,7 @@ const ConfirmCode = styled("a", {
     fontWeight: "$bold",
     borderStyle: "none",
     borderTopRightRadius: "0.2rem",
+    borderBottomRightRadius: "0.2rem",
     "&:active": {
         backgroundColor: "LightGray",
     }
