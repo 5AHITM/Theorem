@@ -788,7 +788,6 @@ export default function Game({
       </WaitingScreenLayout>
     );
   } else {
-    if (roomFound) {
       return (
         <Layout>
           <DragDropContext
@@ -846,25 +845,7 @@ export default function Game({
           </DragDropContext>
         </Layout>
       );
-    } else {
-      return (
-        <WaitingScreenLayout>
-          {roomFound ? (
-            <StyledHeading>Room Found</StyledHeading>
-          ) : (
-            <StyledHeading>Waiting for other player to join</StyledHeading>
-          )}
-          <StyledButton
-            onClick={() => {
-              //copy roomnumber to clipboard
-              navigator.clipboard.writeText(roomNumber);
-            }}
-          >
-            Room number: {roomNumber}
-          </StyledButton>
-        </WaitingScreenLayout>
-      );
-    }
+    
   }
 }
 
