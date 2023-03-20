@@ -1,8 +1,8 @@
 import { styled } from "../stitches.config";
-import { useState, useEffect } from "react";
-import { resetServerContext } from "react-beautiful-dnd";
-import { InferGetServerSidePropsType } from "next/types";
+import { useState } from "react";
 import Link from "next/link";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { Logo } from "../components/atoms/Logo";
 
 const Layout = styled("div", {
   background: "linear-gradient(180deg, #000000 0%, #2c2c2c 100%)",
@@ -37,7 +37,7 @@ const StyledButton = styled("button", {
   border: "2px solid white",
   borderRadius: "0.5rem",
   padding: "0.5rem",
-  fontSize: "4rem",
+  fontSize: "2rem",
   cursor: "pointer",
   transition: "all 0.2s ease-in-out",
   color: "white",
@@ -56,6 +56,7 @@ const StyledInput = styled("input", {
   fontSize: "1rem",
   cursor: "pointer",
   transition: "all 0.2s ease-in-out",
+  width: "10rem",
   color: "black",
   textDecoration: "none",
   "&:hover": {
@@ -63,45 +64,78 @@ const StyledInput = styled("input", {
   },
 });
 
-export default function Home({
-  data,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+const LayoutBox = styled("div", {
+  height: "fit-content",
+});
+
+const StyledLabel = styled("label", {
+  color: "white",
+});
+
+const StyledSection = styled("section", {
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "1rem",
+});
+
+export default function Home() {
   const [roomNumber, setRoomNumber] = useState("");
 
-  return (
-    <Layout>
-      <StyledButton
-        onClick={() => {
-          if (document.documentElement.requestFullscreen)
-            document.documentElement.requestFullscreen();
-        }}
-      >
-        Go Fullscreenmode
-      </StyledButton>
+  //const { data: session } = useSession();
 
-      <label htmlFor="roomNumber">Room Number:</label>
-      <StyledInput
-        type="text"
-        name="roomNumber"
-        value={roomNumber}
-        onChange={(v) => setRoomNumber(v.target.value)}
-      />
+  const test = true;
 
-      <StyledLink href={"/game?roomNumber=" + roomNumber}>Join Room</StyledLink>
+  if (test) {
+    return (
+      <Layout>
+        <LayoutBox>
+          <Logo></Logo>
+        </LayoutBox>
+        <StyledSection>
+          <StyledButton
+            onClick={() => {
+              if (document.documentElement.requestFullscreen)
+                document.documentElement.requestFullscreen();
+            }}
+          >
+            Go Fullscreenmode
+          </StyledButton>
+        </StyledSection>
 
-      <StyledLink href="/game?isPrivate=true">Create Room</StyledLink>
+        <StyledSection>
+          <StyledInput
+            type="text"
+            name="roomNumber"
+            value={roomNumber}
+            onChange={(v) => setRoomNumber(v.target.value)}
+            placeholder="Room Number"
+          />
+          <StyledLink href={"/game?roomNumber=" + roomNumber}>
+            Join Room
+          </StyledLink>
+        </StyledSection>
 
-      <StyledLink href="/game">Search</StyledLink>
-    </Layout>
-  );
+        <StyledSection>
+          <StyledLink href="/game?isPrivate=true">Create Room</StyledLink>
+        </StyledSection>
+
+        <StyledSection>
+          <StyledLink href="/game?isPrivate=true&botEnemy=true">
+            Play against the Bot
+          </StyledLink>
+        </StyledSection>
+
+        <StyledLink href="/game">Search</StyledLink>
+        {/* {!test && <button onClick={() => signOut()}>Sign out</button>} */}
+      </Layout>
+    );
+  } else {
+    // return (
+    //   <Layout>
+    //     <button onClick={() => signIn("google")}>Sign in with Google</button>
+    //   </Layout>
+    // );
+  }
 }
-
-export const getServerSideProps = async () => {
-  resetServerContext();
-
-  // Fetch data from external API
-  const data = [];
-
-  // Pass data to the page via props
-  return { props: { data } };
-};

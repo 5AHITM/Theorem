@@ -16,6 +16,10 @@ export interface Card {
   stance: "attack" | "defense";
   playedStance: "open" | "hidden";
   trapped: boolean;
+  coordinates: {
+    x: number;
+    y: number;
+  };
 }
 
 export interface Result {

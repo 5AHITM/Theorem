@@ -270,7 +270,7 @@ export const PlayerUtilities: React.FC<{
             </ConvertManaButton>
             <ConvertManaButton
               onClick={() => {
-                convertMana(1);
+                convertMana(2);
               }}
               disabled={
                 !manaConversionAllowed ||
@@ -285,7 +285,7 @@ export const PlayerUtilities: React.FC<{
             </ConvertManaButton>
             <ConvertManaButton
               onClick={() => {
-                convertMana(1);
+                convertMana(3);
               }}
               disabled={
                 !manaConversionAllowed ||
@@ -303,3 +303,4 @@ export const PlayerUtilities: React.FC<{
       </UtilityAreaLayout>
     );
   };
+

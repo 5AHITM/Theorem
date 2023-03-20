@@ -27,13 +27,12 @@ export const GameArea: React.FC<{
   setEnemySelectedCard?: (card: number[]) => void;
   setSelectedCardCoordinates: (e: any) => void;
   selectedCard?: Card;
-  addCardPositions: (card: any) => void;
+  addCardPositions: (card: any, player: boolean) => void;
   attackedCard: CardCoordinates;
   enemyAttackingCard: Card;
   enemyAttackingFinished: (card: any) => void;
   alreadyAttackedCards?: any[];
   changeCardStance: (card: CardStance) => void;
-  cardStances: CardStance[];
   attackingEnemyFinished: () => void;
   cardDied: (attackingCard: boolean) => void;
   showPlayerIcon: PlayerAttackable;
@@ -43,6 +42,9 @@ export const GameArea: React.FC<{
   enemyCardToDie: Card;
   changeIntialCardStance: (card: CardStance) => void;
   showCard: (card: Card) => void;
+  getPlayerIconCoordiantes: (e: HTMLElement) => void;
+  playerIconPos: number[];
+  currentFightingCard: Card;
 }> = ({
   getCoordiantes,
   playerCards,
@@ -62,7 +64,6 @@ export const GameArea: React.FC<{
   enemyAttackingFinished,
   alreadyAttackedCards,
   changeCardStance,
-  cardStances,
   attackingEnemyFinished,
   showPlayerIcon,
   showEnemyIcon,
@@ -72,6 +73,9 @@ export const GameArea: React.FC<{
   cardDied,
   changeIntialCardStance,
   showCard,
+  getPlayerIconCoordiantes,
+  playerIconPos,
+  currentFightingCard,
 }) => {
   return (
     <GameAreaLayout>
@@ -82,10 +86,10 @@ export const GameArea: React.FC<{
         getCoordiantes={() => {}}
         cards={enemyCards}
         changeCardStance={changeIntialCardStance}
-        cardStances={cardStances}
         showIcon={showEnemyIcon}
         attackPlayer={attackPlayer}
         showCard={showCard}
+        getPlayerIconCoordiantes={getPlayerIconCoordiantes}
       ></CardHand>
 
       <GameField
@@ -104,12 +108,13 @@ export const GameArea: React.FC<{
         enemyAttackingFinished={enemyAttackingFinished}
         alreadyAttackedCards={alreadyAttackedCards}
         changeCardStance={changeCardStance}
-        cardStances={cardStances}
         attackingEnemyFinished={attackingEnemyFinished}
         enemyCardToDie={enemyCardToDie}
         playerCardToDie={playerCardToDie}
         cardDied={cardDied}
         showCard={showCard}
+        playerIconPos={playerIconPos}
+        currentFightingCard={currentFightingCard}
       ></GameField>
       <CardHand
         gameState={gameState}
@@ -117,10 +122,10 @@ export const GameArea: React.FC<{
         getCoordiantes={getCoordiantes}
         cards={playerCards}
         changeCardStance={changeIntialCardStance}
-        cardStances={cardStances}
         showIcon={showPlayerIcon}
         attackPlayer={attackPlayer}
         showCard={showCard}
+        getPlayerIconCoordiantes={getPlayerIconCoordiantes}
       ></CardHand>
     </GameAreaLayout>
   );

@@ -4,6 +4,8 @@ import { CardHidden } from "./atoms/CardHidden";
 import { CardFront } from "./atoms/CardFront";
 import { GameState, SizeVariants } from "../utils/Enum";
 import { Card } from "../utils/Types";
+import { AnimatePresence, motion } from "framer-motion";
+import React from "react";
 
 const DetailAreaLayout = styled("div", {
   display: "flex",
@@ -32,95 +34,103 @@ const CardDeckArea = styled("div", {
   alignItems: "center",
   justifyContent: "center",
   overflow: "hidden",
+  position: "relative",
 });
 
 const CardButton = styled("button", {
-  width: "50%",
-  overflow: "hidden",
+  width: "100%",
+  backgroundColor: "transparent",
+  border: "none",
+  outline: "none",
+
+  "&:hover": {
+    cursor: "pointer",
+  },
 });
 
 const CardDeckContainer = styled("div", {
-  position: "fixed",
-  width: "12%",
-  bottom: "12%",
+  zIndex: 0,
+});
+
+const MotionDiv = styled(motion.div, {
+  width: "50%",
+  position: "absolute",
+  zIndex: 1,
 });
 
 export const DetailArea: React.FC<{
-  cardDeck: string[];
   drawCard: () => void;
   gameState: GameState;
   zoomCard: Card;
-}> = ({ cardDeck, drawCard, gameState, zoomCard }) => {
-  function getStyle(style, snapshot) {
-    if (!snapshot.isDropAnimating) {
-      return style;
-    }
-
-    const { moveTo, curve, duration } = snapshot.dropAnimation;
-    const translate = `translate(${moveTo.x / 0.7}px, ${moveTo.y / 0.7}px)`;
-
-    // patching the existing style
-    return {
-      ...style,
-      transformOrigin: "top left",
-      transform: `scale(0.7) ${translate}`,
-      // slowing down the drop because we can
-      transition: `all ${curve} ${duration}s`,
-    };
-  }
+}> = ({ drawCard, gameState, zoomCard }) => {
+  const [drawCardAnimation, setDrawCardAnimation] = React.useState<
+    "open" | "closed" | "hover"
+  >("closed");
+  const variants = {
+    open: { y: ["10%", "200%", "0%"], opacity: [1, 0, 0] },
+    closed: { y: 0, opacity: 1 },
+    hover: { y: "10%" },
+  };
   return (
     <DetailAreaLayout>
       <ZoomCardArea>
         <CardContainer>
-          {zoomCard ? (
-            <CardFront
-              card={zoomCard}
-              sizeVariant={SizeVariants.LARGE}
-              showCard={() => {}}
-            ></CardFront>
-          ) : (
-            <CardHidden></CardHidden>
-          )}
+          <AnimatePresence>
+            {zoomCard ? (
+              <motion.div
+                key="zoomCardMotionDiv"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <CardFront
+                  card={zoomCard}
+                  sizeVariant={SizeVariants.LARGE}
+                  showCard={() => {}}
+                  trapped={false}
+                ></CardFront>
+              </motion.div>
+            ) : (
+              <CardHidden></CardHidden>
+            )}
+          </AnimatePresence>
         </CardContainer>
       </ZoomCardArea>
       <CardDeckArea>
-        <CardButton
-          onClick={() => {
-            if (gameState === GameState.PLAYER_DRAWS) {
-              drawCard();
+        <MotionDiv
+          animate={drawCardAnimation}
+          variants={variants}
+          onAnimationComplete={(definition) => {
+            console.log(definition);
+            if (definition === "open") {
+              setDrawCardAnimation("closed");
             }
           }}
         >
-          <Droppable droppableId="cardDeck" isDropDisabled={true}>
-            {(provided) => (
-              <div ref={provided.innerRef}>
-                {cardDeck.map((card, index) => (
-                  <Draggable
-                    draggableId={card}
-                    index={index}
-                    key={card}
-                    isDragDisabled={!(gameState === GameState.PLAYER_DRAWS)}
-                  >
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        style={getStyle(
-                          provided.draggableProps.style,
-                          snapshot
-                        )}
-                      >
-                        <CardHidden></CardHidden>
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </CardButton>
+          <CardButton
+            onClick={() => {
+              if (gameState === GameState.PLAYER_DRAWS) {
+                drawCard();
+                setDrawCardAnimation("open");
+              }
+            }}
+            onMouseEnter={() => {
+              if (gameState === GameState.PLAYER_DRAWS) {
+                setDrawCardAnimation("hover");
+              }
+            }}
+            onMouseLeave={() => {
+              if (gameState === GameState.PLAYER_DRAWS) {
+                setDrawCardAnimation("closed");
+              }
+            }}
+          >
+            <CardHidden></CardHidden>
+          </CardButton>
+        </MotionDiv>
+        <CardDeckContainer>
+          <CardHidden></CardHidden>
+        </CardDeckContainer>
       </CardDeckArea>
     </DetailAreaLayout>
   );
